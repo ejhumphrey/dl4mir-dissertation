@@ -1,0 +1,185 @@
+
+% ---------------------------------------------------------------------------
+%                   LATEX TEMPLATE FOR MARL PhD THESIS
+% ---------------------------------------------------------------------------
+
+% based on Harish Bhanderi's PhD/MPhil template, then Uni Cambridge
+% http://www-h.eng.cam.ac.uk/help/tpl/textprocessing/ThesisStyle/
+% corrected and extended in 2007 by Jakob Suckale, then MPI-CBG PhD programme
+% and made available through OpenWetWare.org - the free biology wiki
+
+
+%: Style file for Latex
+% Most style definitions are in the external file PhDthesisPSnPDF.
+% In this template package, it can be found in ./Latex/Classes/
+%\documentclass[twoside,11pt]{Latex/Classes/PhDthesisPSnPDF}
+\documentclass[oneside, 12pt, letterpaper]{Latex/Classes/NYUdissertation}
+
+%: Macro file for Latex
+% Macros help you summarise frequently repeated Latex commands.
+% Here, they are placed in an external file /Latex/Macros/MacroFile1.tex
+% An macro that you may use frequently is the figuremacro (see introduction.tex)
+\include{Latex/Macros/MacroFile1}
+
+%: ----------------------------------------------------------------------
+%:                  TITLE PAGE: name, degree,..
+% ----------------------------------------------------------------------
+% below is to generate the title page with crest and author name
+
+%if output to PDF then put the following in PDF header
+\ifpdf
+    \pdfinfo { /Title  (Bear Claw Macaroon Tiramisu Cheesecake)
+               /Creator (TeX)
+               /Producer (pdfTeX)
+               /Author (Your Name addy@nyu.edu)
+               % /CreationDate (D:YYYYMMDDhhmmss)  %format D:YYYYMMDDhhmmss
+               % /ModDate (D:YYYYMMDDhhmm)
+               /Subject (Music Technology)
+               /Keywords (Marzipan, jujubes, pudding, sesame snaps) }
+         \pdfcatalog { /PageMode (/UseOutlines)
+                  /OpenAction (fitbh)  }
+\fi
+
+\title{\doublespacing Bear Claw Macaroon Tiramisu Cheesecake}
+
+\threecommittee
+{Professor I.~M. Smart, Chairperson}
+{Professor Beardsley Wordsworth}
+{Professor Norma Hazelwood}
+
+\degree{Doctor of Philosophy}
+\degreedate{2014}
+
+% ----------------------------------------------------------------------
+% The section below defines www links/email for author and institutions
+% They will appear on the title page of the PDF and can be clicked
+
+%: ----------------------- HELP: www links
+% You can also see below how, www links are placed
+% \href{http://www.something.net}{link text}
+
+\author{\href{mailto:addy@nyu.edu}{Your Name}}
+\program{Program in \href{http://steinhardt.nyu.edu/music/technology/}{Music Technology}}
+\department{Department of \href{http://steinhardt.nyu.edu/music/}{Music and Performing Arts Professions}}
+\university{\href{http://www.nyu.edu/}{New York University}}
+\crest{}%\includegraphics[width=3in]{NYUlogoLarge2597}}
+\submittedtext{Submitted in partial fulfillment\\
+  of the requirements for the degree of\\
+  Doctor of Philosophy in the\\
+  \href{http://steinhardt.nyu.edu/}{Steinhardt School of Culture, Education, and Human Development}}
+
+
+% ----------------------------------------------------------------------
+
+% turn of those nasty overfull and underfull hboxes
+\hbadness=10000
+\hfuzz=50pt
+\makeindex
+
+%:--------------------------------------------------------------
+%:                  FRONT MATTER: dedications, abstract,..
+% --------------------------------------------------------------
+
+\begin{document}
+
+%\hyphenpenalty=9000
+%\frontmatter
+\widowpenalty=10000
+\clubpenalty=10000
+
+
+%: ----------------------- generate cover page ------------------------
+%\setstretch{1.2}
+\maketitle  % command to print the title page with above variables
+\makecopyright
+
+%: ----------------------- abstract ------------------------
+
+% Your institution may have specific regulations if you need an abstract and where it is to be placed in the document. The default here is just after title.
+
+% \include{frontmatter/abstract}
+
+%: ----------------------- tie in front matter ------------------------
+\doublespacing
+\include{frontmatter/acknowledgement}
+
+%: ----------------------- contents ------------------------
+% levels are: 0 - chapter, 1 - section, 2 - subsection, 3 - subsubsection
+\setcounter{secnumdepth}{3} % organisational level that receives a numbers
+\setcounter{tocdepth}{2}    % print table of contents for level 2
+\singlespacing
+\tableofcontents            % print the table of contents
+%\addcontentsline{toc}{section}{continued}
+%: ----------------------- list of figures/tables ------------------------
+\clearpage
+\listoftables                   % print list of tables
+\clearpage
+\listoffigures                  % print list of figures
+
+%: ----------------------- glossary ------------------------
+
+% Tie in external source file for definitions: /frontmatter/glossary.tex
+% Glossar entries can also be defined in the main text. See glossary.tex
+
+\include{frontmatter/glossary}
+\makeglossaries
+\clearpage
+\printglossaries
+
+
+\chapterbegin
+
+%: ----------------------- epigraph ------------------------
+\include{frontmatter/epigraph}
+
+%: --------------------------------------------------------------
+%:                  MAIN DOCUMENT SECTION
+% --------------------------------------------------------------
+
+% the main text starts here with the introduction, 1st chapter,...
+
+\mainmatter
+\doublespacing
+%: ----------------------- subdocuments ------------------------
+
+% Parts of the thesis are included below. Rename the files as required.
+% But take care that the paths match. You can also change the order of appearance by moving the include commands.
+
+\include{1/introduction}
+\include{2/background}
+\include{3/conclusion}
+
+% -------------------------------------------------------------- 
+%:                  BACK MATTER: appendices, refs,..
+% --------------------------------------------------------------
+
+% the back matter: appendix and references close the thesis
+
+
+%: ----------------------- bibliography ------------------------
+
+%\clearpage
+\onehalfspacing
+\bibliographystyle{apacite}
+
+\renewcommand{\bibname}{Bibliography} % changes the header; default: Bibliography
+
+\bibliography{backmatter/library} % adjust this to fit your BibTex file
+
+
+
+%: ------ appendices----------------------------------------
+\include{backmatter/appendices}
+
+%: --------------------------- index ---------------------------
+
+%\clearpage
+% \begin{footnotesize}
+% \cleardoublepage % ensure the right page
+% \phantomsection % sets an anchor
+% \printindex
+% \end{footnotesize}
+
+
+
+\end{document}
