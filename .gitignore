@@ -9,6 +9,20 @@
 *.so
 *.aux
 
+# Latex cruft #
+###############
+*.acn
+*.bbl
+*.blg
+*.brf
+*.dvi
+*.idx
+*.lof
+*.lot
+*.out
+*.toc
+*.xdy
+
 # Packages #
 ############
 # it's better to unpack these files and commit the raw source
