@@ -1,31 +1,15 @@
-
 %---------------------------------------------------------------------------
-% NYU steinhardt PhD dissertation version 1.0 style file by Taemin Cho 2012
+% NYU steinhardt PhD dissertation version 1.1 style file by Oriol Nieto 2014
+% Version 1.0 style file by Taemin Cho 2012
 % PhDthesis version 2 style file by Jakob Suckale, 2007
 % based on CUEDthesis version 1 by Harish Bhanderi 2002
 %---------------------------------------------------------------------------
 
 %-------------------------- identification ---------------------
-\ProvidesClass{Latex/Classes/NYUdissertation}[2012/03/05 PhD dissertation class]
+\ProvidesClass{Latex/Classes/NYUdissertation}[2014/07/01 PhD dissertation class]
 
-% todo
-%:-------------------------- report or book -----------------------
+%:-------------------------- book -----------------------
 
-%If you want to use a Report style document then uncomment the following 3 lines and comment the below 8 book style lines:
-%\DeclareOption*{\PassOptionsToClass{\CurrentOption}{report}}
-%\ProcessOptions\relax
-%%\LoadClass[letterpaper]{report}
-%\ifx\pdfoutput\undefined
-%   \LoadClass[dvips, letterpaper]{report}
-%\else
-%   \LoadClass[pdftex, letterpaper]{report}
-%\fi
-
-%%Bibliography
-%%uncomment next line to change bibliography name to references for Report document class
-%\renewcommand{\refname}{References}
-
-%If you want to use a Book style document then uncomment the following 3 lines and comment the above 8 report style lines:
 \newif\if@nyustyle
 \DeclareOption{nyustyle}{\@nyustyletrue}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
@@ -40,6 +24,10 @@
 \usepackage{afterpage}
 \usepackage{pdflscape}
 \usepackage{setspace}
+\usepackage{verbatim} % for commenting
+\usepackage{subcaption} % replaces subfigure/subfig
+
+%\usepackage{times} % set font to times
 
 \usepackage{epsf} 
 \usepackage{amsmath}
@@ -51,10 +39,8 @@
 
 \usepackage{fancyhdr} % for better header layout
 \usepackage{eucal}
-%\usepackage[english]{babel}
 \usepackage[usenames, dvipsnames]{color}
 \usepackage[perpage]{footmisc}
-%\usepackage[round, sort]{natbib}
 \usepackage{ifthen}
 \usepackage{arydshln}
 \usepackage{multicol} % for pages with multiple text columns, e.g. References
@@ -79,14 +65,13 @@
 }
 \captionsetup[figure]{position = bottom, skip = 15pt}
 
-\setlength{\columnsep}{20pt} % space between columns; default 10pt quite narrow
+%\setlength{\columnsep}{20pt} % space between columns; default 10pt quite narrow
 \usepackage[nottoc]{tocbibind} % correct page numbers for bib in TOC, nottoc suppresses an entry for TOC itself
 \usepackage{textcase}
 \usepackage{prettyref}
 \newrefformat{chp}{Chapter~\ref{#1}}
 \newrefformat{tab}{Table~\ref{#1}}
 \newrefformat{fig}{Figure~\ref{#1}}
-\newrefformat{subfig}{Figure~\ref{#1}}
 \newrefformat{subtab}{Table~\ref{#1}}
 \newrefformat{adx}{Appendix~\ref{#1}}
 \newrefformat{eq}{Equation~\textup{(\ref{#1})}}
@@ -99,7 +84,6 @@
 \renewcommand{\thetable}{\arabic{table}}
 \renewcommand{\thefigure}{\arabic{figure}}
 
-   \usepackage{times} % set font to times
 %:-------------------------- PDF/PS setup -----------------------
 
 %if you use a macTeX 2008 or later, use the ifpdf package
@@ -108,12 +92,12 @@
 %if you use an older version, uncomment these lines:
 %\newif \ifpdf
 %    \ifx \pdfoutput \undefined
-        % for running latex
+%       % for running latex
 %        \pdffalse
 %    \else
-        % for running pdflatex
+%       % for running pdflatex
 %        \pdfoutput = 1    % positive value for a PDF output
-                          % otherwise a DVI
+%                         % otherwise a DVI
 %        \pdftrue
 %\fi
 
@@ -229,25 +213,13 @@
 \let\originall@chapter\l@chapter
 \def\l@chapter#1#2{\originall@chapter{{\uppercase{#1}}}{#2}}
 
-\if@nyustyle
-
-     \cftsetindents{chapter}{0em}{4em}
-     \cftsetindents{section}{3em}{2.8em}
-     \cftsetindents{subsection}{5.8em}{3.5em}
-     \cftsetindents{subsubsection}{9.3em}{4.5em}
-     \cftsetindents{figure}{0em}{3.5em}
-     \cftsetindents{table}{0em}{3.5em}
-
-\else
-
-     \cftsetindents{chapter}{0em}{4.5em}
-     \cftsetindents{section}{4.5em}{2.8em}
-     \cftsetindents{subsection}{7.3em}{3.5em}
-     \cftsetindents{subsubsection}{10.8em}{4.5em}
-     \cftsetindents{figure}{0em}{3.5em}
-     \cftsetindents{table}{0em}{3.5em}
-
-\fi%
+% Spaces for the TOC
+\cftsetindents{chapter}{0em}{4em}
+\cftsetindents{section}{3em}{2.8em}
+\cftsetindents{subsection}{5.8em}{3.5em}
+\cftsetindents{subsubsection}{9.3em}{4.5em}
+\cftsetindents{figure}{0em}{3.5em}
+\cftsetindents{table}{0em}{3.5em}
 
 \AtBeginDocument{%
   \preto\section{\ifnum\value{section}=0\addtocontents{toc}{\vskip 1em}\fi }
@@ -260,120 +232,68 @@
 \usepackage{titlesec}
 \usepackage{sectsty}
 \usepackage[normalem]{ulem}
-
-%\usepackage{babel}
 \usepackage{blindtext}
 \usepackage{hyperref}
 
-\setcounter{secnumdepth}{0}
-
-\sectionfont{\normalfont\normalsize \bfseries} %\underline
-\subsectionfont{\centering\normalsize \normalfont\bfseries}
+\sectionfont{\normalfont\normalsize \underline} %\underline
+\subsectionfont{\centering\normalsize \normalfont\underline}
 \subsubsectionfont{\normalfont\normalsize}
 
-\renewcommand{\thechapter}{\Roman{chapter}}
-\renewcommand{\thesection}{\hspace{-0.45cm}}
-\renewcommand{\thesubsection}{}
-\renewcommand{\thesubsubsection}{\hspace{-0.45cm}}
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+
+% Uncomment the following lines to *always* ignore section numbers (ignoring secnumdepth in the main tex)
+%\renewcommand{\thesection}{\hspace{-0.45cm}}
+%\renewcommand{\thesubsection}{}
+%\renewcommand{\thesubsubsection}{\hspace{-0.45cm}}
      
-\usepackage[table,dvipsnames,svgnames]{xcolor}
-\usepackage{blindtext}
-
-% \titleformat{\chapter}[display]
-% {\normalfont\huge\bfseries\centering}
-% {\chaptertitlename\ \thechapter}{20pt}{\Huge}
-
+% Chapter display following NYU's ugly guidelines
+\renewcommand{\thechapter}{\Roman{chapter}}
 \titleformat{\chapter}[display]
-{\normalfont\Large\bfseries\centering}
-{%\MakeUppercase
-  \chaptertitlename\ \thechapter}{0pt}{\LARGE}
+{\normalfont\normalsize\centering}
+{\singlespacing\MakeUppercase
+  \chaptertitlename~\Roman{chapter}}{0em}
+{\singlespacing\normalsize\MakeUppercase}
 
-\if@nyustyle
-     % \usepackage{ulem}
-     \titleformat{\chapter}[display]
-     {\normalfont\normalsize\centering}
-     {\singlespacing\MakeUppercase
-       \chaptertitlename~\thechapter}{0em}
-     {\singlespacing\normalsize\MakeUppercase}
+% Section and subsection displays using NYU guidelines
+\titleformat{\section}
+{\normalsize}{}{0pt}{\underline}
+\titleformat{\subsection}
+{\centering\normalsize}{}{0pt}{\underline}
+\titleformat{\subsubsection}
+{\normalsize}{}{0pt}{}
+\titleformat{\subsubsubsection}
+{\normalsize\centering}{}{0pt}{}
 
-     \titlespacing{\chapter}{0pt}{2em}{3em}
-     \titlespacing{\section}{0pt}{2.5em}{0.5em}
-     \titlespacing{\subsection}{0pt}{2.5em}{0.5em}
-     \titlespacing{\subsubsection}{0pt}{2.5em}{0.5em}
-     \titlespacing{\subsubsubsection}{0pt}{2.5em}{0.5em}
-
-     \titleformat{\section}
-     {\normalsize}{}{0pt}{\underline}
-     \titleformat{\subsection}
-     {\centering\normalsize}{}{0pt}{\underline}
-     \titleformat{\subsubsection}
-     {\normalsize}{}{0pt}{}
-     \titleformat{\subsubsubsection}
-     {\normalsize\centering}{}{0pt}{}
-     % \usepackage{tikz}
-\else%
-     % \usepackage{fix-cm}
-     % \usepackage{tikz} % Style 2, 3, 4
-     % \usetikzlibrary{calc} % 2, 3, 4
-     % \usetikzlibrary{decorations,decorations.shapes,shapes} % 3
-
-     % \titleformat{\chapter}[display]
-     % {\normalfont\Large\scshape\bfseries\centering}
-     % { \MakeUppercase
-     %   \chaptertitlename\ \thechapter}{0pt}{\LARGE
-     % }
-
-     % \titleformat{\chapter}[display]
-     % {\normalfont\normalsize\centering}
-     % { \MakeUppercase
-     %   \chaptertitlename\
-     %   \thechapter}{0pt}
-     % {\normalsize\MakeUppercase}
-
-%     \usepackage{stringstrings}
-     \titleformat{\chapter}[display] % level 0
-     {\normalfont\centering}
-     { \MakeUppercase
-       \chaptertitlename\
-       \thechapter}{0.5em}
-     {\normalsize\MakeUppercase}
-
-     \titlespacing{\section}{0pt}{2.5em}{0.5em}
-     \titlespacing{\subsection}{0pt}{2.5em}{0.5em}
-     \titlespacing{\subsubsection}{0.4in}{1em}{0.5em}
-     \titlespacing{\subsubsubsection}{0.4in}{1em}{0.5em}
-
-     \newcommand{\periodafter}[1]{#1.}
-     \titleformat{\section}  % level 1
-     {\normalsize\bfseries\centering}{\thesection}{0.5em}{}
-     \titleformat{\subsection}  % level 2
-     {\normalsize\bfseries}{\thesubsection}{0.5em}{}
-     \titleformat{\subsubsection}[runin]  % level 3
-     {\normalsize\bfseries}{}{0pt}{\periodafter}
-     \titleformat{\subsubsubsection}[runin]  % level 4
-     {\normalsize\bfseries\itshape}{}{0pt}{\periodafter}
-
-\fi
-
+% Margin
+\titlespacing{\chapter}{0pt}{2em}{3em}
+\titlespacing{\section}{0pt}{2.5em}{0.5em}
+\titlespacing{\subsection}{0pt}{2.5em}{0.5em}
+\titlespacing{\subsubsection}{0pt}{2.5em}{0.5em}
+\titlespacing{\subsubsubsection}{0pt}{2.5em}{0.5em}
 
 %:-------------------------- math -----------------------
 
-\usepackage{subfig}
-\DeclareCaptionListOfFormat{parenssep}{#1\,(#2)}
-%\caption@setsubrefformat{parenssep}
-\caption@setlistofformat{parenssep}
-\captionsetup[subfigure]{listofformat=parenssep}
-\newrefformat{subfig}{Figure \subref{#1}}
+% Uri: All of this is included in the non-deprecated subcaption package. 
+% Stop using subfig or subfigure, this is 2014 for the love of the Flying Spaghetti Monster.
+%\usepackage{subfig}
+%\DeclareCaptionListOfFormat{parenssep}{#1\,(#2)}
+%%\caption@setsubrefformat{parenssep}
+%\caption@setlistofformat{parenssep}
+%\captionsetup[subfigure]{listofformat=parenssep}
+%\newrefformat{subfig}{Figure \subref{#1}}
+
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 
 % Strut macros for skipping spaces above and below text in tables.
-% \def\abovestrut#1{\rule[0in]{0in}{#1}\ignorespaces}
-% \def\belowstrut#1{\rule[-#1]{0in}{#1}\ignorespaces}
+\def\abovestrut#1{\rule[0in]{0in}{#1}\ignorespaces}
+\def\belowstrut#1{\rule[-#1]{0in}{#1}\ignorespaces}
 
-% \def\abovespace{\abovestrut{0.20in}}
-% \def\aroundspace{\abovestrut{0.20in}\belowstrut{0.10in}}
-% \def\belowspace{\belowstrut{0.10in}}
+\def\abovespace{\abovestrut{0.20in}}
+\def\aroundspace{\abovestrut{0.20in}\belowstrut{0.10in}}
+\def\belowspace{\belowstrut{0.10in}}
 
 \renewcommand{\arraystretch}{1.5}
 %:-------------------------- page layout -----------------------
@@ -543,33 +463,33 @@
 
 %define title page layout
 
-% \if@nyustyle
-    \renewcommand{\maketitle}{%
-      \thispagestyle{empty}
-      \begin{alwayssingle}
-        \renewcommand{\@evenhead}{}%
-        \renewcommand{\@oddfoot}{}%
-        \renewcommand{\@evenfoot}{}%
-        \begin{center}
-          {\@committee \par}
-          \null\vfill
-          {\@uppercasetitle\par}
-          \null
-          \vspace{3em}
-          {\@author\par}
-          \vspace*{1em}
-          {
-            \@program \par
-            \@department \par
-          }%end large
-          \null\vfill
-          \vspace*{3em}
-          {\@submittedtext \par}
-          { \@university \par}
+\renewcommand{\maketitle}{%
+  \thispagestyle{empty}
+  \begin{alwayssingle}
+    \renewcommand{\@evenhead}{}%
+    \renewcommand{\@oddfoot}{}%
+    \renewcommand{\@evenfoot}{}%
+    \begin{center}
+      {\@committee \par}
+      \null\vfill
+      {\@uppercasetitle\par}
+      \null
+      \vspace{3em}
+      {\@author\par}
+      \vspace*{1em}
+      {
+        \@program \par
+        \@department \par
+      }%end large
+      \null\vfill
+      \vspace*{3em}
+      {\@submittedtext \par}
+      { \@university \par}
 %          \vspace*{10pt}
-          { {\@degreedate}}
-        \end{center}
-      \end{alwayssingle}}
+      { {\@degreedate}}
+    \end{center}
+  \end{alwayssingle}
+}
 
 % page number for cover back side should have page number blanked
 
@@ -602,10 +522,6 @@
 
 % EPIGRAPH
 %
-% The acknowledgements environment puts a large, bold, centered
-% "Acknowledgements" label at the top of the page. The acknowledgements
-% themselves appear in a quote environment, i.e. tabbed in at both sides, and
-% on its own page.
 
 \newenvironment{epigraph}
 {
@@ -684,12 +600,6 @@
 % The romanpages environment set the page numbering to lowercase roman one
 % for the contents and figures lists. It also resets
 % page-numbering for the remainder of the dissertation (arabic, starting at 1).
-
-%\newenvironment{romanpages}
-%{
-%	\setcounter{page}{1}
-%	\renewcommand{\thepage}{\roman{page}}
-%} % close romanpage env't
 
 {\newpage\renewcommand{\thepage}{\arabic{page}}\setcounter{page}{1}}
 \usepackage{rotating}
