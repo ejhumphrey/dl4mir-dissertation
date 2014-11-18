@@ -13,8 +13,8 @@
 \label{sec:context}
 
 % Timbre, though hard to define, is relatively constrained
-Even though a satisfactory definition remains elusive, it is important to recognize that the perception of timbre is tightly coupled with its physical acoustic stimulus.
-Therefore, it shares the trait with other sensory phenomena, like pitch or loudness, that all information necessary to model human experience is contained within a signal representation.
+Though a satisfactory definition remains elusive, it is important to recognize that the perception of timbre is tightly coupled with its physical acoustic stimulus.
+Similar to the perception of pitch or loudness, all information necessary to model human experience is contained within the signal representation.
 These kinds of low-level percepts are literal in nature, especially when compared to more abstract concepts like artist recognition or estimating tension.
 As it is a particular goal of this work to explore how deep learning methods can be applied to the murky waters of music analysis, we now turn our attention to the problem of automatically transcribing chords from polyphonic music recordings.
 
@@ -236,7 +236,7 @@ Half-diminished 7 & \texttt{hdim7} & $\{0, 3, 6, 10\}$ \\
 The third field provides an interval set, $i$, wrapped by parentheses.
 In practice, there are two reasons for representing information intervallically.
 One such instance is, through a combination of additional degrees and asterisks, the modification of a quality shorthand in order to represent a non-standard, but related, chord.
-An example of this might be the chord name \texttt{A:min(*b3, 7)}, which means that the minor third ($C$) is absent, but a major 7 ($A\flat$) has been added.
+An example of this might be the chord name \texttt{A:min(\*b3, 7)}, which means that the minor third ($C$) is absent, but a major 7 ($A\flat$) has been added.
 The other instance occurs when the intervals are certain but the quality is ambiguous, such as \texttt{C:(1, 5)}; note that this is a valid spelling of the chord shown in Figure \ref{fig:powerchord_context}.
 
 The final field of this chord syntax is the bass interval, $b$, which indicates the scale degree at the bottom of the chord.
@@ -246,7 +246,7 @@ For example, the chords \texttt{C:maj/b7} and \texttt{C:7} would be understood a
 
 
 \subsection{Motivation}
-\label{sec:motivation}
+\label{subsec:motivation}
 
 % Historical Context
 Even from the earliest efforts in content-based music informatics research, automatic music transcription has stood as one of the Holy Grails of the field.
@@ -275,7 +275,7 @@ Beginners will likely prefer simple or more common descriptions, whereas experts
 
 
 \subsection{Limitations}
-\label{sec:limitations}
+\label{subsec:limitations}
 % Limitations
 It should be acknowledged that such an inquiry is subject to certain limitations, and there are two worth mentioning here.
 The first derives from the philosophical limits of objective truth in an inherently subjective task.
@@ -289,26 +289,51 @@ Therefore a chord transcription may be a poor approach toward representing such 
 In some cases an alternative approach to analysis, such as voice leading, might make more sense; in others, such as rap or math rock, a lack of clearly structured harmonic content may arguably render the goal of harmonic analysis altogether irrelevant.
 
 
-\section{Previous Work on Automatic Chord Estimation}
+\section{Previous Efforts in Automatic Chord Estimation}
 \label{sec:background}
 
 In this section, we attempt to develop a formal defintion of the automatic chord estimation task, and detail the standard methodology used by the research community.
-We then close with a brief survey of the state of the art and the apparent trajectory of the topic.
+We then close with a brief survey of the state of the art and the apparent trajectory of the research topic.
 
 
 \subsection{Problem Formulation}
 \label{subsec:problem_formulation}
 
 % Problem formulation
-Transcription versus recognition versus estimation
+Consistent with the motivations outlined in \ref{subsec:motivation}, the goal of an automatic chord estimation (ACE) system is --or, at least, has been-- to produce an objectively ``good'' time-aligned sequence of chords from a given music signal.
+This established notion of objectivity is crucial to how the problem is approached, whereby conventional methodolgy prefers repeatable, quantitative evaluation as a proxy to qualitative feedback collected from human subjects.
+While the latter is generally preferable to the former, such user studies can be prohibitively costly in both time and money to conduct with any regularity.
+As a result, the research of computational systems that model human behavior often proceeds by collecting some number of input-output datapoints from human subjects \emph{beforehand}, and subsequently measuring the degree to which a system can produce these outputs from the inputs.
+Importantly, this paradigm operates on the assumption that these human provided input-output pairs, conventionally referred to as ``ground truth'' in various domains, are absolute, and not a function subject.
 
 % Datasets and human annotations
-Beatles via Chris Harte
-Curated under the banner of collecting ``expert'' annotations.
+The first major effort to curate ground truth chord transcriptions was led by Harte in the mid-2000s \cite{Isophonics}, where a small team of individuals transcribed the entire discography of The Beatles.
+Containing chord annotations for 180 tracks, this was a landmark dataset in the field of MIR and shaped years of chord recognition research.
+More recently, two datasets were made publicly available following the 2011 Conference of the International Society of Music Information Retrieval (ISMIR), one of over 700 tracks led by J. Ashley Burgoyne \cite{Burgoyne2011} and another of 295 tracks led by Tae Min Cho \cite{Cho2011b}; for convenience, we will refer to the former as ``Billboard'' and the latter as ``NYU'', corresponding to the related projects.
+Along the way, one additional, comparatively small, dataset was released, containing 20 tracks by the band Queen, provided by Matthias Mauch \cite{Mauch2009x}.
+In all four cases, the chord transcriptions are provided on the premise that the data corresponds to the ``expert'' perspective.
+To prevent errors or resolve judgment calls, all annotation efforts named above employed a review process, where the transcriptions of one or more annotator were verified by a different individual.
 
-Vocabularies
-Major-minor Chord mapping
+% Transcription, estimation and recognition
+% Somewhat ironically, there is some inconsistency in the literature regarding what this task should be called.
+% Mauch makes mention of this in his thesis \cite{Mauch2010PhD},
 
+% The issue of vocabularies -- Major-minor Chord mapping
+As we have seen in \ref{subsec:foundations}, it is a particular nuance of chord naming conventions that the vocabulary of possible chord names is effectively infinite.
+This results in a few practical problems that must be resolved.
+While the majority of musical content will be well described by a bounded subset of chord spellings, a large number of low-frequency chord names will naturally occur in a dataset.
+This is made worse by the reality that some chord qualities, namely \texttt{maj} or \texttt{min}, are simply more common than the rest.
+Taken together, chord estimation systems are typically designed to classify chords among a fixed vocabulary defined \emph{a priori}.
+
+In the history of ACE, the choice of vocabulary has been anything but standard, influenced by a variety of factors.
+Data-driven approaches, for example, can be sensitive to the amount of labeled data available to train a given model, in which case it might be advantageous to discard under-represented chord classes.
+Alternatively, it might be a useful constraint of the system to only predict the most common chords, helping to cut down on confusions and spurious errors, or perhaps a researcher is not particularly interested in detecting inversions.
+It therefore becomes equally challenging to compare the performance of systems designed for different vocabularies.
+
+One common strategy devised by the community to cope with this variation is the concept of Major-Minor chord resolution.
+This proceeds by taking the space of all chord names in a collection of transcribed music recordings, and mapping each chord name to either a Major or Minor chord with the same root \cite{McVicar2013}.
+Though some chord quality resolutions are musically reasonable, e.g. \texttt{maj7} $\to$ \texttt{maj}, others are less sound, e.g. \texttt{dim7} $\to$ \texttt{min} or \texttt{aug} $\to$ \texttt{maj}.
+A thorough discussion on the impacts of such decisions will take place in Section \ref{sec:pilot_study}, but we address the practice of \emph{vocabulary resolution} here to call attention to the fact that, save for a few exceptions, the majority of chord recognition research and methodology focuses on this artificial Major-Minor formulation.
 
 
 \subsection{Computational Approaches}
@@ -325,19 +350,20 @@ Finally, \emph{post-filtering} is applied to the output of the pattern matching 
 
 Though the implementation details have continued to evolve over the last decade, the brunt of chord recognition research has concentrated not on the fundamental system per se, but rather the tuning of its components.
 In particular, much time and energy has been invested in developing not just better features, but specifically better \emph{chroma} features \cite{muller2010}.
-Acknowledging the challenges inherent to designing good features, Pachet et al pioneered work in automatic feature optimization \cite{pachet2004}, and more recently deep learning methods have been employed to produce robust Tonnetz features \cite{ejh2011}.
+Complementing chroma features, others have explored the use of multi-band chroma to model bass frequencies separately \cite{Mauch2009?} or a Tonnetz representation in an effort to better encode harmonic relationships between chords \cite{Lee2007}.
+Acknowledging the challenges inherent to designing good features, Pachet et al pioneered work in automatic feature optimization \cite{pachet2004}, and more recently deep learning methods have been employed to learn robust Tonnetz features \cite{ejh2011}.
 Early methods focused on local smoothing, such as low-pass \cite{} or median \cite{} filtering as a form of pre-filtering, but more recently some methods have attempted to leverage the repeated nature of music to yield more stable estimates of the harmonic composition at a given point in time \cite{Cho2011}.
-Various classification strategies have been investigated such as binary templates \cite{?}, Dirichlet distribution models, or Support Vector Machines (SVMs) \cite{weller2009}, but Gaussian Mixture Models (GMM) are by and large the most common feature modeling approach.
+Various classification strategies have been investigated such as binary templates \cite{?}, Dirichlet distribution models \cite{Burgoyne2008?}, or Support Vector Machines (SVMs) \cite{weller2009}, but Gaussian Mixture Models (GMM) are by and large the most common feature modeling approach \cite{a,b,c}.
 The choice of post-filtering methods has been shown to significantly impact system performance, and much research has focused on properly tuning Hidden Markov Models (HMMs) \cite{Cho2010}, first introduced by \cite{sheh2003}.
 Recently, in an effort to continue to advance the state of the art, researchers have begun exploring more complex post-filtering methods such as Dynamic Bayesian Networks (DBNs) \cite{mauch2010b, McVicar2013} and Conditional Random Fields (CRFs) \cite{?}.
 
 
-% Data collection
-\subsection{State of the Art}
-\label{subsec:problem_formulation}
-% Mirex
+% % Data collection
+% \subsection{State of the Art}
+% \label{subsec:problem_formulation}
+% % Mirex
 
-McVicar et al submitted a fingerprinting based system, demonstrating that most submissions can, and likely are, over-fitting the transcriptions used in evaluation.
+% McVicar et al submitted a fingerprinting based system, demonstrating that most submissions can, and likely are, over-fitting the transcriptions used in evaluation.
 
 
 
@@ -390,7 +416,7 @@ Data sources:
 Following the previous work of Cho \cite{Cho2014}, we build a system to predict thirteen chord qualities, given in Table \ref{tab:qualities} in all 12 pitch classes, plus one no-chord class, for a total of 157 classes.
 In light of the observations made in the course of the pilot study, combined with recent methodology at MIReX, we only ignore all chord instances with names that specify interval modifications, e.g. \texttt{A:min(*b3)}, or bass scale degrees that are not strictly contained by the chord shorthand, e.g. \texttt{C:maj/4}.
 The decision is made in the interest of annotation consistency; considering that the cumulative data is compiled from five sources and several dozen annotators, it is quite unlikely that such conventions were applied identically by all subjects involved.
-This subset comprises only a small percentage of the overall data ($?.?\%$), and helps filter out curious chord spellings, such as \texttt{D:maj(*1)/#1} or \texttt{A:maj(2,*3)/2}.
+This subset comprises only a small percentage of the overall data ($?.?\%$), and helps filter out curious chord spellings, such as \texttt{D:maj(\*1)/$\sharp$1} or \texttt{A:maj(2,\*3)/2}.
 
 % Statistics
 Need a picture of the class distributions.
@@ -591,3 +617,4 @@ Build a language model determining the cost of confusing one chord with another;
 
 
 
+We need to develop better means of curating datasets such that objective measures better correspond with subjective experience.
