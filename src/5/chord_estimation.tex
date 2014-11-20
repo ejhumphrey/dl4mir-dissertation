@@ -690,77 +690,112 @@ Not only is this work one of the highest performing systems at the recent iterat
 It also considers a significantly larger vocabulary than previous work, and presents an even greater challenge to the application of deep learning to ACE.
 
 
-
-Here we discuss the ways we tackle chord estimation and see what helps and hurts the learning problem.
-The source of pain here stems from the assumption of independently and identically distributed (I.I.D) data is violated to a significant degree.
-
-
-An additional challenge can be observed in how the numerical representations of the data are distributed in the input space, where majority classes exhibit far more variation, and are therefore inherently more complex, than the minority classes.
-This is intuitively satisfying, where the idea of a Major 6 chord, for example, is a far narrower concept than a Major itself.
-To assess this claim, Principal Components Analysis is performed independently on each chord quality, with observations rotated to a common root.
-Illustrated in Figure \ref{fig:explained_variance}, the resulting analysis indicates that the majority classes exhibit considerably more variation than the minority classes, whereby nearly twice as many components are necessary to achieve the same degree of reconstruction.
-
-
-\subsection{Data}
-
+\subsection{Data Considerations}
+\label{subsec:data_considerations}
 % Say something about Taemin's dissertation.
-Following the previous work of Cho \cite{Cho2014}, we build a system to predict thirteen chord qualities, given in Table \ref{tab:qualities} in all 12 pitch classes, plus one no-chord class, for a total of 157 classes.
+Following the previous work of Cho \cite{Cho2014}, we consider thirteen chord qualities, given in Table \ref{tab:qualities} in all 12 pitch classes, plus one no-chord class, for a total of 157 classes.
+Having all four datasets at our disposal, we merge these information sources into the largest collection of chord transcriptions used to date, totalling 1235 tracks.
+After performing fuzzy string matching on a manifest of the known artist names and track titles, we identify X redundant tracks and randomly drop all but one from the collection; this results in a final count of 12XX tracks.
 
-
-combined with recent methodology at MIReX, we only ignore all chord instances with names that specify interval modifications, e.g. \texttt{A:min(*b3)}, or bass scale degrees that are not strictly contained by the chord shorthand, e.g. \texttt{C:maj/4}.
-The decision is made in the interest of annotation consistency; considering that the cumulative data is compiled from five sources and several dozen annotators, it is quite unlikely that such conventions were applied identically by all subjects involved.
+Combining conclusions from the previous section with recent discussion of evaluation at MIReX, we chose to ignore all chord instances with names that specify interval modifications, e.g. \texttt{A:min(*b3)}, or bass scale degrees that are not strictly contained by the chord shorthand, e.g. \texttt{C:maj/4}.
+The decision is made in the interest of annotation consistency; considering that the cumulative data is compiled from multiple sources and several dozen annotators, it is quite unlikely that such conventions were applied identically by all subjects involved.
 This subset comprises only a small percentage of the overall data ($?.?\%$), and helps filter out curious chord spellings, such as \texttt{D:maj(\*1)/$\sharp$1} or \texttt{A:maj(2,\*3)/2}.
 
 % Statistics
-Need a picture of the class distributions.
-Huge imbalance in classes.
-Previous work has demonstrated that the data can be rotated to distribute instances across qualities, rather than classes.
-This effectively reduces the problem to quality discrimination.
-The discrepancies in the data distributions manifest in a few ways.
-Observations of each class are themselves imbalanced, both relatively and absolutely.
-To the former, there is a stark division between the majority classes (maj, min, maj7, min7, 7, and N), and the minority classes (maj6, min6, dim, aug, sus4, sus2, dim7, hdim7), shown in Figure \ref{fig:quality_distribution}.
-Further compounding this challenge, the minority classes themselves are not comprised of a significant absolute amount of data.
+Unsurprisingly, as the data is collected from real music, the distribution of absolute chord classes is extremely imbalanced.
+In fact, some chord qualities do not occur in every root, and stratifying the data for training, validation, and testing only exacerbates the issue.
+Much previous work, including the previous discussion, has demonstrated that chord names can be rotated to distribute instances across qualities, rather than absolute classes, motivating root-invariant analysis.
+A root-invariant histogram of the chord qualities contained in the merged dataset, given in Figure \ref{fig:training_distribution}, clearly shows there is severe relative and absolute class imbalance.
+To the former, a stark division exists between the majority classes (\texttt{maj}, \texttt{min}, \texttt{maj7}, \texttt{min7}, \texttt{7}, and \texttt{N}), and the minority classes (\texttt{maj6}, \texttt{min6}, \texttt{dim}, \texttt{aug}, \texttt{sus4}, \texttt{sus2}, \texttt{dim7}, \texttt{hdim7}).
+The ratio, for example, between the most and least common qualities, \texttt{maj} and \texttt{dim7} respectively, is nearly three orders of magnitude ($\approx 700$).
+Arguably, the more challenging imbalance is an overall lack of data for some minority classes.
+Over all roots, the total duration of \texttt{dim7} is on the order of hundreds of seconds.
+Considering the repetitive structure of music, it is reasonable to assume that these few instances also occur in the same small number of tracks, limiting the variability of this data.
+
+
+\subsection{Research Questions}
+\label{subsec:research_questions}
+
+What can we do to overcome these issues of class imbalance?
+% Build class invariance into the model
+% use dropout during training
+% smaller inputs, more constraints, leverage HMM for context / stabilization
+How does the deep learning system compare to the state of the art?
+% Beats it! depending on who you ask, at least
+What are the advantages and challenges of training with larger vocabularies?
+% Resolve predictions back to maj / min, how does it do? Should be better...
+% Larger vocabularies result in more class collisions
+% But this is actually a manifestation of ambiguity
 
 
 
-\subsection{Signal Representation}
+\subsection{Experimental Setup}
 
+This work proceeds directly from the previous study, and takes a similar approach in many facets.
+There are a handful of important distinctions to make between the two, however, and these differences are detailed here.
 
-Though convolutional architectures could, at least theoretically, be applied to raw, time-domain audio, the system is simplified by using musical knowledge to produce perceptually motivated pitch spectra via the constant-Q transform.
-Transforming audio signals to time-frequency representations provides the dual benefits of a lower dimensional input than raw audio and is linear in pitch, allowing kernels to translate over an input.
-Importantly, this filterbank front-end can be interpreted as hard-coding the first layer of a larger convolutional architecture.
+\subsubsection{}
 
-The first stage of the system is a constant-Q filterbank \cite{Schoerkhuber2009}, motivated by two reasons.
-First, a filterbank frontend greatly reduces the dimensionality of the input data.
-Second, the constant-Q transform is linear in time and pitch, a property that can be exploited by a convolutional architecture to simplify the learning task.
-Acting as multi-band automatic gain control, local contrast normalization is then applied to the time-frequency representation, as outlined in \cite{LeCun2010}, with a slight modification to the smoothing kernel.
-Typically the kernel used to low-pass filter the representation is a symmetric, truncated Gaussian in both dimensions, but we instead use a half-Hanning window in time to mimic the precedence effect and reduce phase delay.
+A comparable constant-Q transform is applied to the audio at a framerate of 20Hz, without subsequent low-pass filtering or decimation, and time-frequency patches are formed from 20 frames, corresponding to 1 second.
+Whereas the previous study aimed to learn context directly, there is the inherent concern that a low input framerate will reduce the amount of data available for training beyond what is required by the model.
+In lieu of learning this context, standard post-filtering will be applied in the form of a uniform-transition HMM with a tunable self-transition penalty, consistent with \cite{Cho2014PhD}.
 
+Additionally, local contrast normalization is included as a standard preprocessing stage, with minor modifications.
+In previous work, a threshold is placed on the scaling term given by the average standard deviation over the entire input.
+While this may be suitable in the field of computer vision, where spatial dimensions are equivalent in 2-space, audio data behave differently in time and frequency.
+Namely, complex sounds often exhibit an overtone series, and energy becomes more densely concentrated in higher frequencies.
+This can have the undesirable effect of inadequately gaining regions that are more sparse.
+To correct for this behavior, the scaling coefficient is adjusted such that the frequency range considered is a piecewise function of frequency height, defined as follows:
 
-\subsection{Deep Learning Considerations}
+\begin{equation}
+X_filt = (X \circledast W) \\
+V = X_filt - X \\
+S_k = V \circledast W_k \\
+S_k = max(S_k, \mu_{S_k})
+Y = \sum_{k=0}^{K-1} g_k * \frac{V}{S_k}
+\end{equation}
 
-% what
+\noindent To illustrate the benefit of this piecewise combination, an example track is given in Figure \ref{lcn_mods}, both with and without the octave-dependent modification.
+
 \begin{figure}[!t]
 \centering
 \includegraphics[width=3in]{pitch-CNN-prob}
-\caption{The CNN Chord Recognition Architecture: A time-pitch tile (a) is input to a CNN (b), yielding a chord likelihood (c).}
-\label{fig:system}
+\caption{The visible effects of octave-dependent LCN, before (top) and after (bottom).}
+\label{fig:lcn_mods}
 \end{figure}
 
-this architecture is diagrammed in Figure \ref{fig:system}.
+
+\subsubsection{Designing a Root-Invariant Classifier}
+
+One of the key findings from the previous study of deep networks for ACE, consistent with previous research, is the importance of enforcing or encouraging root-invariance in the model.
+With GMMs, this is typically achieved by rotating all data, i.e. chroma features, to the same root and fitting a model for each quality.
+Then, when applying the model, likelihoods are estimated for each root by circularly rotating chroma through all twelve positions to recover the full space of chord classes.
+In our previous work on chord recognition, this concept was mimicked by rotating the data in the input domain.
+While it led to improved results, rotating the data is less than ideal for at least two reasons.
+One, it is an implicit, rather than explicit, association between classes, and the model is tasked with learning these redundant relationships.
+In the case of chord recognition, the model needs to learn the same behavior 12 times over, to represent each quality in every root.
+Two, rotating data in the input space may create unnatural artifacts in the kinds of data the model learns to expect, and it is not clear what, if any, side effects this may have.
+It is assumed that this does not fundamentally change the latent distribution of the data used for training, but it may cause a mismatch with real data at test time.
+
+An alternative to rotating the data, as convolutional networks have amply demonstrated, is to build the invariance directly into the architecture.
+This is realized here by defining a fully convolutional model, such that the classifier's weights for each quality are shared over all roots; a diagram of this configuration is given in Figure \ref{fig:fullconvnet}.
+Simplifying conceptually, this proceeds as follows: the penultimate representation is designed to yield a matrix with shape $(12 \times N)$, corresponding to the number of pitch classes and the chosen output dimensionality of the second to last layer, respectively; the chord classifier is then applied by taking the inner product with a weight matrix with shape $(N \times 13)$, corresponding to the dimensionality of the previous layer and the number of chord qualities, respectively.
+For ease and efficiency this is implemented as a convolution, but the result is equivalent.
+This produces a $(12 \times 13)$ matrix, which is flattened to represent the 13 qualities in all possible roots.
+The no-chord condition is not captured by this operation, however, and a separate fully connected layer is applied in parallel to the flattened penultimate representation to estimate this class independently, which is then concatenated to the chord estimator.
+Finally, this combined representation of 157 classes is normalized by the softmax operation, producing a probability mass function over all classes.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=5in]{fullconvnet}
+\caption{A Fully Convolutional Chord Estimation Architecture.}
+\label{fig:fullconvnet}
+\end{figure}
 
 
-\subsubsection{Root-Invariant Classifier}
-Take the data as-is, optimize the negative log-likelihood over the dataset.
 
-$L(X^i, Y^i) = -ln(\mathcal{L}(X^i|Y^i))$
+\subsubsection{Correcting Bias via Likelihood Scaling}
 
-TODO: Observe that it learns a root invariant representation of qualities
-Distance matrix between qualities
-Ave vectors for same qualities in different roots
-
-
-\subsubsection{Objective Function}
 Take the data as-is, optimize the negative log-likelihood over the dataset.
 
 $L(X^i, Y^i) = -ln(\mathcal{L}(X^i|Y^i))$
@@ -789,113 +824,13 @@ In the language of coadaptation, the tensor can be seen as a ``team'' of feature
 Alternatively,
 
 
-$L(X^i, Y^i) = -ln(\mathcal{L}(X^i|Y^i))$
-
-Then, at test time, apply likelihood scaling.
-Consistent with ASR and other imbalanced learning problems.
-Appropriately suited to HMM processing now
-
-
-
-\subsection{Evaluation and Metrics}
-Classic metric is weighted chord symbol recall.
-Give definitions, and point to MIREX.
-
-However, this statistic is biased toward classes that occur most frequently.
-Classically this has not proven to be an issue, because the vocabulary considered was restricted to the 24 Major/minor chords; and furthermore, when the data is rotated to be root-invariant, all statistics can be considered at the quality level.
-When tackling an imbalanced learning problem, it can be just as important to consider the metrics that are used to quantify the system as the way that it is trained.
-
-Binary classification, introduce various Type errors and confusion matrices.
-Extending this to multiple classes, we can consider the class-wise precision and recall values over a square confusion matrix.
-Need an image of a confusion matrix.
-In this manner, precision is given by the columns, recall by the rows, and an f-score as a combination of the two.
-
-Walkthrough example of why this is important.
-Point out that we do not explicitly decide which measure is better, but acknowledge that systems that perform better on certain metrics may be more useful in different scenarios.
-
 
 \subsection{Experimental Setup}
 
-Resolve data to 24-maj/min + N
-Test a variety of model complexities (number and size of kernels)
 
-
-We get junk back! Heavy major bias, doesn't learn minority chords, as to be expected.
-
-Demonstrate with toy example of parabola and Gaussian.
-
-\subsection{Re-weighting the Data Distribution}
-
-\subsubsection{Uniform Presentation}
-The dataset is sampled such that the likelihood of drawing a datapoint with class $i$ from $K$ classes is $\frac{1}{K}$.
-
-\subsubsection{Outlier Rejection}
-Low intraclass likehood; a datapoint $X$ of class $i$ has a low likelihood of having label $Y$ for class $i$:
-\begin{equation}
-P(X^i | Y^i) \approx 0
-\label{eq:outliers}
-\end{equation}
-
-
-\subsubsection{Avoiding Collisions}
-
-High interclass confusion; a datapoint $X$ of class $i$ has a high likelihood of having label $Y$ for class $j$:
-
-\begin{equation}
-P(X^i | Y^j) \approx 1
-\label{eq:collisions}
-\end{equation}
-
-\subsubsection{Curriculum Learning}
-The dataset is chunked into sets and trained on progressively more difficult examples.
-
-\subsection{Changing the Loss Function}
-
-Observed problems with uniform presentation:
-\begin{itemize}
-\item Perhaps overly discriminative; cuts big gaps between near-neighbors, and makes it hard / impossible to post-filter the output.
-\item Doesn't incorporate distribution bias; Majors are just more common than Maj6's.
-\end{itemize}
-
-
-\subsubsection{Limiting the Maximum Likelihood}
-
-This seems to have pretty significant potential.
-Prevents the optimization problem from running away, leaves hope for post-filtering.
-Can ``accidentally'' get more things right by keeping the confusions closer together?
-
-\begin{equation}
-L(X^i, Y^i) = -ln(\mathcal{L}(X^i|Y^i)) + \lambda~max_j(\mathcal{L}(X^i|Y^j)), \text{for}~ j\in~K
-\label{eq:collisions}
-\end{equation}
-
-
-\subsubsection{Margin Loss}
-This keeps things closer.
-Observed problem; error signal becomes much weaker as the training data is fit.
-To circumvent this, it might be necessary to identify which data points should be revisited during training.
-Margin of zero produces degenerate models. Information stops propagating.
-
-\begin{equation}
-L(X^i, Y^i) = \| max(m_{i,j} - (\mathcal{L}(X^i|Y^i) - \mathcal{L}(X^i|Y^j)), 0) \|_p, \text{where} j\neq~i
-\label{eq:collisions}
-\end{equation}
-
-
-\subsubsection{Using the Distribution Prior}
-The contribution of the loss from a given datapoint is weighted by its class frequency in the training set.
-As-is, linear scale, logarithmic
-
-\subsubsection{Substitution Matrix}
-Build a language model determining the cost of confusing one chord with another; may be asymmetric.
-
-
-\subsection{Alternative Representations}
-
-\subsubsection{Predicting nodes on a decision tree}
-
-\subsubsection{Generative Inference}
-
+TODO: Observe that it learns a root invariant representation of qualities
+Distance matrix between qualities
+Ave vectors for same qualities in different roots
 
 
 
