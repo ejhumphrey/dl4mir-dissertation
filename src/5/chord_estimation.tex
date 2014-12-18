@@ -210,6 +210,7 @@ Those considered in this work are indicated in the following table:
 \begin{table}[h]
 \begin{center}
 \caption{Chord quality names and corresponding relative semitones.}
+\label{tab:qualities}
 \begin{tabular}{l | c | c}
 Name & Shorthand & Semitones \\
 \hline
@@ -228,7 +229,6 @@ Fully-diminished 7 & \texttt{dim7} & $\{0, 3, 6, 9\}$ \\
 Half-diminished 7 & \texttt{hdim7} & $\{0, 3, 6, 10\}$ \\
 \hline
 \end{tabular}
-\label{tab:qualities}
 \end{center}
 \end{table}
 
@@ -600,8 +600,8 @@ Arch & Train & Valid & Test & Train & Valid & Test \\
 \end{table}
 
 
-\subsection{Qualitative Error Analysis}
-\label{subsec:error_analysis}
+\subsection{Qualitative Analysis}
+\label{subsec:Qualitative_analysis}
 
 While the quantitative results obtained in the previous discussion are certainly encouraging, we have yet to fully address the larger research objectives.
 As indicated by Table \ref{tab:exp2res}, transposing the data during training slightly improves generalization, but more so limits the degree to which the models can overfit.
@@ -685,7 +685,12 @@ Seeing as how such instances comprise a relatively small portion of the data, ig
 
 In light of observations resulting from the previous study, combined with other recent trends in ACE research, we now focus on the task of large vocabulary ACE.
 As mentioned, there is a smaller subset of research focusing on vocabularies past the Major-minor formulation, but, for the same reasons discussed in \ref{subsec:problem_formulation}, comparing these efforts directly is problematic due to differences in vocabularies considered and the data used.
-One of the most advanced automatic chord estimation systems to date is the recent work of Cho \cite{Cho2014}.
+
+One of the most advanced large-vocabulary ACE systems to date is the recent work of Cho \cite{Cho2014}.
+For context, this system design is consistent with the previous overview of ACE research, whereby the different stages of the system are modified separately.
+A multiband chroma representation is computed from beat-synchronous audio analysis, producing 4 parallel chroma features.
+Each is modeled by a separate Gaussian Mixture Model, yielding four separate observation likelihoods as a function of time.
+These four are then decoded jointly, using a k-stream HMM, resulting in a time-aligned chord sequence.
 Not only is this work one of the highest performing systems at the recent iteration of MIReX, but we are also priviledged by access to a software implementation, thereby enabling direct comparisons with other work.
 It also considers a significantly larger vocabulary than previous work, and presents an even greater challenge to the application of deep learning to ACE.
 
@@ -693,7 +698,7 @@ It also considers a significantly larger vocabulary than previous work, and pres
 \subsection{Data Considerations}
 \label{subsec:data_considerations}
 % Say something about Taemin's dissertation.
-Following the previous work of Cho \cite{Cho2014}, we consider thirteen chord qualities, given in Table \ref{tab:qualities} in all 12 pitch classes, plus one no-chord class, for a total of 157 classes.
+Following the previous work of Cho \cite{Cho2014}, we also consider thirteen chord qualities, given in Table \ref{tab:qualities} in all 12 pitch classes, plus one no-chord class, for a total of 157 classes.
 Having all four datasets at our disposal, we merge these information sources into the largest collection of chord transcriptions used to date, totalling 1235 tracks.
 After performing fuzzy string matching on a manifest of the known artist names and track titles, we identify X redundant tracks and randomly drop all but one from the collection; this results in a final count of 12XX tracks.
 
@@ -726,19 +731,24 @@ What are the advantages and challenges of training with larger vocabularies?
 % Resolve predictions back to maj / min, how does it do? Should be better...
 % Larger vocabularies result in more class collisions
 % But this is actually a manifestation of ambiguity
+Does observed system behavior correspond to quantitative evaluation?
+% Getting a lot of reasonable confusions.
+% Maybe this is a function of an inherently subjective task.
+% The ground truth data on hand were ``reviewed'', and there are no records concerning which chord names may have been contested or corrected.
+% Rock corpus
 
 
 
 \subsection{Experimental Setup}
-
+\label{subsec:experimental_setup}
 This work proceeds directly from the previous study, and takes a similar approach in many facets.
 There are a handful of important distinctions to make between the two, however, and these differences are detailed here.
 
-\subsubsection{}
-
+\subsubsection{Input Representation}
+\label{subsubsec:data_considerations}
 A comparable constant-Q transform is applied to the audio at a framerate of 20Hz, without subsequent low-pass filtering or decimation, and time-frequency patches are formed from 20 frames, corresponding to 1 second.
 Whereas the previous study aimed to learn context directly, there is the inherent concern that a low input framerate will reduce the amount of data available for training beyond what is required by the model.
-In lieu of learning this context, standard post-filtering will be applied in the form of a uniform-transition HMM with a tunable self-transition penalty, consistent with \cite{Cho2014PhD}.
+In lieu of learning this context, standard post-filtering will be applied in the form of a uniform-transition HMM with a tunable self-transition penalty, consistent with \cite{Cho2014PhD}; this is introduced in greater detail shortly, in \ref{subsubsec:viterbi}.
 
 Additionally, local contrast normalization is included as a standard preprocessing stage, with minor modifications.
 In previous work, a threshold is placed on the scaling term given by the average standard deviation over the entire input.
@@ -751,22 +761,22 @@ To correct for this behavior, the scaling coefficient is adjusted such that the 
 X_filt = (X \circledast W) \\
 V = X_filt - X \\
 S_k = V \circledast W_k \\
-S_k = max(S_k, \mu_{S_k})
-Y = \sum_{k=0}^{K-1} g_k * \frac{V}{S_k}
+S_k = max(S_k, \mu_{S_k}) \\
+Y = \sum_{k=0}^{K-1} g_k * \frac{V}{S_k} \\
 \end{equation}
 
 \noindent To illustrate the benefit of this piecewise combination, an example track is given in Figure \ref{lcn_mods}, both with and without the octave-dependent modification.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{pitch-CNN-prob}
-\caption{The visible effects of octave-dependent LCN, before (top) and after (bottom).}
+\includegraphics[width=5in]{cqt_compare}
+\caption{The visible effects of octave-dependent LCN, before (left) and after (right).}
 \label{fig:lcn_mods}
 \end{figure}
 
 
 \subsubsection{Designing a Root-Invariant Classifier}
-
+\label{subsubsec:root_invariance}
 One of the key findings from the previous study of deep networks for ACE, consistent with previous research, is the importance of enforcing or encouraging root-invariance in the model.
 With GMMs, this is typically achieved by rotating all data, i.e. chroma features, to the same root and fitting a model for each quality.
 Then, when applying the model, likelihoods are estimated for each root by circularly rotating chroma through all twelve positions to recover the full space of chord classes.
@@ -792,28 +802,52 @@ Finally, this combined representation of 157 classes is normalized by the softma
 \label{fig:fullconvnet}
 \end{figure}
 
+% Additionally, we consider a variety of model complexities, defined in the following table:
 
 
-\subsubsection{Correcting Bias via Likelihood Scaling}
+\subsubsection{Correcting Bias with Scaled Likelihood Estimation}
+\label{subsubsec:scaled_likelihood_estimation}
+Having defined the output of the model as a probability function, it is trivial to again optimize the parameters to the negative log-likelihood over the dataset.
+However, there are two difficulties that prohibit the uniform presentation of classes, as in previous work.
+First, due to the increased number of classes, minibatches would either need to consist of many datapoints, increasing the processing time of each batch, or the learning rate would need to be smaller or diminishing over time to prevent oscillation, increasing the number of iterations necessary to converge.
+To the latter point, it is easy to imagine scenarios where gradient descent wobbles back and forth between updates, as each batch pulls the parameters in a slightly different direction.
+The other challenge this raises is a result of the considerable class imbalance, where uniform presentation would spend too much time on minority classes, while slowly the full extent of the majority classes.
 
-Take the data as-is, optimize the negative log-likelihood over the dataset.
+The solution to this problem is found in Bayes' theorem, where the network is understood as yielding a class posterior probability, $P(Y|x)$, for the chord class, $Y$, given the observation, $x$:
 
-$L(X^i, Y^i) = -ln(\mathcal{L}(X^i|Y^i))$
+\begin{equation}
+P(x|Y) = \frac{P(Y|x)*P(x)}{P(Y)}
+\end{equation}
 
-Then, at test time, apply likelihood scaling.
-Consistent with ASR and other imbalanced learning problems.
-Appropriately suited to HMM processing now
+The observation likelihood, $P(x|Y)$, is then a function of the posterior, the class prior, $P(Y)$, and probability of the observation itself, $P(x)$.
+This final quantity is independent and thus can be ignored:
+
+\begin{equation}
+P(Y|X) \varpropto \frac{P(X|Y)}{P(Y)}
+\end{equation}
+
+While the deep network is trained to produce the class posterior, the class prior can be measured empirically over the training set, and divided out after the fact.
+Referred to as \emph{scaled likelihood estimation}, this strategy has proven effective at reducing the effects of class imbalances in the functionally related domain of automatic speech recognition \cite{Deng, others}.
+Notably, scaled likelihood estimation is particularly attractive here because it scales well with the number of estimated classes.
+
+As a final comment, a possible pitfall when applying likelihood scaling is a matter of numerical stability arising from the least represented classes, or classes that might not even occur in the training set.
+Whereas this can be mitigated with pseudo-counting \cite{?} --setting an heuristically determined, non-zero lower bound-- the class prior here is computed by counting each observation toward the same quality in all roots.
+Though this prior could be seen as a coefficient vector to optimize in a more direct way, we find this approach works reasonably well in practice.
 
 
 \subsubsection{Convolutional Dropout}
+\label{subsubsec:conv_dropout}
+
 Here, we extend the principles of dropout, discussed in Chapter \ref{chp:deep_learning}, to 3D convolutions.
 In the weight-matrix case, training with dropout effectively ignores activations of an transformed output, setting them to zero.
 Considering each output coefficient as a measure of activation for a given ``feature'', the act of dropout can be interpretted as sub-sampling the feature extractors learned by the model.
 
-By extension, there are two ways the same principle could be applied in the case of 3D convolutions.
-One, the $i^{th}$ kernel, $W_i$, can be masked with probability $p$, resulting in the possibly empty feature map, $Z_i$:
+By extension, there are two ways the same principle could be applied in the case of 3D convolutions: over an entire 3D kernel, or distributed among all 2D receptive fields among all kernels.
+We opt for the former as a trade-off in the degree of randomness dropout introduces to the training processes; the merits of one approach over another are left for future work.
+Expressed formally, the $i^{th}$ kernel, $W_i$, can be masked with probability $p$, resulting in the possibly empty feature map, $Z_i$:
 
 \begin{equation}
+% \label{eq:conv_dropout}
 Z_i = binomial(p) * h(X \circledast W_i + b_i) / (1.0 - p)
 \end{equation}
 
@@ -821,17 +855,292 @@ Z_i = binomial(p) * h(X \circledast W_i + b_i) / (1.0 - p)
 Here, it is expected that each kernel learns a collection of feature extractors that, on average, work well together.
 In the language of coadaptation, the tensor can be seen as a ``team'' of feature detectors, and as such correlations are broken up at this mid, as opposed to global, level.
 
-Alternatively,
+There are two small implementation details worth noting.
+First, the same parameters in the model are dropped out over the entire batch, and not separately for each datapoint in the batch.
+In the bagging and model selection interpretation of dropout, this is analagous to updating one different model at each update step; the alternative effectively updates several models simultaneously.
+Again, future work is necessary to determine the advantages of one approach versus another, but we prefer the single-select approach for its parallels to coordinate block descent \cite{somebody}.
+Additionally, the original proposal of dropout suggests that the activations of all outputs be halved when using the full model at test time.
+We find this somewhat cumbersome, and, as indicated in Eq. \ref{eq:conv_dropout}, scale \emph{up} the parameters during training, allowing models in test to be agnostic of dropout.
+
+
+\subsubsection{Training and Early Stopping}
+\label{subsubsec:early_stopping}
+
+In contrast to the previous study, which converged to a stable result in a few thousand iterations, it takes considerably more effort to train models for this task, on the order of approximately 100k iterations.
+Dropout, as predicted, takes roughly 4 to 5 times this amount to reach a maximal result.
+Given the lengthy run time, we checkpoint parameters every 1k iterations during training and frame early stopping as a brute-force search over a finite set of parameter configurations.
+Due to the application of Viterbi and the coupling with the self transition penalty, validation is non-trivial and computationally expensive.
+Therefore, exhaustive validation is performed every 10k iterations, starting at 5k.
+The best model and self-transition penalty are chosen by finding the configuration with the highest harmonic mean between the overall $f_1$ and average quality $f_1$ scores.
+
+
+\subsubsection{Viterbi Post-filtering}
+\label{subsubsec:viterbi}
+
+Though somewhat standard at this point in ACE research, it is worthwhile to properly formalize the HMM-based post-filtering approach used here, given its considerable impact on system performance.
 
 
 
-\subsection{Experimental Setup}
+\subsection{Quantitative Results}
+\label{subsec:quantitative_results}
+
+Following from the setup defined above, we train a set of models for four dropout values, $p_{dropout} \in \{0.0, 0.125, 0.25, 0.5\}$, across five folds of the data.
+Note that when $p_{dropout} = 0.0$, this is equivalent to training a model without dropout.
+First, we are curious to investigate if and how the weight tying in the classifier has enforced the notion of root invariant representations.
+% TODO: Observe that it learns a root invariant representation of qualities
+% Distance matrix between qualities
+% Ave vectors for same qualities in different roots
+
+The
+Concerning the question of performance, the recall averages across folds are given in the following table, using with the system and evaluation methodology presented in Cho \cite{Cho2014PhD}:
+
+\begin{table}[h]
+\begin{center}
+\caption{Comparing chord symbol recall with a state of the art system.}
+\label{tab:base_stats}
+\begin{tabular}{l | c | c}
+
+                      & Overall & Quality-wise  \\
+\hline
+Cho (2014)            & 62.41 & 47.31 \\
+\hline
+$p_{dropout} = 0.0$   & \textbf{67.37} & 41.02 \\
+$p_{dropout} = 0.125$ & 65.53 & 48.15 \\
+$p_{dropout} = 0.25$  & 64.91 & \textbf{53.39} \\
+$p_{dropout} = 0.5$   & 63.92 & 52.13 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Based on this data, the different deep network models significantly out-perform the state of the art in large vocabulary ACE, some in slightly different ways.
+The model trained with $p_{dropout} = 0.0$ does considerably better on the overall dataset by nearly $5\%$, but performs much worse on the quality-wise measure.
+All dropout models recover this deficiency in the quality-wise recall surpassing state of the art, at the slight expense of overall recall.
+Of the four, $p_{dropout} = 0.25$ is produces the best trade-off between the two metrics, yielding gains of $2\%$ and $6\%$ for the overall and quality-wise metrics, respectively.
+
+If we were to stop here, it would give the impression that deep learning has once again trumped the previous benchmark.
+However, there are other metrics to consider which tell a far more complex story of how these models perform.
+The results of all metrics defined previously --precision, recall, and $f_1$ score, both overall and quality-wise-- are given in the following table:
+
+\begin{table}[h]
+\begin{center}
+\caption{A more complete picture of system performance, contrasted against state of the art.}
+\label{tab:base_stats}
+\begin{tabular}{l | c c c | c c c |}
+                      & \multicolumn{3}{c}{Overall} & \multicolumn{3}{c}{Quality-wise} \\
+                      & Prec    & Rec.    & $f_1$   & Prec.     & Rec.      & $f_1$    \\
+\hline
+Cho (2014)            & 78.05   & 62.41   & 68.95   & 54.77     & 47.31     & 48.46    \\
+\hline
+$p_{dropout} = 0.0$   & 76.09   & 67.37   & 70.81   & 61.59     & 41.02     & 47.00    \\
+$p_{dropout} = 0.125$ & 76.75   & 65.53   & 70.22   & 47.28     & 48.15     & 46.34    \\
+$p_{dropout} = 0.25$  & 77.77   & 64.91   & 70.21   & 48.35     & 53.39     & 47.54    \\
+$p_{dropout} = 0.5$   & 78.06   & 63.92   & 69.28   & 47.40     & 52.13     & 46.77    \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Having more results from which to draw conclusions, a few interesting trends materialize.
+Most noticeable is that despite the fluctuation in recall across models, the $f_1$ scores are all quite close; however, in this case, the previous system has the highest quality-wise score.
+As a result, any rise or fall in recall is generally traded for a comparable shift in precision going the other direction.
+This is most stark in the quality-wise measures for the model where $p_{dropout} = 0.0$.
+It manages the lowest recall of any model, but also the highest precision by a large margin.
+Interpreting the significance of this result, while this model may miss more instances of some chords, likely corresponding to the minority classes, it generally offers a higher degree of confidence in its estimations across qualities.
+Additionally, while it at first seemed that dropout contributed significantly to improving the quality-wise measures, we see now that it primarily shifts the bias point from higher precision to higher recall, and the $f_1$ are within the same close margin.
 
 
-TODO: Observe that it learns a root invariant representation of qualities
-Distance matrix between qualities
-Ave vectors for same qualities in different roots
+TODO: Quality-wise recall bar plot, over four models
+Run the other 4 folds for the 4 dropout conditions for the XXL model
+Isn't TMC's system run on all 5 folds? where is this data
+
+
+To continue developing a deeper understanding of these quality centric statistics, the top-5 confusions and corresponding recall percentages, rotated relative to C, are given in Tables \ref{tab:baseline_confs}-\ref{tab:dropout_p0x25_confs} for the baseline, no-dropout, and $25\%$-dropout models.
+These results are tabulated by rotating the actual chord name to its equivalent quality in C, and applying the same rotation to the estimated label, thus preserving relative errors.
+Interestingly enough, though the models are all roughly in the same performance range, they do so through very different means.
+
+
+\begin{table}[h]
+\begin{center}
+\begin{scriptsize}
+\caption{Top-5 relative confusions for Cho 2014}
+\label{tab:baseline_confs}
+\begin{tabular}{c || c | c | c | c | c |}
+\hline
+Actual & 1 & 2 & 3 & 4 & 5 \\
+\hline
+C:maj (69.45) &    C:7 ( 5.84) &   G:maj ( 3.02) &  C:maj7 ( 2.79) &   F:maj ( 2.71) &  C:sus4 ( 1.86) \\
+  C:min (64.02) & C:min7 (11.98) &   C:maj ( 3.25) &  Eb:maj ( 3.12) &  C\#:min ( 2.62) &     C:7 ( 1.65) \\
+ C:maj7 (65.38) &  C:maj (16.93) &  C:maj6 ( 1.94) &   G:maj ( 1.83) &  A:min7 ( 1.22) &  C:sus2 ( 1.08) \\
+ C:min7 (45.40) &  C:min (24.75) &     C:7 ( 7.32) &  Eb:maj ( 3.23) &  Bb:maj ( 2.57) &     F:7 ( 1.49) \\
+    C:7 (51.96) &  C:maj (19.81) &  C:sus4 ( 5.06) &   C:min ( 3.49) &       N ( 1.87) &   F:maj ( 1.84) \\
+\hline
+ C:maj6 (25.55) &  C:maj (14.60) &  A:min7 (12.49) &  C:sus2 ( 9.95) &  C:maj7 ( 7.76) &   A:min ( 7.57) \\
+ C:min6 (34.96) & C:min7 (17.77) &     F:7 (13.76) & A:hdim7 ( 7.28) &   C:min ( 5.10) &   F:maj ( 3.20) \\
+  C:dim (48.35) & C:hdim7 ( 7.03) &   C:min ( 5.73) &  C:min7 ( 5.25) &   F:maj ( 3.37) &  C:maj6 ( 3.24) \\
+  C:aug (42.03) &  C:maj (18.63) &     C:7 ( 8.79) &   E:aug ( 6.21) &  C\#:min ( 5.94) &  C:maj7 ( 5.11) \\
+ C:sus4 (46.64) &  C:maj (27.56) &   F:maj ( 5.61) &     C:7 ( 4.16) &  F:sus2 ( 4.01) &  Bb:maj ( 2.19) \\
+ C:sus2 (72.32) &  C:maj (17.40) &  C:maj7 ( 6.13) &  D:sus4 ( 1.39) &   D:min ( 0.92) &  C:sus4 ( 0.81) \\
+ C:dim7 ( 0.00) &  A:dim (35.59) &   A:min (18.13) &  A:maj7 (12.07) &   C:dim ( 8.77) &     A:7 ( 5.21) \\
+C:hdim7 (36.32) &    C:7 (12.08) &  C:min7 ( 9.61) & Eb:min7 ( 6.63) &     F:7 ( 6.20) &  Eb:min ( 6.13) \\
+\hline
+      N (57.15) &  D:maj ( 2.54) &   E:maj ( 2.40) &   C:maj ( 2.29) &   G:maj ( 2.24) &   A:maj ( 2.21) \\
+\hline
+\end{tabular}
+\end{scriptsize}
+\end{center}
+\end{table}
+
+
+\begin{table}[h]
+\begin{center}
+\begin{scriptsize}
+\caption{Top-5 relative confusions for $p_{dropout} = 0.0$}
+\label{tab:baseline_confs}
+\begin{tabular}{c || c | c | c | c | c |}
+\hline
+Actual & 1 & 2 & 3 & 4 & 5 \\
+\hline
+C:maj (79.86) &     C:7 ( 3.41) &        N ( 2.84) &    F:maj ( 2.39) &    G:maj ( 1.85) &   C:maj7 ( 1.29) \\
+C:min (63.90) &  C:min7 (11.54) &    C:maj ( 7.14) &   Eb:maj ( 3.82) &        N ( 2.39) &    F:maj ( 1.85) \\
+C:maj7 (60.79) &   C:maj (25.60) &    G:maj ( 3.26) &   A:min7 ( 1.46) &    E:min ( 1.18) &   C:maj6 ( 1.04) \\
+C:min7 (46.25) &   C:min (24.29) &    C:maj ( 9.71) &   Eb:maj ( 4.46) &   Bb:maj ( 2.21) &    F:maj ( 1.93) \\
+C:7 (35.48) &   C:maj (46.47) &        N ( 3.38) &    F:maj ( 2.54) &   Bb:maj ( 1.35) &   C:sus4 ( 1.18) \\
+\hline
+C:maj6 (20.90) &   C:maj (49.92) &   C:maj7 ( 7.43) &   C\#:maj ( 3.77) &        N ( 3.04) &   F:maj7 ( 1.82) \\
+C:min6 (13.30) &   C:min (29.45) &   C:min7 (26.06) &      F:7 ( 9.32) &    C:maj ( 7.66) &      B:7 ( 6.65) \\
+C:dim (36.12) &   C:min (15.53) &     Ab:7 ( 7.87) &        N ( 6.32) &   C:dim7 ( 4.20) &    C:maj ( 3.63) \\
+C:aug (22.24) &   C:maj (34.69) &      C:7 ( 8.03) &   C\#:min ( 7.58) &   C:maj7 ( 6.11) &    F:min ( 2.77) \\
+C:sus4 (25.95) &   C:maj (50.13) &      C:7 ( 7.04) &    F:maj ( 3.90) &        N ( 2.90) &   Bb:maj ( 1.74) \\
+C:sus2 (61.81) &   C:maj (28.10) &   C:maj7 ( 4.36) &        N ( 1.40) &    G:maj ( 1.23) &   C:sus4 ( 0.98) \\
+C:dim7 ( 0.00) &   A:maj (44.64) &    A:dim (22.38) &    A:min (20.93) &        N ( 4.33) &    B:maj ( 3.00) \\
+C:hdim7 (32.09) &  Eb:min (10.47) &   C:min7 ( 9.13) &    C:maj ( 6.21) &     Ab:7 ( 6.02) &      F:7 ( 5.96) \\
+\hline
+N (75.48) &   C:maj ( 2.85) &    D:maj ( 2.06) &    A:maj ( 1.90) &    F:maj ( 1.67) &   Bb:maj ( 1.6105) \\
+\hline
+\end{tabular}
+\end{scriptsize}
+\end{center}
+\end{table}
+
+
+\begin{table}[h]
+\begin{center}
+\begin{scriptsize}
+\caption{Top-5 relative confusions for $p_{dropout} = 0.25$}
+\label{tab:baseline_confs}
+\begin{tabular}{c || c | c | c | c | c |}
+\hline
+Actual & 1 & 2 & 3 & 4 & 5 \\
+\hline
+C:maj (70.08) &     C:7 ( 5.91) &       N ( 3.43) &  C:maj6 ( 3.01) &  C:maj7 ( 2.56) &   F:maj ( 1.89) \\
+  C:min (58.18) &  C:min7 (18.31) &   C:maj ( 3.80) &       N ( 3.12) &  C:min6 ( 2.26) &     C:7 ( 2.03) \\
+ C:maj7 (72.59) &   C:maj (12.14) &  C:maj6 ( 2.71) &  G:maj6 ( 2.45) &  A:min7 ( 1.44) &       N ( 1.02) \\
+ C:min7 (56.51) &   C:min (18.48) &     C:7 ( 6.24) &       N ( 2.36) &   C:maj ( 1.66) &  Eb:maj ( 1.20) \\
+C:7 (50.51) &   C:maj (26.03) &       N ( 4.87) &  C:sus4 ( 2.37) &  C:maj6 ( 1.88) &  G:min7 ( 1.75) \\
+\hline
+ C:maj6 (41.29) &   C:maj (19.34) &  C:maj7 (10.00) &  C\#:maj ( 6.52) &  C:sus2 ( 5.03) &  A:min7 ( 3.27) \\
+ C:min6 (55.99) &  C:min7 (24.22) &   C:min ( 7.48) &     B:7 ( 5.34) &     F:7 ( 0.95) &  D:min7 ( 0.83) \\
+  C:dim (38.31) &  C:dim7 (12.84) & C:hdim7 (10.05) &  C:min6 ( 6.49) &   C:min ( 4.74) &       N ( 4.30) \\
+  C:aug (46.23) &   C:maj (13.97) &     C:7 ( 8.09) &       N ( 4.86) &  C\#:min ( 4.81) &  Ab:aug ( 4.52) \\
+ C:sus4 (38.43) &   C:maj (31.54) &     C:7 (12.63) &  C:sus2 ( 1.72) &  F:sus2 ( 1.66) &   F:maj ( 1.53) \\
+ C:sus2 (77.59) &   C:maj (16.37) &  C:maj7 ( 3.17) &     C:7 ( 0.91) &   G:maj ( 0.77) &  D:sus4 ( 0.38) \\
+ C:dim7 ( 0.00) &   A:dim (39.22) &   A:maj (31.40) &   A:min (11.91) &       N ( 5.17) &   C:dim ( 4.93) \\
+C:hdim7 (65.10) &  C:min7 ( 8.95) &   C:min ( 3.95) &    Ab:7 ( 3.47) & C\#:min7 ( 3.41) &     C:7 ( 2.92) \\
+\hline
+      N (76.56) &   C:maj ( 2.14) &   E:maj ( 1.42) &   A:maj ( 1.42) &   D:maj ( 1.35) &   G:maj ( 1.23) \\
+\hline
+\end{tabular}
+\end{scriptsize}
+\end{center}
+\end{table}
+
+What we see from this confusion analysis is that the errors made by these systems are often musically plausible, and in some cases it might be difficult to call them errors.
+A \texttt{C:dim7}, for example, itself contains a \texttt{C:dim} triad.
+From both a system design and evaluation standpoint, this motivates some kind of hierarchical representation, where triads are predicted at a coarser level than tetrads, e.g. $\{\texttt{C:dim}, \texttt{C:dim7}, \texttt{C:hdim7}\} \implies \texttt{C:dim}$.
+
+
+\subsection{Qualitative Analysis}
+\label{subsec:qualitative_analysis}
+
+In the previous subsection we were able to address many of the research questions posed.
+The final question ---is system behavior consistent with quantitative evaluation?--- can only be investigated through qualitative analysis.
+Returning to the metrics presented in Section \ref{subsec:evaluation_methodology}, there are two dimensions of interest on which they can be examined: the averaging of measures over qualities, and the comparison function between chord names.
+
+% Is quality-wise even a good measure?
+It was observed during training that achieving a good balance between overall and quality-wise performance is especially challenging.
+Observing these statistics over the various checkpoints in parameter selection for validation reveals a curious trend: very small changes in a quality-wise metric can result in an enormous differential in the overall one.
+This makes perfect sense in hindsight, and is illustrated in Figure \ref{fig:bigswing}.
+Due to the large imbalance of classes, a tiny shift in a decision boundary between two closely related classes, such as \texttt{C:maj} and \texttt{C:maj6}, will affect the different measures disproportionately.
+This calls into question somewhat the stability of quality-wise measures, and the relative weight they should receive when comparing systems on this kind of metric.
+Is it undesirable for a system to miss rare chords in favor of those that occur most frequently if it results in better overall performance?
+There may be no definitive answer to such a question, instead being determined as a function of a system's design and target use case.
+It is a valuable goal to make sure that computational systems perform well across all kinds of data and not just the most common cases.
+However, it seems equally important to avoid measures that introduce other, perhaps artificial, biases in model selection.
+% This is known as a macro-average (right), and it must be a known issue. How do others get around it? Perhaps a non-linear combination would stabilize this (geo-mean, log-weighting of contributions, etc).
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=5in]{bigswing}
+\caption{Validation performance as a function of iteration; overall (solid) and quality-wise (dashed) recall are shown for multiple self-transition penalties.}
+\label{fig:bigswing}
+\end{figure}
+
+% Considering the comparison function
+The choice of comparison function is a slightly more complex dimension to investigate.
+As shown in the previous section, the confusions made by these systems are predominantly between similar, and in some cases harmonically valid, chord names.
+Notably, the idea has been proposed in the past that softer evaluations measure could be used to better characterize harmonic similarity, such as pitch recall or comparing only the first two or three intervals in a chord \cite{Harte2010PhD}.
+Neither of these approaches have seen much traction in the community, nor are they satisfying from a research standpoint.
+Both approaches suffer from the deficiency that they may artificially inflate performance statistics without necessarily leading to fundamentally better systems.
+In both cases, a system that fails to produce any strictly ``correct'' answer could receive the same score as a system that reproduces the ground truth exactly.
+Additionally, grounding softer comparisons in music theory can require extra information about the specific key and harmonic function of the chord, information that grouth truth transcriptions may not contain explicitly.
+For example, \texttt{C:maj} and \texttt{C:maj7} are both syntactically valid and functionally equivalent in the key of $C_{major}$, as these chords build on the tonic.
+In $F_{major}$, conversely, a \texttt{C:maj7} is harmonically invalid; here, C is the fifth scale degree, or dominant, and therefore \texttt{C:maj} and \texttt{C:7} would be functionally equivalent (hence the term ``dominant'' 7th chord).
+The resulting conundrum in ACE evaluation is that while strict chord comparisons are not necessarily well aligned with subjective experience, alternative strategies toward softer comparisons leave something to be desired.
+Therefore, how might we better encode if and when different chord names are acceptable?
+
+% Pull in multiple perspectives : Introducing the Rock Corpus
+One way to address this is to call into question the validity of the ground truth transcriptions themselves.
+Recall that the various chord annotation collections used in development and evaluation here were all curated through a review process, whereby disagreements or judgement calls where ironed out as ``errors'', in the effort of producing singular chord names over time.
+As a result, the notion of ground truth is baked into the data itself.
+Fortunately, the \emph{Rock Corpus} dataset, first introduced in \cite{deClerqc2010}, is a set of, at the time of writing, 200 popular rock tracks with time-aligned chord and melody transcriptions performed by two expert musicians.
+Ironically, this collection of chord transcriptions has seen little use in the ACE literature, as its initial release lacked timing data for the transcriptions, and the chord names are provided in a Roman Numeral syntax.
+A subsequent release fixed the former issue, however, in addition to doubling the size of the collection from 100 to the now 200 tracks.
+The latter issue is more a matter of convenience, as key information is provided with the transcriptions and this format can be translated to absolute chord names, consistent with the syntax in Section \ref{subsec:chord_syntax}.
+This dataset provides a previously uncapitalized opportunity to explore the behavior of ACE systems as a function of multiple reference transcriptions.
+
+% What happens if the ground truth changes?
+We first consider the effects of choosing a different ground truth.
+Using the same fuzzy string matching described above, we identify 45 tracks in the collection that are also in the Rock Corpus, and we can look at what happens if either of these new annotations were used as ground truth.
+You get big swings in accuracy depending on which perspective you end up with, and in some sense, they're both equally valid.
+Concurrent opinions are different from sequential opinions; this is known as ``anchoring'' and causes hysteresis in annotation.
+For example, ``Human A says X, human B doesn't disagree'' doesn't entail ``Human B says Y, human A disagrees''.
+
+% What if either is ground truth? We can look at C(A, B) vs max(C(A, M), C(B, M)), over the rock corpus alone, to obtain many datapoints.
+%
+% Three elements fall out:
+%
 
 
 
+
+
+
+
+
+\subsection{Conclusions}
+\label{subsec:conclusions}
+
+% Quantitative observations
+Overall, considering the research questions posed, we find that the deep learning approach outperforms the state of the art in the typical measures of quantitative evaluation.
+We
+
+% Qualitative observations
 We need to develop better means of curating datasets such that objective measures better correspond with subjective experience.
+
+
+\section{Summary}
+\label{sec:summary}
+
+In this chapter we have thoroughly explored the application of deep learning methods to the classic MIR task of ACE.
+By standard evaluation practices, we demonstrate competitive performance in a Major-minor formulation of the task, and an improvement over the state of the art with considerably larger chord vocabularies.
