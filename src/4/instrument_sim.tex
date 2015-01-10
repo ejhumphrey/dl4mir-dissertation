@@ -153,14 +153,16 @@ At test time, this pairwise harness is discarded, and the deep network is used t
 \subsection{Time-Frequency Representation}
 \label{subsec:timbre_tfr}
 
-Though it is a particular goal of the system to minimally design transformations, a Constant-Q filterbank front-end is used here for three reasons.
-First, it is a considerable simplification of the system, both computationally and in the number of learned parameters.
-A logarithmic filterbank serves as a reasonable approximation of the human auditory system, and this filterbank can be viewed as a hard-coded layer in the network.
-Therefore the learning problem is simpler, and an optimized implementation, such as the one discussed in Chapter \ref{chapter:deep_learning}, can be used to reduce processing time.
-Furthermore, it is generally agreed upon that pitch invariance is, at least to some degree, a component of timbre perception.
+Though it is a particular goal of the system to minimally design transformations, audio is first processed by a Constant-Q transform (CQT) for three reasons.
+First, the application of a filterbank front-end results in a considerable simplification of the system, both computationally and in the number of learned parameters.
+Sharing a common formulation with neural networks, a filterbank can be viewed as a hard-coded layer in the network.
+Knowing the parameters in advance allows for the development of an optimized implementation, such as the one discussed in Chapter \ref{chapter:deep_learning}, reducing processing time.
+Additionally, the CQT is logarithmic in frequency, serving as a reasonable approximation of the human auditory system.
+Furthermore, it is generally agreed upon that timbre perception is, at least to some degree, invariant to pitch.
 Also following from this earlier discussion, the use of convolutional networks allows for translation invariance of features in both $log_2$-frequency and time.
 
-The filterbank is parameterized as follows: all input audio is first downsampled to 16kHz; bins are spaced at 24 per octave, or quarter-tone resolution, and span eight octaves, from 27.5Hz to 7040Hz; analysis is performed at a framerate of 20Hz. Logarithmic compression is applied to the frequency coefficients with an offset of one, e.g. $log_{1p}(x) = log(x + 1.0) $.
+The constant-Q filterbank is parameterized as follows: all input audio is first downsampled to 16kHz; bins are spaced at 24 per octave, or quarter-tone resolution, and span eight octaves, from 27.5Hz to 7040Hz; analysis is performed at a framerate of 20Hz uniformly across all frequency bins.
+Logarithmic compression is applied to the frequency coefficients with an offset of one, e.g. $log_{1p}(x) = log(x + 1.0)$.
 
 
 \subsection{Deep Convolutional Networks for Timbre Embedding}
@@ -172,7 +174,19 @@ A five-layer neural network is designed to project time-frequency inputs into a 
 The first three layers make use of 3D-convolutions, to take advantage of translation invariance, reduce the overall parameter space, and act as a constraint on the learning problem.
 Max-pooling is applied in time and frequency, to further accelerate computation by reducing the size of feature maps, and allowing a small degree of scale invariance in both directions.
 The final two layers are fully-connected affine transformations, the latter of which yields the embedding space.
-While the first four layers use a hard rectified linear unit as the activation function, the output of the final layer is linear, i.e. it has no activation function.
+The first four hidden layers use a hyperbolic tangent as the activation function, while the visible output layer is linear, i.e. it has no activation function in the conventional sense.
+
+Hyperbolic tangents are chosen as the activation function for the hidden layers purely as a function of numerical stability.
+It was empirically observed that randomly initialized networks designed with rectified linear units instead were near impossible to train; it is hypothesized that, due to the relative nature of the learning problem, i.e. the network must discover an equilibrium for the training data, it is easy for the parameters to be pushed into a space where all activations go to zero, collapsing the network.
+Conversely, hyperbolic tangents are everywhere-differentiable, and did not suffer the same behavior.
+The use of activation functions that provide an error signal everywhere, such as sigmoids or ``leaky'' rectified linear units \cite{Maas2014}, or better parameter initialization might avoid this behavior, but neither were explored here.
+
+Combining the successful application of linear ``bottleneck'' layers \cite{Liao2013} with lessons learned from previous efforts \cite{Humphrey2011}, the visible layer is chosen here to be linear.
+As will be discussed in more detail shortly, a saturating nonlinearity at the output makes the choice of hyperparameters crucial in order to prevent the network from pushing datapoints against the limits of its space.
+However, the absence of boundaries allows the network to find the appropriate scale factor for the embedding.
+
+Specifically, the network is parameterized thusly: the input to the network is a 2D tile of log-CQT coefficients with shape $(20, 192)$, corresponding to time and frequency respectively; the first convolutional layer uses 20 filters with shape $(1, 5, 13)$ and max-pooling with shape $(2, 2)$; the second convolutional layer uses 40 filters with shape $(20, 5, 11)$ and max-pooling with shape $(2, 2)$; the third convolutional layer uses 80 filters with shape $(1, 1, 9)$ and max-pooling with shape $(2, 2)$; the fourth layer is fully-connected and has 256 outputs; the final layer is also fully connected, and has 3 outputs.
+
 
 \subsection{Pairwise Training}
 \label{subsec:timbre_pairwise}
