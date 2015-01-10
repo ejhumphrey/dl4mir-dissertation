@@ -1,0 +1,230 @@
+
+%: ----------------------- introduction file header -----------------------
+% the code below specifies where the figures are stored
+\graphicspath{{4/figures/}}
+
+\chapter{Timbre Similarity}
+\label{chp:timbre}
+
+Timbre is a difficult attribute to define in acoustic perception.
+Research has long sought to better understand the latent dimensions, in the hope of developing methods that can estimate the pairwise similarity between observations.
+In lieu of adequate information to study this phenomenon directly, here instrument taxonomies are used as an approach to objectively define such relationships.
+A non-linear semantic embedding is achieved by training a deep convolutional network to project time-frequency representations of audio into a low-dimensional, semantically organized space.
+The discriminative properties of the resulting embeddings are explored, and the notions of timbral smoothness are investigated qualitatively.
+
+
+\section{Context}
+\label{sec:context}
+
+\subsection{Definition}
+% Definition
+Despite its common usage in the various forms of music for centuries, a satisfactory definition of \emph{timbre} remains elusive to this day; in fact, the one adopted by the American National Standards Institute gives creedence to this claim, arriving at the concept by exclusion \cite{ANSI197x}:
+
+\begin{quote}
+Timbre is that attribute of auditory sensation in terms of which a subject can judge that two sounds similarly presented and having the same loudness and pitch are dissimilar.
+\end{quote}
+
+Such a definition is deficient when constructing a system to capture timbral similarity.
+The sentiment is captured rather succinctly by Phillipe Manoury, who offered the following insight \cite{}:
+
+\begin{quote}
+One of the most striking paradoxes concerning timbre is that when we knew less about it, it didn’t pose much of a problem.
+\end{quote}
+
+% Historical context
+% Psychoacoustics, Early work and the struggle to define
+% Helmholtz, pitch, and other psychoacoustics.
+Given this inherent ambiguity in concept definition, it is worthwhile to contextualize how this situation came to be.
+The perception of timbre falls under the umbrella of \emph{psychoacoustics}, a topic of study that sits at the boundary of psychology and acoustics.
+Some of the earliest research in psychoacoustics was pioneered by von Helmholtz in his inquiries into the sensations of pitch and loudness.
+Research in timbre perception would not come until much later, due to two difficulties.
+One, it is not immediately obvious what the salient dimensions of timbre might be, whereas pitch and loudness are predominantly one dimensional, with the partial exception of octave equivalance in the former.
+Additionally, researchers were limited by the kinds of stimuli they could create and use in perceptual experimentation.
+
+% Psychology and psychoacoustics in the 1960-90s
+With the advent of computers and continued scientific advances through the 20th century, these issues could be dealt with direclty.
+This encouraged an effort to establish a constructive, rather than exclusionary, defintion of timbre.
+This work, perfomed by Plomp \cite{Plomp1976} Grey and Wessel \cite{Grey1979}, adopted similar experimental design.
+Human subjects were presented pairs of sound stimuli and asked to rate the pairwise similarity between the two.
+Having collected a number of ratings from a number of participants, multi-dimensional scaling was used to project the stimuli into a low-dimesional space that preserved the given relationships.
+At this point, the researcher would then turn to spectral analysis to identify possible charateristics of the stimuli that might correlate with the different dimensions of the resulting projection.
+This approach proved relatively fruitful, yielding a variety of signal-level statistics, or \emph{features}, found to correspond positively with subjective ratings.
+Early work suggested suggested features such as log-attack time, spectral centroid, and spectral spread, and were echoed later in the work of Krumhansl.
+This line of inquiry showed promise, and went on to inform much of how MIR approaches timbre and how such systems should be built.
+
+% Deficiencies
+%  - at the mercy of researcher ingenuity to find good features
+%  - subjective ratings are limited by the space of stimuli used
+However, recent work has identified two issues with this approach to timbre research \cite{Glennon2014}.
+First, as stated by Caclin et al., ``Given the multiplicity of acoustical parameters that could be proposed to explain perceptual dimensions, one can never be sure that the selected parameters do not merely covary with the true underlying parameters.'' \cite{Caclin2005}.
+This statement can be interpreted in two related ways:
+one, the space of parameters considered is bounded by the insight and ingenuity of the researcher;
+and two, it is possible that a chosen parameter covaries with the true, but unobserved, parameter.
+Second, the utility of a timbre space resulting from MDS is limited to the space of stimuli with which it was obtained.
+In other words, factors of variance not captured by the sonic palette used as stimuli are unlikely to be encoded in the resulting dimensions.
+
+There is also a concern regarding the degree to which conclusions resulting from research on subjective pairwise ratings might be generalized.
+Typically, stimuli used in such experiements are synthetic to the point of unnatural \cite{Teresawa2007?} or chosen from a space of instrument sounds.
+In the latter case, familiarity with such sounds have the potential to bias subjects away from a purely perceptual rating.
+Finally, the perpection of timbre undoubtedly has a time-varying characteristic, but much research focuses on timbre as a stationary phenomena.
+Some, like \cite{Krumhansl1980?}, have considered the attack and sustained regions of a sound separately, finding that instrument identification was possible from either portion.
+However, by concatenating the attack of one instrument with the sustained portion of another, it was demonstrated that a subject would perceive only the attack instrument, effectively masking the signature survived in the sustain.
+Such a finding illustrates that the perception of timbre not only varies over small time scales, but is dependent on context and the sequential ordering of events.
+
+% Synthesizing this brief history of timbre perception research into some kind of workable defintion, timbre is a time-varying quality of sound, akin to texture in the visual domain.
+% Referred to by Landy as a \emph{second-order percept}, texture is the emergent property
+
+
+\subsection{Computational Modeling}
+% Computational approaches and models
+% Short-time statistics
+Most previous approaches to computationally modeling timbre instantaneously can be grouped into one of two categories: signal statistics and basis projections.
+The first follows from the perceptual research of the later 20th century, whereby statistics representing higher level concepts are computed for their semantic merit.
+Initially these corresponded to the features named by in the work of Grey or Krumhansl, but have expanded over time to include a wide array of creative and clever measures.
+The interested reader is directed to \cite{Essid2006} for a comprehensive space of possible features.
+
+
+% Cascaded Transforms
+From an often complimentary perspective, other music researchers have designed transform-based systems to project signals into representations with various properties.
+One of the earliest and most common approaches is the use of Mel-frequency Cepstral Coefficients (MFCCs) for timbre-oriented tasks.
+Originally designed for speech coding purposes by Mermelstein in the 1960s \cite{Mermelstein}, the first significant contribution in MIR to call attention to these features was that of Logan in 2000 \cite{Logan}.
+MFCCs have, if not in reality then at least in practice, become synonymous with timbre-centric MIR, now being used in an innumerable number of systems for instrument classification \cite{}, tagging \cite{}, genre prediction \cite{}, mood estimation \cite{} or structural analysis \cite{}, to name only a few representative works in each.
+The general process of computing MFFCs is given in Figure and proceeds as follows: an input audio signal is divided into overlapping, short-time \emph{frames}, on the order of tens to hundreds of milliseconds; a filterbank, perceptually scaled in frequency, is then applied to each short-time frame and log-compressed; finally, a discrete cosine transform (DCT) is applied to these frequency coefficients, characterizing the shape of the spectrum (or the spectrum of the spectrum, referred to rather cheekily as the \emph{ceps}trum).
+Often only the first dozen or so coefficients are used in practice on the principle that they capture the most relevant information, though this is more convention than rule.
+
+% Machine learning approaches
+Similar in principle, though less widely used, is to instead \emph{learn} the set of bases over which the spectrum is projected.
+For exaple, the approach taken by Jehan \cite{Jehan2005}, which preserves the first 12 coefficients of a trained PCA decomposition.
+In this instance, the projection into the PCA subspace attempts to decorrelate the principal axes of the data in the input space, like the Discrete Cosine Transform.
+The primary difference here, however, is that the bases are learned from a sample of observations.
+
+\subsection{Motivation}
+
+% Motivation for similarity
+While many of these approaches have proven useful in various classification tasks, none directly result in a notion of timbre similarity, a useful concept in a variety of scenarios.
+The search and navigation of large sound libraries is one such instance, where sparse metadata and text-based queries often reduce the task of navigating a sound library to that of an exhaustive, brute force search.
+The inherent difficulty of finding a target sound in a potentially massive collection of items lies in the inability to capture the specific query semantically, relying instead on metaphors; distorted guitars are described as `crunchy' or trumpets `bright.'
+
+User interfaces
+Composition and
+
+\subsection{Limitations}
+Failing to adopt a clear definition of timbre does not relieve you of inherently operating on one.
+The work presented here is not intended to be synonomous with timbre, and is subject in many ways to the limitations named in previous perceptual research; a timbre space is achieved as a result of the inputs considered, and will likely fail on sufficiently novel stimuli.
+% Additionally, you can't learn everything.
+
+
+\section{Learning a Timbre Space}
+\label{sec:timbre_embedding}
+
+Having motivated the value and practical uses of a timbre similarity space, it is worthwhile to outline the ideal goals for such a system.
+First and foremost, one would learn, rather than design, signal-level features relevant to achieve the given task.
+This idea is based on the combination of an inability to clearly define the sensory phenomenon and the known caveats of previous perceptual studies.
+Additionally, sound should be represented in an intuitive manner, such that distance between points is, in some sense, meaningful.
+In other words, sounds from the same source should be near-neighbors, whereas sounds from different sources should be far apart.
+% Come back to how we show this in the methodology.
+Finally, a good embedding space is perceptually \emph{smooth}, meaning that a point in the embedding space that bisects two others should be a hybrid of the two, e.g. a tenor saxophone might fall between a clarient and a French horn.
+
+These objectives have clear conceptual overlap with dimensionality reduction methods and instrument classification systems, on which this work builds.
+The approach presented here consists of several parts, as diagrammed in Figure \ref{fig:nlse}, and discussed in the following subsections.
+First, all audio is transformed into a time-frequency representation (Subsection \ref{subsec:timbre_tfr}).
+The principle component of the system is a deep convolutional network, which maps tiles of these time-frequency coefficients into a low-dimensional space (Subsection \ref{subsec:timbre_deepnet}).
+During training, this network is duplicated such that two inputs may yield two outputs, and these parameters are learned by optimizing the distance between these two representations (Subsection \ref{subsec:timbre_pairwise}).
+At test time, this pairwise harness is discarded, and the deep network projects arbitrary inputs to the learned embedding space.
+
+
+\subsection{Time-Frequency Representation}
+\label{subsec:timbre_tfr}
+
+Though it is a particular goal of the system to minimally design transformations, a Constant-Q filterbank front-end is used here for three reasons.
+First, it is a considerable simplification of the system, both computationally and in the number of learned parameters.
+A logarithmic filterbank serves as a reasonable approximation of the human auditory system, and this filterbank can be viewed as a hard-coded layer in the network.
+Therefore the learning problem is simpler, and an optimized implementation, such as the one discussed in Chapter \ref{chapter:deep_learning}, can be used to reduce processing time.
+Furthermore, it is generally agreed upon that pitch invariance is, at least to some degree, a component of timbre perception.
+Also following from this earlier discussion, the use of convolutional networks allows for translation invariance of features in both $log_2$-frequency and time.
+
+The filterbank is parameterized as follows: all input audio is first downsampled to 16kHz; bins are spaced at 24 per octave, or quarter-tone resolution, and span eight octaves, from 27.5Hz to 7040Hz; analysis is performed at a framerate of 20Hz. Logarithmic compression is applied to the frequency coefficients with an offset of one, e.g. $log_{1p}(x) = log(x + 1.0) $.
+
+
+\subsection{Deep Convolutional Networks for Timbre Embedding}
+\label{subsec:timbre_deepnet}
+
+Noting that the details of deep learning and convolutional networks are discussed at length previously, only those decisions unique to this task are addressed here; for clarity regarding the mathematical or conceptual definitions of these terms, refer to Chapter \ref{chapter:deep_learning}.
+
+A five-layer neural network is designed to project time-frequency inputs into a low-dimensional embedding.
+The first three layers make use of 3D-convolutions, to take advantage of translation invariance, reduce the overall parameter space, and act as a constraint on the learning problem.
+Max-pooling is applied in time and frequency, to further accelerate computation by reducing the size of feature maps, and allowing a small degree of scale invariance in both directions.
+The final two layers are fully-connected affine transformations, the latter of which yields the embedding space.
+While the first four layers use a hard rectified linear unit as the activation function, the output of the final layer is linear, i.e. it has no activation function.
+
+\subsection{Pairwise Training}
+\label{subsec:timbre_pairwise}
+Pairwise training
+Select a distance metric
+contrastive loss function
+Perceptron loss + perceptron loss (margin)
+
+Training strategy
+uniform presentation + / -
+minibatch stochastic gradient descent
+
+
+\section{Experimental Methodology}
+\label{sec:example}
+
+Here's the explanation of what was done.
+
+\subsection{Data}
+Start with the VSL
+Use instrument boundaries as a nearest neighbor taxonomy.
+Cut-off at 5000 sound files.
+After discarding unreasonable duplicates, left with 24 classes.
+Keep three conditions from the pilo
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{pink_muffin.png}
+\caption{Cupcake caramels gingerbread cake.}
+\label{fig:muffin}
+\end{figure}
+
+
+\begin{equation}
+\nabla^2p = \frac{1}{c^2} \frac{\partial^2 p}{\partial t^2}
+\label{eq:wave}
+\end{equation}
+
+Muffin dragee caramels sweet pudding danish bonbon jelly-o \gls{tcap}.
+Dessert chocolate bar marzipan.
+Tiramisu cheesecake caramels cake lemon drops. Icing pastry lollipop marshmallow jujubes.
+Gingerbread carrot cake marzipan souffle halvah. Bear claw cheesecake toffee pie donut.
+Dessert pastry applicake biscuit caramels marzipan croissant muffin \ref{tab:things}.
+
+\begin{table*}[h]
+\begin{center}
+\caption{Halvah danish liquorice sesame snaps}
+\begin{tabular}{l l l l l l l}
+Dessert & Love \\
+\hline
+Cookie & 5.8\\
+Macaroon & 9.3\\
+Sugar plum & 0.78\\
+\hline
+\end{tabular}
+\label{tab:things}
+\end{center}
+\end{table*}
+
+
+\noindent
+Icing cheesecake biscuit pudding marshmallow.
+Cake toffee fruitcake gummi bears.
+Macaroon macaroon lollipop marzipan.
+Ice cream tiramisu pie powder halvah.
+
+
+
+
+
+
+
