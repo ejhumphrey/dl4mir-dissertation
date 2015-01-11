@@ -143,11 +143,12 @@ In other words, signals from the same source should be near-neighbors, whereas s
 Finally, the ideal similarity space is perceptually \emph{smooth}, meaning that a point that interpolates the path between two others should be a blend of the two, e.g. a tenor saxophone might fall between a clarient and a French horn.
 
 These objectives have clear conceptual overlap with dimensionality reduction methods and instrument classification systems, on which this work builds.
+In lieu of precise information regarding the relationship between two given sounds, music instrument classes are used as a proxy for timbre similarity.
 The approach presented here consists of several parts, as diagrammed in Figure \ref{fig:nlse}, and discussed in the following subsections.
 First, all audio is transformed into a time-frequency representation (Subsection \ref{subsec:timbre_tfr}).
 The main component of the system is a deep convolutional network, which maps tiles of these time-frequency coefficients into a low-dimensional space (Subsection \ref{subsec:timbre_deepnet}).
-During training, this network is duplicated such that two inputs may yield two outputs, and these parameters are learned by optimizing the distance between these two representations (Subsection \ref{subsec:timbre_pairwise}).
-At test time, this pairwise harness is discarded, and the deep network is used to project inputs to the learned embedding space.
+A pairwise training harness is made by copying this network, and parameters are learned by minimizing the distance between observations of the same sound source and maximizing the distance otherwise (Subsection \ref{subsec:timbre_pairwise}).
+At test time, the pairwise harness is discarded, and the resulting network is used to project inputs to the learned embedding space.
 
 
 \subsection{Time-Frequency Representation}
@@ -185,15 +186,58 @@ Combining the successful application of linear ``bottleneck'' layers \cite{Liao2
 As will be discussed in more detail shortly, a saturating nonlinearity at the output makes the choice of hyperparameters crucial in order to prevent the network from pushing datapoints against the limits of its space.
 However, the absence of boundaries allows the network to find the appropriate scale factor for the embedding.
 
-Specifically, the network is parameterized thusly: the input to the network is a 2D tile of log-CQT coefficients with shape $(20, 192)$, corresponding to time and frequency respectively; the first convolutional layer uses 20 filters with shape $(1, 5, 13)$ and max-pooling with shape $(2, 2)$; the second convolutional layer uses 40 filters with shape $(20, 5, 11)$ and max-pooling with shape $(2, 2)$; the third convolutional layer uses 80 filters with shape $(1, 1, 9)$ and max-pooling with shape $(2, 2)$; the fourth layer is fully-connected and has 256 outputs; the final layer is also fully connected, and has 3 outputs.
+Specifically, the network is parameterized thusly: the input to the network is a
+2D tile of log-CQT coefficients with shape $(20, 192)$, corresponding to time
+and frequency respectively; the first convolutional layer uses 20 filters with
+shape $(1, 5, 13)$ and max-pooling with shape $(2, 2)$; the second convolutional
+layer uses 40 filters with shape $(20, 5, 11)$ and max-pooling with shape $(2,
+2)$; the third convolutional layer uses 80 filters with shape $(1, 1, 9)$ and
+max-pooling with shape $(2, 2)$; the fourth layer is fully-connected and has 256
+outputs; the final layer is also fully connected, and has 3 outputs.
 
 
 \subsection{Pairwise Training}
 \label{subsec:timbre_pairwise}
-Pairwise training
-Select a distance metric
-contrastive loss function
-Perceptron loss + perceptron loss (margin)
+
+% Relative vs absolute
+As discussed previously, there are currently no known quantities with which to measure timbre, in the same way that fundamental frequency has Hertz or loudness decibels.
+In the absence of this absolute reference, previous efforts have instead tried to determine the relative relationships between a collection of observations.
+Collecting this data subjectively quickly becomes prohibitive, as the number of pairwise comparisons to be made increases quadradically with the total number of observations considered.
+Music instruments, however, provide an interesting source of objective information for this problem.
+Based on the coarse approximation that all sounds produced by a single instrument are in some sense similar, regardless of pitch or loudness, class boundaries can be used to define a neighborhood of similar timbres.
+
+% TODO-future: Don't tie everything together, just pick k-NN from *inside* the one class, should be smoother
+% TODO-future: Explore soft similarity scores rather than binary values
+This approach to defining timbre ``neighborhoods'' can be used to extend the work of Hadsell et al \cite{Hadsell2007} to address this challenge of learning a timbre similarity space.
+Referred to by the authors as ``dimensionality reduction by learning an invariant mapping'' (DrLIM), a deep network was trained in a pairwise manner to minimize the distance between ``similar'' data points in a learned, nonlinear embedding space, and vice versa.
+Similarity was determined in an unsupervised manner by linking the $k$-nearest neighbors in the input space.
+Though left as future work, the authors propose that other information, such as class relationships, might be levereaged to learn different embeddings.
+This is an important consideration for the problem of timbre, because fundamental frequency and amplitude are likely to dominate the graph of nearest neighbors in the input space.
+
+The intution behind DrLIM is both simple and satisfying: datapoints that are deemed ``similar'' should be close together, while those that are ``dissimilar'' should be far apart.
+Though the precise distance metric is a flexible design decision, it is used here in the Euclidean sense.
+A collection of similar and dissimilar relationships can be viewed as a physical system of attractive and repulsive forces.
+Learning proceeds by finding a balance of these contrasting forces; and furthermore, this analogy illustrates the need for both positive and negative forces to maintain equilibrium.
+
+% This first sentence blows, come back to this.
+In practice, DrLIM is, at its core, a pairwise training strategy.
+First, a parameterized, differentiable function, $f(\dot | \Theta)$, e.g. a neural network, is designed for a given problem; for the purposes of dimensionality reduction, the output will be much smaller than the input, and typically either 2 or 3 for the purposes of visualization.
+During training, the function $f$ is copied and parameters, $\Theta$, \emph{shared} between both, such that $f_1(\dot | Theta) == f_2(\dot | Theta)$.
+Two inputs, $X_1$ and $X_2$, are transformed by their respective functions, $f_1$ and $f_2$, to produce the outputs, $Z_1$ and $Z_2$.
+A metric, e.g. Euclidean, is chosen to compute a distance, $D$ between these outputs.
+Finally, a similarity score, $Y$, representing the relationship between $X_1$ and $X_2$, is passed to a contrastive loss function, which penalizes similar and dissimilar pairs differently.
+When the pair is similar, the loss will be small when the distance is small; for dissimilar pairs, the loss will be small when the distance is outside a given \emph{margin}.
+This is expressed symbolically by the following:
+
+\begin{equation}
+Z_1 = f_1(X_1 | Theta), Z_2 = f2(X_2 | Theta) \\
+D = || Z_1 - Z_2 ||_2 \\
+\mathcal{L} = Y * D^2 + (1 - Y) * max(0, m - D)^2 \\
+\end{equation}
+
+\noindent~Note that similarity is given by $Y=1$, for consistency with boolean logic.
+As a result, the first term of the loss function is only non-zero for similar pairs, and the inverse is true for the second term.
+
 
 Training strategy
 uniform presentation + / -
