@@ -220,46 +220,67 @@ A collection of similar and dissimilar relationships can be viewed as a physical
 Learning proceeds by finding a balance of these contrasting forces; and furthermore, this analogy illustrates the need for both positive and negative forces to maintain equilibrium.
 
 % This first sentence blows, come back to this.
-In practice, DrLIM is, at its core, a pairwise training strategy.
+At its core, DrLIM is ultimately a pairwise training strategy.
 First, a parameterized, differentiable function, $f(\dot | \Theta)$, e.g. a neural network, is designed for a given problem; for the purposes of dimensionality reduction, the output will be much smaller than the input, and typically either 2 or 3 for the purposes of visualization.
 During training, the function $f$ is copied and parameters, $\Theta$, \emph{shared} between both, such that $f_1(\dot | Theta) == f_2(\dot | Theta)$.
 Two inputs, $X_1$ and $X_2$, are transformed by their respective functions, $f_1$ and $f_2$, to produce the outputs, $Z_1$ and $Z_2$.
 A metric, e.g. Euclidean, is chosen to compute a distance, $D$ between these outputs.
 Finally, a similarity score, $Y$, representing the relationship between $X_1$ and $X_2$, is passed to a contrastive loss function, which penalizes similar and dissimilar pairs differently.
-When the pair is similar, the loss will be small when the distance is small; for dissimilar pairs, the loss will be small when the distance is outside a given \emph{margin}.
+When the pair is similar, the loss will be small when the distance is small; for dissimilar pairs, the loss will be small when the distance is outside a given margin, $m$.
 This is expressed symbolically by the following:
 
+
 \begin{equation}
-Z_1 = f_1(X_1 | Theta), Z_2 = f2(X_2 | Theta) \\
-D = || Z_1 - Z_2 ||_2 \\
-\mathcal{L} = Y * D^2 + (1 - Y) * max(0, m - D)^2 \\
+Z_1 = f_1(X_1 | Theta), Z_2 = f2(X_2 | Theta)\\
+D = || Z_1 - Z_2 ||_2\\
+\mathcal{L} = Y * D^2 + (1 - Y) * max(0, m - D)^2\\
 \end{equation}
 
 \noindent~Note that similarity is given by $Y=1$, for consistency with boolean logic.
 As a result, the first term of the loss function is only non-zero for similar pairs, and the inverse is true for the second term.
 
+%Training strategy
+Returning to the previous discussion regarding the dynamic range of the output layer, it should now be clear that the choice of margin only influences the learned embedding relative to a scale factor when the output is unbounded.
+The two loss terms are mirrored parabolas, and changing the margin, or horizontal offset, only serves to move the vertical line at which they reflect, and not the curvature of the space.
+In fact, this observation encourages a simple generalization of this loss function, where a second margin is introduced:
 
-Training strategy
-uniform presentation + / -
-minibatch stochastic gradient descent
+\begin{equation}
+\mathcal{L} = Y * max(0, D - m_{sim})^2 + (1 - Y) * max(0, m_{diff} - D)^2 \\
+\end{equation}
+
+This generalized square-square loss is shown in Figure \ref{fig:double_margin} for various margin values.
+Whereas the differential margin controls the variance of all points in space, the similar margin will control the variance of a similarity neighborhood.
+In the original formulation, where implicitly $m_{sim} = 0$, the loss is lowest when all inputs are mapped to \emph{exactly} the same point; for the purposes of similarity, a more diffuse distribution of points is desirable.
+It is worth noting the slight parallel to linear discriminant analysis, which seeks to minimize intraclass variance and maximize interclass variance.
+Given the relative nature of this trade-off, it is sufficient to pick a single ratio between the margins, eliminating the need to vary both hyperparameters.
+
+
+In practice, training proceeded via minibatch stochastic gradient descent with a constant learning rate, set at 0.02 for 25k iterations, or until a batch returned a total loss of zero.
+Batches consisted of 100 comparisons, drawn such that a datapoint was paired with both a positive and negative example.
 
 
 \section{Experimental Methodology}
 \label{sec:example}
 
 Here's the explanation of what was done.
+What are the questions we want to address?
+
+- What is the impact of the the different margin ratios
+- How is the space organized
+- How does it compare to an LDA based system
+
 
 \subsection{Data}
 Start with the VSL
 Use instrument boundaries as a nearest neighbor taxonomy.
 Cut-off at 5000 sound files.
 After discarding unreasonable duplicates, left with 24 classes.
-Keep three conditions from the pilo
+Keep three conditions from the pilot study (c5, c8, c12), and one with all 24 classes.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.6\textwidth]{pink_muffin.png}
-\caption{Cupcake caramels gingerbread cake.}
+\includegraphics[width=0.6\textwidth]{raw_vsl_distribution.png}
+\caption{Raw distribution of instrument samples in the Vienna Symphonic Library.}
 \label{fig:muffin}
 \end{figure}
 
@@ -277,13 +298,44 @@ Dessert pastry applicake biscuit caramels marzipan croissant muffin \ref{tab:thi
 
 \begin{table*}[h]
 \begin{center}
-\caption{Halvah danish liquorice sesame snaps}
-\begin{tabular}{l l l l l l l}
-Dessert & Love \\
+\caption{Instruments considered and their corresponding codes.}
+\begin{tabular}{l | c || l | c}
+Instrument & Code & Instrument & Code \\
+
 \hline
-Cookie & 5.8\\
-Macaroon & 9.3\\
-Sugar plum & 0.78\\
+French Horn & ho & Tuba & tu\\
+Violin & vi & Cimbasso & ci \\
+B$\flat$ Clarinet & klb & Piccolo & pt \\
+Tenor Trombone & tp & Oboe & ob \\
+C Trumpet & trc & Bass Clarinet & bkl \\
+Bass Trombone & bp & Wagner Tuba & wt \\
+Acoustic Concert Guitar & akg & Contra Bassoon & kfa \\
+Bassoon & fa & English Horn & eh \\
+Cello & vc & Bass & kb \\
+Bass Trumpet & bt & Soprano Saxophone & sxs \\
+Distorted Guitar & eg & Tenor Saxophone & sxt \\
+Flute & fl1 & Alto Flute & afl \\
+
+\hline
+\end{tabular}
+\label{tab:things}
+\end{center}
+\end{table*}
+
+
+
+\begin{table*}[h]
+\begin{center}
+\caption{Instrument set configurations.}
+\begin{tabular}{l | c }
+Key & Instrument Codes \\
+\hline
+
+c5 & tu, ob, klb, vc, fl1
+c8 & trc, ho, ob, eh, klb, sxt, vi, vc
+c12 & c8 + \{tp, tu, fa, fl1\}
+c24 & c12 + \{bp, akg, bt, eg, ci, pt, bkl, wt, kfa, kb, sxs, afl\}
+
 \hline
 \end{tabular}
 \label{tab:things}
@@ -301,5 +353,56 @@ Ice cream tiramisu pie powder halvah.
 
 
 
+%train
+\begin{table*}[h]
+\begin{center}
+\caption{k-Neighbors classification results over the training set.}
+\small
+\begin{tabular}{rllll}
+      & c5             & c8             & c12            & c24            \\
+\hline
+ 0    & $93.81\pm0.53$ & $89.97\pm0.40$ & $86.70\pm0.39$ & $74.17\pm0.79$ \\
+ 0.25 & $94.21\pm0.18$ & $90.25\pm0.54$ & $87.17\pm0.35$ & $73.91\pm0.61$ \\
+ 0.5  & $93.04\pm0.29$ & $89.16\pm0.27$ & $86.08\pm0.26$ & $71.59\pm0.88$ \\
+\hline
+\end{tabular}
+\label{tab:things}
+\end{center}
+\end{table*}
+
+%valid
+\begin{table*}[h]
+\begin{center}
+\caption{k-Neighbors classification results over the validation set.}
+\small
+\begin{tabular}{rllll}
+\hline
+      & c5             & c8             & c12            & c24            \\
+\hline
+ 0    & $92.37\pm0.64$ & $87.94\pm0.45$ & $84.52\pm0.97$ & $70.86\pm1.51$ \\
+ 0.25 & $93.75\pm0.53$ & $88.62\pm0.58$ & $85.65\pm0.26$ & $71.46\pm0.63$ \\
+ 0.5  & $91.75\pm0.67$ & $87.78\pm0.85$ & $83.78\pm0.53$ & $66.37\pm1.69$ \\
+\hline
+\end{tabular}
+\label{tab:things}
+\end{center}
+\end{table*}
 
 
+%test
+\begin{table*}[h]
+\begin{center}
+\caption{k-Neighbors classification results over the testing set.}
+\small
+\begin{tabular}{rllll}
+\hline
+      & c5             & c8             & c12            & c24            \\
+\hline
+ 0    & $92.49\pm0.41$ & $88.26\pm0.74$ & $84.35\pm0.41$ & $70.67\pm0.55$ \\
+ 0.25 & $92.97\pm0.41$ & $88.67\pm0.79$ & $85.16\pm0.24$ & $70.28\pm0.86$ \\
+ 0.5  & $91.96\pm0.35$ & $87.83\pm0.25$ & $84.04\pm0.57$ & $66.91\pm0.57$ \\
+\hline
+\end{tabular}
+\label{tab:things}
+\end{center}
+\end{table*}
