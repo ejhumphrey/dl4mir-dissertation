@@ -262,14 +262,19 @@ Batches consisted of 100 comparisons, drawn such that a datapoint was paired wit
 \section{Experimental Methodology}
 \label{sec:example}
 
-Here's the explanation of what was done.
-What are the questions we want to address?
+% Here's the explanation of what was done.
+% What are the questions we want to address?
+
+To assess the viability of data-driven nonlinear semantic embeddings for timbre similarity, and thus address the goals outlined at the outset of Section \ref{sec:timbre?}, two experiments are used to quantify different performance criteria.
+First, the local structure and class boundaries of the learned embeddings are explored using a simple k-nearest neighbor classifier and compared with another supervised dimensionality reduction algorithm.
+Second, global organization of the space is measured by a ranked retrieval task, again comparing to other methods.
+Additionally, in lieu of a subjective evaluation of perceptual ``smoothness'' of the resulting timbre space, the learned embeddings are investigated qualitatively.
+
+Finally, the formulation described in the previous section presents two system variables, thus giving rise to two additional considerations:
 
 \begin{enumerate}
 \item What is the effect of using different margin ratios?
-\item How does this approach compare to other methods?
 \item How does the set of instruments considered impact the learned embedding?
-\item How perceptually ``smooth'' is the resulting space?
 \end{enumerate}
 
 
