@@ -279,37 +279,17 @@ Finally, the formulation described in the previous section presents two system v
 
 
 \subsection{Data}
-Start with the VSL
-Use instrument boundaries as a nearest neighbor taxonomy.
-Cut-off at 5000 sound files.
-After discarding unreasonable duplicates, left with 24 classes.
-Keep three conditions from the pilot study (c5, c8, c12), and one with all 24 classes.
+The data source used herein is drawn from the Vienna Symphonic Library (VSL), a truly massive collection of studio-grade orchestral instrument samples recorded over a variety of performance techniques \footnote{VSL Link}.
+In aggregate, the VSL contains over 400k sound recordings from more than 40 different instruments, both pitched and percussive.
+Sorting instrument classes by sample count yields 27 instruments with at least 5k samples; three of these instruments, however, are not reasonably distinct from other sources, e.g. ``flute-1'' and ``flute-2'', and discarded rather than risk introducing conflicting information.
+This decision yields the set of instruments contained in Table \ref{table:all_insts} for experimentation.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{raw_vsl_distribution.png}
-\caption{Raw distribution of instrument samples in the Vienna Symphonic Library.}
-\label{fig:muffin}
-\end{figure}
-
-
-\begin{equation}
-\nabla^2p = \frac{1}{c^2} \frac{\partial^2 p}{\partial t^2}
-\label{eq:wave}
-\end{equation}
-
-Muffin dragee caramels sweet pudding danish bonbon jelly-o \gls{tcap}.
-Dessert chocolate bar marzipan.
-Tiramisu cheesecake caramels cake lemon drops. Icing pastry lollipop marshmallow jujubes.
-Gingerbread carrot cake marzipan souffle halvah. Bear claw cheesecake toffee pie donut.
-Dessert pastry applicake biscuit caramels marzipan croissant muffin \ref{tab:things}.
 
 \begin{table*}[h]
 \begin{center}
 \caption{Instruments considered and their corresponding codes.}
 \begin{tabular}{l | c || l | c}
 Instrument & Code & Instrument & Code \\
-
 \hline
 French Horn & ho & Tuba & tu\\
 Violin & vi & Cimbasso & ci \\
@@ -323,13 +303,24 @@ Cello & vc & Bass & kb \\
 Bass Trumpet & bt & Soprano Saxophone & sxs \\
 Distorted Guitar & eg & Tenor Saxophone & sxt \\
 Flute & fl & Alto Flute & afl \\
-
 \hline
 \end{tabular}
 \label{tab:things}
 \end{center}
 \end{table*}
 
+
+The distribution of sound files for these instruments, grouped by class, is given in Figure \ref{fig:c24_dist}.
+As discussed previously, it is an inherent difficulty of pairwise similiarty models that the resulting relationships are limited by the number of unique classes considered.
+Fortunately, there is no added cost to considering a wider palette of sound sources here because the label information is objective.
+Therefore, building upon previous work \cite{Humphrey2011}, three configuration subsets are repeated from the pilot study as well as a fourth consisting of all 24 classes, given in Table \ref{table:configs}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{raw_vsl_distribution.png}
+\caption{Distribution of instrument samples in the Vienna Symphonic Library.}
+\label{fig:c24_dist}
+\end{figure}
 
 
 \begin{table*}[h]
@@ -338,30 +329,35 @@ Flute & fl & Alto Flute & afl \\
 \begin{tabular}{l | l }
 Key & Instrument Codes \\
 \hline
-
 c5 & tu, ob, klb, vc, fl \\
 c8 & trc, ho, ob, eh, klb, sxt, vi, vc \\
 c12 & c8 + \{tp, tu, fa, fl\} \\
 c24 & c12 + \{bp, akg, bt, eg, ci, pt, bkl, wt, kfa, kb, sxs, afl\} \\
-
 \hline
 \end{tabular}
 \label{tab:things}
 \end{center}
 \end{table*}
 
+For each instrument class, 5k samples are drawn, without replacement, to build a uniformly distributed collection.
+This step simplifies the process of data sampling during stochastic training of the network, which may be sensitive to class imbalances.
+The collection of instrument samples is stratified into five equal partitions for cross validation, used at a ratio of 3-1-1 for training, validation, and testing, respectively.
+The partitions are circularly rotated such that each is used as the test set once, i.e. (1, 2, 3)-4-5, (2, 3, 4)-5-1, and so on.
 
 
+\subsection{Quantitative Analysis}
 
-\noindent
-Icing cheesecake biscuit pudding marshmallow.
-Cake toffee fruitcake gummi bears.
-Macaroon macaroon lollipop marzipan.
-Ice cream tiramisu pie powder halvah.
+k-Nearest Neighbors classifier in sklearn.
+Transform the entirety of each split using the trained network.
+Sample a collection of points: 50k, 10k, 25k for train, validation, and test, respectively.
+Sweep k across the validation set for classifier selection.
+Use it for classification and ranked retrieval.
 
-
-
-
+For comparison, a similarly structured algorithm is constructed.
+Use linear discriminant analysis (LDA), given the parallels mentioned previously.
+However, LDA can exhibit odd behavior in high dimensional spaces, and projecting into a PCA subspace first can help alleviate these issues \cite{PCASubspace?}.
+Using the same input dimensions as the deep network, fit a whitened PCA transform to a large sample of the training set, reducing the dimensionality from 3840 to 256.
+After transforming the data, an LDA transform is also trained over the same sample.
 
 %train
 \begin{table*}[h]
@@ -503,3 +499,32 @@ vi &   0.49 &  0.23 &  0.61 &  2.44 &  0.46 &  1.20 &  2.46 &  0.48 &  2.05 &  0
 \label{tab:things}
 \end{center}
 \end{table*}
+
+
+\begin{table*}[h]
+\begin{center}
+\caption{Confusion Matrix -- (c12, pca-lda).}
+\scriptsize
+\begin{tabular}{ccccccccccccc}
+\hline
+     &    eh &    fa &   fl &    ho &   klb &    ob &   sxt &    tp &   trc &    tu &    vc &    vi \\
+\hline
+ eh  & \textbf{46.10} &  3.01 & 11.27 &  6.79 &  2.61 & 10.92 &  0.21 &  9.69 &  9.85 &  0.79 &  1.20 &  1.04 \\
+ fa  &  5.12 & \textbf{46.84} &  0.37 & 14.42 &  0.31 &  0.27 &  1.88 &  7.55 &  0.58 & 17.15 &  2.47 &  0.57 \\
+ fl & 13.33 &  1.62 & \textbf{20.82} &  6.93 &  4.01 & 17.74 &  1.79 &  4.26 & 16.32 &  1.63 &  2.10 &  1.85 \\
+ ho  &  5.45 & 19.49 &  2.11 & \textbf{43.53} &  1.77 &  0.29 &  0.94 & 15.47 &  1.38 &  7.51 &  1.53 &  4.70 \\
+ klb & 10.80 &  4.88 & 11.69 & 10.62 &  \textbf{9.04} &  9.61 &  4.84 &  5.47 & 11.99 &  6.51 &  7.96 &  5.07 \\
+ ob  & 15.45 &  0.40 & 17.80 &  1.67 &  3.09 & \textbf{31.93} &  0.56 &  2.42 & 19.92 &  0.69 &  0.81 &  2.14 \\
+ sxt &  0.48 &  2.77 &  2.28 &  3.62 &  2.33 &  0.97 & \textbf{47.47} &  1.40 &  3.45 &  9.48 & 14.48 & 15.77 \\
+ tp  & 15.98 &  9.58 &  6.45 & 19.43 &  2.02 &  5.74 &  0.52 & \textbf{18.93} &  9.42 &  4.33 &  1.15 &  2.07 \\
+ trc & 10.72 &  0.20 & 14.14 &  3.64 &  3.50 & 19.71 &  0.77 &  5.67 & \textbf{36.01} &  0.27 &  1.12 &  4.97 \\
+ tu  &  0.04 & 12.39 &  0.06 &  7.13 &  0.77 &  0.03 &  4.35 &  3.68 &  0.03 & \textbf{62.74} &  7.67 &  0.26 \\
+ vc  &  0.39 &  1.65 &  2.87 &  2.66 &  2.09 &  2.36 & 18.99 &  1.16 &  4.29 & 10.02 & \textbf{44.95} & 12.05 \\
+ vi  &  0.93 &  1.78 &  2.63 &  5.04 &  1.62 &  3.22 & 13.43 &  1.44 &  7.86 &  1.43 &  4.49 & \textbf{56.47} \\
+\hline
+\end{tabular}
+\label{tab:things}
+\end{center}
+\end{table*}
+
+\subsection{Ranked Retrieval}
