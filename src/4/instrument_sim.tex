@@ -279,7 +279,7 @@ Keep three conditions from the pilot study (c5, c8, c12), and one with all 24 cl
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.6\textwidth]{raw_vsl_distribution.png}
+\includegraphics[width=\textwidth]{raw_vsl_distribution.png}
 \caption{Raw distribution of instrument samples in the Vienna Symphonic Library.}
 \label{fig:muffin}
 \end{figure}
@@ -327,20 +327,22 @@ Flute & fl1 & Alto Flute & afl \\
 \begin{table*}[h]
 \begin{center}
 \caption{Instrument set configurations.}
-\begin{tabular}{l | c }
+\begin{tabular}{l | l }
 Key & Instrument Codes \\
 \hline
 
-c5 & tu, ob, klb, vc, fl1
-c8 & trc, ho, ob, eh, klb, sxt, vi, vc
-c12 & c8 + \{tp, tu, fa, fl1\}
-c24 & c12 + \{bp, akg, bt, eg, ci, pt, bkl, wt, kfa, kb, sxs, afl\}
+c5 & tu, ob, klb, vc, fl1 \\
+c8 & trc, ho, ob, eh, klb, sxt, vi, vc \\
+c12 & c8 + \{tp, tu, fa, fl1\} \\
+c24 & c12 + \{bp, akg, bt, eg, ci, pt, bkl, wt, kfa, kb, sxs, afl\} \\
 
 \hline
 \end{tabular}
 \label{tab:things}
 \end{center}
 \end{table*}
+
+
 
 
 \noindent
@@ -359,11 +361,14 @@ Ice cream tiramisu pie powder halvah.
 \caption{k-Neighbors classification results over the training set.}
 \small
 \begin{tabular}{rllll}
-      & c5             & c8             & c12            & c24            \\
+ model \textbackslash config  & c5    & c8   & c12  & c24  \\
 \hline
  0    & $93.81\pm0.53$ & $89.97\pm0.40$ & $86.70\pm0.39$ & $74.17\pm0.79$ \\
  0.25 & $94.21\pm0.18$ & $90.25\pm0.54$ & $87.17\pm0.35$ & $73.91\pm0.61$ \\
  0.5  & $93.04\pm0.29$ & $89.16\pm0.27$ & $86.08\pm0.26$ & $71.59\pm0.88$ \\
+ \hline
+ PCA-LDA & $64.44\pm0.47$ & $56.58\pm0.60$ & $47.22\pm0.45$ & $35.81\pm0.28$ \\
+
 \hline
 \end{tabular}
 \label{tab:things}
@@ -377,11 +382,13 @@ Ice cream tiramisu pie powder halvah.
 \small
 \begin{tabular}{rllll}
 \hline
-      & c5             & c8             & c12            & c24            \\
+model \textbackslash config & c5  & c8 & c12   & c24     \\
 \hline
  0    & $92.37\pm0.64$ & $87.94\pm0.45$ & $84.52\pm0.97$ & $70.86\pm1.51$ \\
  0.25 & $93.75\pm0.53$ & $88.62\pm0.58$ & $85.65\pm0.26$ & $71.46\pm0.63$ \\
  0.5  & $91.75\pm0.67$ & $87.78\pm0.85$ & $83.78\pm0.53$ & $66.37\pm1.69$ \\
+ \hline
+ PCA-LDA & $59.97\pm0.96$ & $52.49\pm2.68$ & $39.25\pm2.01$ & $24.32\pm0.97$ \\
 \hline
 \end{tabular}
 \label{tab:things}
@@ -396,11 +403,30 @@ Ice cream tiramisu pie powder halvah.
 \small
 \begin{tabular}{rllll}
 \hline
-      & c5             & c8             & c12            & c24            \\
+model \textbackslash config & c5  & c8  & c12   & c24   \\
 \hline
  0    & $92.49\pm0.41$ & $88.26\pm0.74$ & $84.35\pm0.41$ & $70.67\pm0.55$ \\
  0.25 & $92.97\pm0.41$ & $88.67\pm0.79$ & $85.16\pm0.24$ & $70.28\pm0.86$ \\
  0.5  & $91.96\pm0.35$ & $87.83\pm0.25$ & $84.04\pm0.57$ & $66.91\pm0.57$ \\
+ \hline
+ PCA-LDA  & $59.91\pm0.77$ & $50.24\pm1.52$ & $39.32\pm0.86$ & $24.77\pm0.51$ \\
+\hline
+\end{tabular}
+\label{tab:things}
+\end{center}
+\end{table*}
+
+
+\begin{table*}[h]
+\begin{center}
+\caption{Average Precision - micro}
+\begin{tabular}{rrrrr}
+\hline
+model \textbackslash config &    c5 &    c8 &   c12 &   c24 \\
+\hline
+ 0    & 98.24 & 95.96 & 93.3  & 80.34 \\
+ 0.25 & 98.36 & 96.18 & 93.75 & 79.81 \\
+ 0.5  & 97.84 & 95.64 & 92.98 & 76.65 \\
 \hline
 \end{tabular}
 \label{tab:things}
