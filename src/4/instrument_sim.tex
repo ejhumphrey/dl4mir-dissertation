@@ -265,9 +265,12 @@ Batches consisted of 100 comparisons, drawn such that a datapoint was paired wit
 Here's the explanation of what was done.
 What are the questions we want to address?
 
-- What is the impact of the the different margin ratios
-- How is the space organized
-- How does it compare to an LDA based system
+\begin{enumerate}
+\item What is the effect of using different margin ratios?
+\item How does this approach compare to other methods?
+\item How does the set of instrument considered impact the resulting embedding?
+\item How perceptually ``smooth'' is the resulting space?
+\end{enumerate}
 
 
 \subsection{Data}
@@ -419,7 +422,7 @@ model \textbackslash config & c5  & c8  & c12   & c24   \\
 
 \begin{table*}[h]
 \begin{center}
-\caption{Average Precision - micro}
+\caption{Average Precision - micro resulting from k-Neighbors classification.}
 \begin{tabular}{rrrrr}
 \hline
 model \textbackslash config &    c5 &    c8 &   c12 &   c24 \\
