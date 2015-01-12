@@ -266,9 +266,10 @@ Batches consisted of 100 comparisons, drawn such that a datapoint was paired wit
 % What are the questions we want to address?
 
 To assess the viability of data-driven nonlinear semantic embeddings for timbre similarity, and thus address the goals outlined at the outset of Section \ref{sec:timbre?}, two experiments are used to quantify different performance criteria.
-First, the local structure and class boundaries of the learned embeddings are explored using a simple k-nearest neighbor classifier and compared with another supervised dimensionality reduction algorithm.
-Second, global organization of the space is measured by a ranked retrieval task, again comparing to other methods.
+First, the local structure and class boundaries of the learned embeddings are explored with a classification task.
+Second, global organization of the space is measured by a ranked retrieval task.
 Additionally, in lieu of a subjective evaluation of perceptual ``smoothness'' of the resulting timbre space, the learned embeddings are investigated qualitatively.
+In each instance, the approach presented here is compared to a conceptually similar, albeit admittedly simpler, system.
 
 Finally, the formulation described in the previous section presents two system variables, thus giving rise to two additional considerations:
 
@@ -345,7 +346,22 @@ The collection of instrument samples is stratified into five equal partitions fo
 The partitions are circularly rotated such that each is used as the test set once, i.e. (1, 2, 3)-4-5, (2, 3, 4)-5-1, and so on.
 
 
+\subsection{Comparison Algorithm}
+
+For the purposes of comparison, a similarly motivated system is constructed using the combination of principal components analysis (PCA) and linear discriminant analysis (LDA).
+Previous work explored the application of PCA alone and locally linear embedding as alternative approaches to dimensionality reduction.
+Both are unsupervised methods, and do not make for the most fair comparison against a supervised neural network.
+LDA, however, is a supervised approach to dimensionality reduction, and shares at least a conceptual parallel to the proposed system, as discussed in previously in Section \ref{subsec:pairwise}.
+
+It is important to note though that LDA can exhibit odd behavior in high dimensional spaces, and projecting into a PCA subspace first can help alleviate these issues \cite{PCASubspace?}.
+Additionally, the cascade of PCA followed by LDA mimics a two-layer neural network, and is interchangable with the framework described here.
+Using the same input dimensions, $20\times192)$, a whitened PCA transform is fit to a large sample of the training set.
+The principal 256 components are preserved, based on an empirical exploration of the explained variance as well as a midway point in the dimensionality reduction of the system, i.e. the number of cofficients decreases near-equally between the PCA and LDA stages.
+After applying the PCA transform to the training sample, an LDA transform is fit to the same data and its corresponding instrument classes, yielding a 3-dimensional embedding.
+
+
 \subsection{Quantitative Analysis}
+
 
 k-Nearest Neighbors classifier in sklearn.
 Transform the entirety of each split using the trained network.
@@ -353,11 +369,7 @@ Sample a collection of points: 50k, 10k, 25k for train, validation, and test, re
 Sweep k across the validation set for classifier selection.
 Use it for classification and ranked retrieval.
 
-For comparison, a similarly structured algorithm is constructed.
-Use linear discriminant analysis (LDA), given the parallels mentioned previously.
-However, LDA can exhibit odd behavior in high dimensional spaces, and projecting into a PCA subspace first can help alleviate these issues \cite{PCASubspace?}.
-Using the same input dimensions as the deep network, fit a whitened PCA transform to a large sample of the training set, reducing the dimensionality from 3840 to 256.
-After transforming the data, an LDA transform is also trained over the same sample.
+
 
 %train
 \begin{table*}[h]
