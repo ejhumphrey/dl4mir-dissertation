@@ -608,3 +608,22 @@ This is a useful observation for determining early-stopping criteria in the disp
 
 \section{Conclusions}
 \label{sec:conclusions}
+
+In this chapter, an approach to building a computational model of timbre similarity was presented, which achieved three goals.
+First, the system is able to automatically learn relevant signal level features, circumventing the challenge posed by the lack of a constructive definition of timbre.
+Second, the resulting timbre space is semantically well-organized, as demonstrated by classification and ranked retrieval measures, and intuitive, based on a Euclidean notion of distance in a dimensionality that can be easily visualized.
+Lastly, the space is quantitatively smooth, such that what confusions exist correspond to instrument families or other like sounds.
+This was made possible by leveraging objective information about a collection of sound sources, eliminating the need for costly subjective ratings.
+Together, this approach to learning a timbre space shows promise for visualization and user-facing applications, such as the search and navigation of large sound libraries.
+
+That said, there is considerable future work to be considered.
+All evaluation performed here is quantitative, and arguably disconnected from all subjective experience.
+User studies would serve to further investigate the ideas of perceptual smoothness and if or how is obtained by the learned space.
+Additionally, though this approach is able to make use of objective instrument taxonomies, any similiarity space obtained through pairwise comparisons is always limited by the range of inputs considered.
+Therefore, in order to obtain a more general timbre space, a much wider set of sound sources would need to be considered.
+Conversely, the intended use case of such a system may provide a constrained palette with which to operate, e.g. instrument sounds for recording engineers and environmental sounds for computational ecologists.
+Finally, there are at least two other ways the sound source information could be used to train a system in a supervised manner.
+One, it may be advantageous to obtain subjective pairwise ratings not between all possible sounds, but rather groups or classes of sounds.
+These pairwise ratings could be used to train a system with soft, continuous-valued similarity ratings, rather than the binary comparison scores used here.
+Two, rather than defining an entire class to be similar, a hybrid approach to similiarity based on distance-based neighborhoods in the input space constrained to a single class may also lead to interesting embeddings.
+It is unlikely such an embedding would exhibit spherical clusters as was produced here, but points are likely to be more uniformly distributed, or diffuse, in space.
