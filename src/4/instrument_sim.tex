@@ -58,11 +58,18 @@ Additionally, researchers were limited by the kinds of stimuli they could create
 With the advent of computers and continued scientific advances through the 20th century, these issues could be addressed directly, and several researchers set out to identify the existence of fundamental dimensions.
 This work, perfomed by Plomp \cite{Plomp1976} Grey and Wessel \cite{Grey1979}, among others, adopted a similar experimental design.
 Human subjects are presented pairs of sound stimuli and asked to rate the similarity between the two.
-Having collected an exhaustive set of pairwise ratings from a number of participants, multi-dimensional scaling is then used to project the stimuli into a low-dimesional space such that the reported relationships between these datapoints are minimally distorted.
+Having collected an exhaustive set of pairwise ratings from a number of participants, multi-dimensional scaling is then used to project the stimuli into a low-dimesional space such that the reported relationships between these datapoints are minimally distorted; an example space is shown in Figure \ref{fig:grey_mds}.
 Using this similarity model, the researcher then considers a wide array of time-frequency signal statistics, or \emph{features}, in order to identify those that best correlate with the different dimensions.
 % Outcomes
 This approach has produced a useful, albeit large, set of features on which computational models have been constructed.
 Among the earliest were those of log-attack time, spectral centroid, and spectral spread, and were echoed later by other researchers, as in the work of Krumhansl \cite{}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{grey-mds.png}
+\caption{The resulting MDS model developed in the work of Grey and Wessel \cite{Grey1978}.}
+\label{fig:grey_mds}
+\end{figure}
 
 % This line of inquiry showed promise, and went on to inform much of how MIR approaches timbre and how such systems should be built.
 
@@ -92,68 +99,102 @@ This places a practical constraint on the generality of a timbre space, as it qu
 % - This is why we are where we are.
 
 
-\subsection{Computational Modeling}
+\subsection{Computational Modeling of Timbre}
 % Computational approaches and models
 % Short-time statistics
 Most previous approaches to computationally modeling timbre instantaneously can be grouped into one of two categories: signal statistics and basis projections.
-The first follows from the perceptual research of the later 20th century, whereby statistics representing higher level concepts are computed for their semantic merit.
+The first follows from the perceptual research described above, whereby specific features are designed to encode some high level semantic concept, e.g. log-attack time or spectral brightness.
 Initially these corresponded to the features named by in the work of Grey or Krumhansl, but have expanded over time to include a wide array of creative and clever measures.
 The interested reader is directed to \cite{Essid2006} for a comprehensive space of possible features.
 
-
 % Cascaded Transforms
-From an often complimentary perspective, other music researchers have designed transform-based systems to project signals into representations with various properties.
+From an often complimentary perspective, other music researchers have utilised transform-based approaches to project signals into representations with various desirable properties.
 One of the earliest and most common approaches is the use of Mel-frequency Cepstral Coefficients (MFCCs) for timbre-oriented tasks.
-Originally designed for speech coding purposes by Mermelstein in the 1960s \cite{Mermelstein}, the first significant contribution in MIR to call attention to these features was that of Logan in 2000 \cite{Logan}.
-MFCCs have, if not in reality then at least in practice, become synonymous with timbre-centric MIR, now being used in an innumerable number of systems for instrument classification \cite{}, tagging \cite{}, genre prediction \cite{}, mood estimation \cite{} or structural analysis \cite{}, to name only a few representative works in each.
-The general process of computing MFFCs is given in Figure and proceeds as follows: an input audio signal is divided into overlapping, short-time \emph{frames}, on the order of tens to hundreds of milliseconds; a filterbank, perceptually scaled in frequency, is then applied to each short-time frame and log-compressed; finally, a discrete cosine transform (DCT) is applied to these frequency coefficients, characterizing the shape of the spectrum (or the spectrum of the spectrum, referred to rather cheekily as the \emph{ceps}trum).
+Originally designed for speech coding by Mermelstein et al in the 1960s \cite{Mermelstein}, the first significant contribution in MIR to call attention to MFCCs as useful music features was that of Logan in 2000 \cite{Logan}.
+MFCCs have, at least in practice, become nearly synonymous with timbre-centric MIR, now being used in a wide array of systems for instrument classification \cite{}, tagging \cite{}, genre prediction \cite{}, mood estimation \cite{} or structural analysis \cite{}, to name only a few representative works in each.
+As described in detail in Chapter \ref{chapter:context}, the general process of computing MFFCs proceeds as follows: an input audio signal is divided into overlapping, short-time \emph{frames}, on the order of tens to hundreds of milliseconds; a filterbank, perceptually scaled in frequency, is then applied to each short-time frame and log-compressed; finally, a discrete cosine transform (DCT) is applied to these frequency coefficients, characterizing the shape of the spectrum (or the spectrum of the spectrum, referred to as the \emph{ceps}trum).
 Often only the first dozen or so coefficients are used in practice on the principle that they capture the most relevant information, though this is more convention than rule.
+Some have even gone so far as to literally \emph{equate} MFCCs and timbre, concluding that specific coefficients are responsible for various perceptual dimensions \cite{Teresawa2007}.
 
 % Machine learning approaches
-Similar in principle, though less widely used, is to instead \emph{learn} the set of bases over which the spectrum is projected.
-For exaple, the approach taken by Jehan \cite{Jehan2005}, which preserves the first 12 coefficients of a trained PCA decomposition.
-In this instance, the projection into the PCA subspace attempts to decorrelate the principal axes of the data in the input space, like the Discrete Cosine Transform.
-The primary difference here, however, is that the bases are learned from a sample of observations.
+Similar in principle, though less widely adopted, is to instead \emph{learn} the set of bases against which a time-frequency representation is projected.
+One such instance is observed in the work Jehan \cite{Jehan2005}, which preserves the first 12 coefficients of a trained PCA decomposition.
+In this scenario, the projection into the PCA subspace serves to decorrelate the principal axes of the data in the input space, much like the Discrete Cosine Transform.
+The primary difference here, however, is that the bases are learned from a sample of observations, rather than defined analytically.
+
+
 
 \subsection{Motivation}
 
 % Motivation for similarity
-While many of these approaches have proven useful in various classification tasks, none directly result in a notion of timbre similarity, a useful concept in a variety of scenarios.
-The search and navigation of large sound libraries is one such instance, where sparse metadata and text-based queries often reduce the task of navigating a sound library to that of an exhaustive, brute force search.
-The inherent difficulty of finding a target sound in a potentially massive collection of items lies in the inability to capture the specific query semantically, relying instead on metaphors; distorted guitars are described as `crunchy' or trumpets `bright.'
+While many computational approaches have proven useful for various classification or recognition tasks, none directly result in a notion of timbre similarity, a useful concept with a variety of applications.
+% Search with sound; avoids the challenge of articulating queries linguistically.
+One notable instance is the difficulty faced in the search and navigation of large sound sample libraries.
+Queries are predominantly forced to take the form of text, as in the Freesound archive shown in
+Figure \ref{fig:freesound}, which is problematic for at least two reasons.
+On one hand, it can challenging to describe a specific query semantically, and often metaphors and figurative language are used to relate the experience of a sound; a distorted guitar might be referred to as `crunchy', or a trumpet as `bright.'
+Conversely, this kind of descriptive language is far from standardized and varies in meaning from one individual to the next.
+Furthermore, such descriptions are not always associated with every sound in a collection, and typically only at the granularity of the entire recording.
+As a result, the task of navigating a sound library is ofetn reduced to that of an exhaustive, brute force search.
 
-User interfaces
-Composition and
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{freesound.png}
+\caption{Screenshot of the Freesound.org homepage. Immediately visible are both the semantic descriptors ascribed to a particular sound (left), and the primary search mechanism, a text field (right).}
+\label{fig:freesound}
+\end{figure}
+
+% Representation for efficient search and retrieval; approximate nearest neighbors, LSH
+The development of a robust timbre space would not only make it possible to search for sounds with sounds, bypassing the linguistic intermediary, but also facilitate the ranking of potentially relevant results by providing a notion of distance.
+% User interfaces and visualization
+This concept of a metric timbre space is also particularly attractive in the realm of user interfaces and visualization.
+Euclidean distance is an intuitve interaction paradigm, and visualization would allow for acoustic information to be understood in an alternative representation.
+% Artistic Exploration and Composition
+The ability to explore familiar ideas from an unfamiliar perspecive holds considerable merit for artistic exploration and new approaches to composition.
+
+
 
 \subsection{Limitations}
-Failing to adopt a clear definition of timbre does not relieve you of inherently operating on one.
-The work presented here is not intended to be synonomous with timbre, and is subject in many ways to the limitations named in previous perceptual research; a timbre space is achieved as a result of the inputs considered, and will likely fail on sufficiently novel stimuli.
-% Additionally, you can't learn everything.
+
+It is valuable to note that despite the difficulty inherent to defining timbre, all computational research must adopt some working concept of it, implicitly or otherwise.
+The work presented here operates on the assumption that the perception of timbre is tightly coupled with the experience of discriminating between unique sound sources.
+This is not intended to be a true equivalence with timbre, but a functional approximation that allows the research to proceed.
+
 
 
 \section{Learning Timbre Similarity}
 \label{sec:timbre_embedding}
 
-From the previous review of psychoacoustics research and efforts to computationally model timbre, there are two important conclusions to draw:
-first, classic timbre features are subject to the wisdom that ``corellation does not imply causation'';
-and second, these features are ultimately bounded by the creativity, insight, or dilligence of a researcher.
-Synthesizing these observations with the discussion from Chapter \ref{chapter:context}, there is a clear argument for feature learning in timbre-related tasks.
+From the previous review of psychoacoustics research and efforts to computationally explain timbre, there is an important series of observations to consider.
+Classic timbre features are manually crafted through an involved process of inspection and exploration.
+When discovered, the knowledge gleaned is truly only valid in the context of the sound sources considered.
+As a result, the process should really be replicated for different sonic palettes, which is far from scalable.
+Furthermore, the subjective data necessary to conduct this kind of research are costly to obtain.
+Synthesizing with the discussion from Chapter \ref{chapter:context}, this argument makes a strong case for feature learning in timbre similarity tasks.
 
-Having discussed the value and applications of a timbre similarity space, it is worthwhile to outline the goals for such a system.
+Having discussed the value and applications of computational timbre similarity space, it is worthwhile to outline the goals for such a system.
 First and foremost, one would learn, rather than design, signal-level features relevant to achieve the given task and circumvent the issues identified previously.
-% This idea is based on the combination of an inability to clearly define the sensory phenomenon and the known caveats of previous perceptual studies.
+This idea is based on the combination of an inability to clearly define the sensory phenomenon, while affording the flexibility to change the space of timbres considered.
 Additionally, sound should be represented in an intuitive manner, such that distance between points is semantically meaningful.
 In other words, signals from the same source should be near-neighbors, whereas sounds from different sources should be far apart.
 % Come back to how we show this in the methodology.
 Finally, the ideal similarity space is perceptually \emph{smooth}, meaning that a point that interpolates the path between two others should be a blend of the two, e.g. a tenor saxophone might fall between a clarient and a French horn.
 
-These objectives have clear conceptual overlap with dimensionality reduction methods and instrument classification systems, on which this work builds.
+These objectives share conceptual overlap with dimensionality reduction methods and instrument classification systems, on which this work builds.
 In lieu of precise information regarding the relationship between two given sounds, music instrument classes are used as a proxy for timbre similarity.
-The approach presented here consists of several parts, as diagrammed in Figure \ref{fig:nlse}, and discussed in the following subsections.
+The approach presented here consists of four components, as diagrammed in Figure \ref{fig:nlse}, and discussed in the following subsections.
 First, all audio is transformed into a time-frequency representation (Subsection \ref{subsec:timbre_tfr}).
 The main component of the system is a deep convolutional network, which maps tiles of these time-frequency coefficients into a low-dimensional space (Subsection \ref{subsec:timbre_deepnet}).
 A pairwise training harness is made by copying this network, and parameters are learned by minimizing the distance between observations of the same sound source and maximizing the distance otherwise (Subsection \ref{subsec:timbre_pairwise}).
 At test time, the pairwise harness is discarded, and the resulting network is used to project inputs to the learned embedding space.
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{nlse_system.pdf}
+\caption{Diagram of the proposed system: a flexible neural network is trained in a pairwise manner to minimize the distance between similar inputs, and the inverse of dissimilar ones.}
+\label{fig:nlse}
+\end{figure}
 
 
 \subsection{Time-Frequency Representation}
