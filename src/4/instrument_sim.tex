@@ -51,37 +51,38 @@ The perception of timbre falls under the umbrella of \emph{psychoacoustics}, a t
 Some of the earliest research in psychoacoustics was pioneered by von Helmholtz in his inquiries into the sensations of pitch and loudness \cite{Cook1995?}.
 Inquiries specific to timbre would not come until much later, due to two difficulties in experimental design.
 One, whereas pitch and loudness are predominantly one dimensional, it is unclear from personal introspection what the salient dimensions of timbre might be.
-A subject might describe a sound as being ``brighter'' than another, but signal analysis is necessary to begin to determine why.
+A subject might describe a sound as being ``brighter'' than another, but signal analysis is a critical tool in beginning to determine why.
 Additionally, researchers were limited by the kinds of stimuli they could create and use in perceptual experimentation, and thus were constrained in the space of possible parameters to explore.
 
 % Psychology and psychoacoustics in the 1960-90s
 With the advent of computers and continued scientific advances through the 20th century, these issues could be addressed directly, and several researchers set out to identify the existence of fundamental dimensions.
 This work, perfomed by Plomp \cite{Plomp1976} Grey and Wessel \cite{Grey1979}, among others, adopted a similar experimental design.
-Human subjects were presented pairs of sound stimuli and asked to rate the pairwise similarity between the two.
-Having collected a number of ratings from a number of participants, multi-dimensional scaling was used to project the stimuli into a low-dimesional space that preserved the given relationships.
-At this point, the researcher would then turn to spectral analysis to identify possible charateristics of the stimuli that might correlate with the different dimensions of the resulting projection.
-This approach proved relatively fruitful, yielding a variety of signal-level statistics, or \emph{features}, found to correspond positively with subjective ratings.
-Conclusions drawn from this work suggested features such as log-attack time, spectral centroid, and spectral spread, and were echoed later, as in the work of Krumhansl \cite{}.
-This line of inquiry showed promise, and went on to inform much of how MIR approaches timbre and how such systems should be built.
+Human subjects are presented pairs of sound stimuli and asked to rate the similarity between the two.
+Having collected an exhaustive set of pairwise ratings from a number of participants, multi-dimensional scaling is then used to project the stimuli into a low-dimesional space such that the reported relationships between these datapoints are minimally distorted.
+Using this similarity model, the researcher then considers a wide array of time-frequency signal statistics, or \emph{features}, in order to identify those that best correlate with the different dimensions.
+% Outcomes
+This approach has produced a useful, albeit large, set of features on which computational models have been constructed.
+Among the earliest were those of log-attack time, spectral centroid, and spectral spread, and were echoed later by other researchers, as in the work of Krumhansl \cite{}.
+
+% This line of inquiry showed promise, and went on to inform much of how MIR approaches timbre and how such systems should be built.
 
 % Deficiencies
-%  - at the mercy of researcher ingenuity to find good features
 %  - subjective ratings are limited by the space of stimuli used
-However, more recent work identifies two issues with this approach to timbre research \cite{Glennon2014}.
-First, as stated by Caclin et al., ``Given the multiplicity of acoustical parameters that could be proposed to explain perceptual dimensions, one can never be sure that the selected parameters do not merely covary with the true underlying parameters.'' \cite{Caclin2005}.
-This statement can be interpreted in two related ways:
-one, the space of parameters considered is bounded by the insight and ingenuity of the researcher;
-and two, it is possible that a chosen parameter covaries with the true, but unobserved, parameter.
-Second, the utility of a timbre space resulting from MDS is limited to the space of stimuli with which it was obtained.
-In other words, factors of variance not captured by the sonic palette used as stimuli are unlikely to be encoded in the resulting dimensions.
+%  - researcher must dig in to find different features for every model
+%  - costly to obtain ratings
+More recently, however, some have begun to recognize a few shortcomings of this approach to timbre research \cite{Glennon2014}.
+First, a timbre space derived from the multidimensional scaling of pairwise ratings is limited to the sonic palette used to produce it, and the inclusion of additional stimuli is likely to rearrange how the space is organized.
+For instance, the MDS model for a collection of orchestral instruments will be quite different with and without considering electronic synthesizers.
+This also has significant implications on the granularity of sounds considered.
+In \cite{Krumhansl1980?}, the attack and sustained regions of a sound were considered separately, resulting in slightly different MDS models.
+Additionally, concatenating the attack of one instrument with the sustained portion of another would cause a subject to perceive only the attack instrument.
+Second, the process of finding well-correlated features to explain the resulting MDS model is difficult and time consuming.
+A researcher must repeat the involved process of feature exploration for every model obtained through a different combination of stimuli.
+Furthermore, as noted by Caclin et al., ``Given the multiplicity of acoustical parameters that could be proposed to explain perceptual dimensions, one can never be sure that the selected parameters do not merely covary with the true underlying parameters.'' \cite{Caclin2005}.
+In other words, correlation does not imply causation, and features identified by inspection entail some degree of uncertainty.
+Finally, the process of collecting subjective pairwise ratings is especially costly, because the number of possible comparisons increases quadratically with number of unique stimuli considered.
+This places a practical constraint on the generality of a timbre space, as it quickly becomes impossible for subjects to exhaustively rate all combinations.
 
-There is also a concern regarding the degree to which conclusions resulting from research on subjective pairwise ratings might be generalized.
-Typically, stimuli used in such experiements are synthetic to the point of unnatural \cite{Teresawa2007?} or chosen from a space of instrument sounds.
-In the latter case, familiarity with such sounds have the potential to bias subjects away from a purely perceptual rating.
-Finally, the perpection of timbre undoubtedly has a time-varying characteristic, but much research focuses on timbre as a stationary phenomena.
-Some, like \cite{Krumhansl1980?}, have considered the attack and sustained regions of a sound separately, finding that instrument identification was possible from either portion.
-However, by concatenating the attack of one instrument with the sustained portion of another, it was demonstrated that a subject would perceive only the attack instrument, effectively masking the signature survived in the sustain.
-Such a finding illustrates that the perception of timbre not only varies over small time scales, but is dependent on context and the sequential ordering of events.
 
 %Synthesizing this brief survey of timbre perception research into some kind of workable defintion, timbre is a time-varying quality of sound, akin to texture in the visual domain.
 % Referred to by Landy as a \emph{second-order percept}, texture is the emergent property
