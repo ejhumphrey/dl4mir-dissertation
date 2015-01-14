@@ -6,11 +6,15 @@
 \chapter{Timbre Similarity}
 \label{chp:timbre}
 
-Timbre is a difficult attribute to define in acoustic perception.
-Research has long sought to better understand the latent dimensions, in the hope of developing methods that can estimate the pairwise similarity between observations.
-In lieu of adequate information to study this phenomenon directly, here instrument taxonomies are used as an approach to objectively define such relationships.
-A non-linear semantic embedding is achieved by training a deep convolutional network to project time-frequency representations of audio into a low-dimensional, semantically organized space.
-The discriminative properties of the resulting embeddings are explored, and the notions of timbral smoothness are investigated qualitatively.
+% Context
+Timbre has proven to be a difficult attribute to define in acoustic perception, and there is little concensus as result in its underpinnings or the efforts to model it computationally.
+% Purpose
+Psychoacoustics has long sought to better understand the space of timbre using subjective pairwise ratings between acoustic stimuli, but this information is costly to obtain and the generalizability of conclusions ultimately dependent on the palette of sounds considered.
+% Goal
+This chapter explores an objective, data-driven approach to the development of relative timbre spaces as a scalable alternative to this line of research.
+% Approach / how
+Here, instrument taxonomies are used to as a proxy for timbre similarity, and a deep convolutional network is used to project time-frequency representations of audio into a low-dimensional, semantically organized space.
+The quality of the resulting embeddings is demonstrated through a series of experiments, indicating that this approach shows significant promise for organizing large collections of audio samples by timbre.
 
 
 \section{Context}
@@ -627,3 +631,29 @@ One, it may be advantageous to obtain subjective pairwise ratings not between al
 These pairwise ratings could be used to train a system with soft, continuous-valued similarity ratings, rather than the binary comparison scores used here.
 Two, rather than defining an entire class to be similar, a hybrid approach to similiarity based on distance-based neighborhoods in the input space constrained to a single class may also lead to interesting embeddings.
 It is unlikely such an embedding would exhibit spherical clusters as was produced here, but points are likely to be more uniformly distributed, or diffuse, in space.
+
+
+% Reflections
+% ----------
+
+% need to better distinguish between relative and absolute information
+% use the language of mathematical sets to describe.
+% absolute knowledge exists in the context of everything, while relative knowledge exists in the context of a subset of everything
+
+% what do we want? general timbre similarity spaces?
+% probably not going to get it though.
+% we can at least explore an approach that is easily adapted to different scenarios
+
+% transforming MDS rating to knowledge is difficult and it takes skilled and insightful individuals to do well
+
+
+% here's the thing about previous work
+% pairwise ratings are fine, and the discovered coefficients might even correspond with the dimensions recovered from pairwise ratings.
+% however, they're only valid for those sounds considered.
+% therefore, every time the sonic palette changes, you need to (a) get pairwise ratings and (b) validate the signal level features.
+% featuers from MDS embeddings isn't a predictive model, it's an explanatory one.
+% so generalization is shot.
+% additionally, not only is subjective data expensive to collect, the cost is quadratic for pairwise models
+
+% the big win here is (a) a predictive model that can be applied to unseen data and (b) it leverages objective information, which is cheaper to obatain and plentiful.
+% this places the model in a larger context.
