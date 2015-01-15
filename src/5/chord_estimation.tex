@@ -1,7 +1,3 @@
-
-% this file is called up by thesis.tex
-% content in this file will be fed into the main document
-
 %: ----------------------- introduction file header -----------------------
 % the code below specifies where the figures are stored
 \graphicspath{{5/figures/}}
@@ -9,12 +5,20 @@
 \chapter{Automatic Chord Estimation}
 \label{chp:chord_estimation}
 
+% Context / Purpose
+The previous chapter was able to reformulate timbre similarity as a well-defined task that used objective information for development and evaluation.
+Automatic chord recognition, one of the oldest subtopics in the field of content-based MIR, embodies nearly the polar opposite scenario, being rather ill-defined and depending on subjective information almost exclusively.
+As such, it provides an interesting case study with which to test the limits of deep learning.
+% Goal
+In addition to the standard objective of looking to advance the state of the art in a chosen application domain, this chapter seeks to explore the limitations of deep learning as applied to complex music intelligence task.
+A thorough investigation serves to not only offer insight into the application of deep learning methods to future problems in content-based MIR, but also culminate in a better understanding of the chord estimation task itself.
+
+
 \section{Context}
 \label{sec:context}
 
-% Timbre, though hard to define, is relatively constrained
-Though a satisfactory definition remains elusive, it is important to recognize that the perception of timbre is tightly coupled with its physical acoustic stimulus.
-Similar to the perception of pitch or loudness, all information necessary to model human experience is contained within the signal representation.
+To understand the chord estimation task is to understand the language of chords.
+
 These kinds of low-level percepts are literal in nature, especially when compared to more abstract concepts like artist recognition or estimating tension.
 As it is a particular goal of this work to explore how deep learning methods can be applied to the murky waters of music analysis, we now turn our attention to the problem of automatically transcribing chords from polyphonic music recordings.
 
