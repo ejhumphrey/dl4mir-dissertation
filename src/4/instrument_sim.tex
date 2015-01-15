@@ -64,10 +64,10 @@ Using this similarity model, the researcher then considers a wide array of time-
 This approach has produced a useful, albeit large, set of features on which computational models have been constructed.
 Among the earliest were those of log-attack time, spectral centroid, and spectral spread, and were echoed later by other researchers, as in the work of Krumhansl \cite{}.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
 \includegraphics[width=0.8\textwidth]{grey-mds.png}
-\caption{The resulting MDS model developed in the work of Grey and Wessel \cite{Grey1978}.}
+\caption{The resulting MDS model developed in the work of Grey and Wessel.}
 \label{fig:grey_mds}
 \end{figure}
 
@@ -111,7 +111,7 @@ The interested reader is directed to \cite{Essid2006} for a comprehensive space 
 From an often complimentary perspective, other music researchers have utilised transform-based approaches to project signals into representations with various desirable properties.
 One of the earliest and most common approaches is the use of Mel-frequency Cepstral Coefficients (MFCCs) for timbre-oriented tasks.
 Originally designed for speech coding by Mermelstein et al in the 1960s \cite{Mermelstein}, the first significant contribution in MIR to call attention to MFCCs as useful music features was that of Logan in 2000 \cite{Logan}.
-MFCCs have, at least in practice, become nearly synonymous with timbre-centric MIR, now being used in a wide array of systems for instrument classification \cite{}, tagging \cite{}, genre prediction \cite{}, mood estimation \cite{} or structural analysis \cite{}, to name only a few representative works in each.
+MFCCs have, at least in practice, become nearly synonymous with timbre-centric MIR, now being used in a wide array of systems for instrument classification \cite{anyone}, tagging \cite{anyone_else}, genre prediction \cite{jesus}, mood estimation \cite{schmidt} or structural analysis \cite{levy}, to name only a few representative works in each.
 As described in detail in Chapter \ref{chapter:context}, the general process of computing MFFCs proceeds as follows: an input audio signal is divided into overlapping, short-time \emph{frames}, on the order of tens to hundreds of milliseconds; a filterbank, perceptually scaled in frequency, is then applied to each short-time frame and log-compressed; finally, a discrete cosine transform (DCT) is applied to these frequency coefficients, characterizing the shape of the spectrum (or the spectrum of the spectrum, referred to as the \emph{ceps}trum).
 Often only the first dozen or so coefficients are used in practice on the principle that they capture the most relevant information, though this is more convention than rule.
 Some have even gone so far as to literally \emph{equate} MFCCs and timbre, concluding that specific coefficients are responsible for various perceptual dimensions \cite{Teresawa2007}.
@@ -137,7 +137,7 @@ Conversely, this kind of descriptive language is far from standardized and varie
 Furthermore, such descriptions are not always associated with every sound in a collection, and typically only at the granularity of the entire recording.
 As a result, the task of navigating a sound library is ofetn reduced to that of an exhaustive, brute force search.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{freesound.png}
 \caption{Screenshot of the Freesound.org homepage. Immediately visible are both the semantic descriptors ascribed to a particular sound (left), and the primary search mechanism, a text field (right).}
@@ -163,7 +163,7 @@ This is not intended to be a true equivalence with timbre, but a functional appr
 
 
 \section{Learning Timbre Similarity}
-\label{sec:timbre_embedding}
+\label{sec:timbre_similarity}
 
 From the previous review of psychoacoustics research and efforts to computationally explain timbre, there is an important series of observations to consider.
 Classic timbre features are manually crafted through an involved process of inspection and exploration.
@@ -189,7 +189,7 @@ A pairwise training harness is made by copying this network, and parameters are 
 At test time, the pairwise harness is discarded, and the resulting network is used to project inputs to the learned embedding space.
 
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
 \includegraphics[width=0.8\textwidth]{nlse_system.pdf}
 \caption{Diagram of the proposed system: a flexible neural network is trained in a pairwise manner to minimize the distance between similar inputs, and the inverse of dissimilar ones.}
@@ -224,9 +224,9 @@ The final two layers are fully-connected affine transformations, the latter of w
 The first four hidden layers use a hyperbolic tangent as the activation function, while the visible output layer is linear, i.e. it has no activation function in the conventional sense.
 
 Hyperbolic tangents are chosen as the activation function for the hidden layers purely as a function of numerical stability.
-It was empirically observed that randomly initialized networks designed with rectified linear units instead were near impossible to train; it is hypothesized that, due to the relative nature of the learning problem, i.e. the network must discover an equilibrium for the training data, it is easy for the parameters to be pushed into a space where all activations go to zero, collapsing the network.
-Conversely, hyperbolic tangents are everywhere-differentiable, and did not suffer the same behavior.
-The use of activation functions that provide an error signal everywhere, such as sigmoids or ``leaky'' rectified linear units \cite{Maas2014}, or better parameter initialization might avoid this behavior, but neither were explored here.
+It was empirically observed that randomly initialized networks designed with rectified linear units instead were near impossible to train; perhaps due to the relative nature of the learning problem, i.e. the network must discover an equilibrium for the training data, the parameters were routinely pulled into a space where all activations would go to zero, collapsing the network.
+Conversely, hyperbolic tangents, which saturate and are everywhere-differentiable, did not suffer the same fate.
+It is possible that the use of activation functions that provide an error signal everywhere, such as sigmoids or ``leaky'' rectified linear units \cite{Maas2014}, or better parameter initialization might avoid this behavior, but neither are explored here.
 
 Combining the successful application of linear ``bottleneck'' layers \cite{Liao2013} with lessons learned from previous efforts \cite{Humphrey2011}, the visible layer is chosen here to be linear.
 As will be discussed in more detail shortly, a saturating nonlinearity at the output makes the choice of hyperparameters crucial in order to prevent the network from pushing datapoints against the limits of its space.
@@ -239,16 +239,16 @@ shape $(1, 5, 13)$ and max-pooling with shape $(2, 2)$; the second convolutional
 layer uses 40 filters with shape $(20, 5, 11)$ and max-pooling with shape $(2,
 2)$; the third convolutional layer uses 80 filters with shape $(1, 1, 9)$ and
 max-pooling with shape $(2, 2)$; the fourth layer is fully-connected and has 256
-outputs; the final layer is also fully connected, and has 3 outputs.
+output coefficients; the final layer is also fully connected, and has 3 output coefficients.
 
 
 \subsection{Pairwise Training}
 \label{subsec:timbre_pairwise}
 
 % Relative vs absolute
-As discussed previously, there are currently no known quantities with which to measure timbre, in the same way that fundamental frequency has Hertz or loudness decibels.
-In the absence of this absolute reference, previous efforts have instead tried to determine the relative relationships between a collection of observations.
-Collecting this data subjectively quickly becomes prohibitive, as the number of pairwise comparisons to be made increases quadradically with the total number of observations considered.
+Briefly summarizing a previous point, there are currently no known quantities with which to measure timbre, in the same way that fundamental frequency has Hertz or loudness decibels.
+In the absence of this absolute reference, previous efforts have instead tried to determine the relative relationships between a collection of subjective ratings.
+Collecting this data subjectively for a large number of sources quickly becomes prohibitive, as the number of pairwise comparisons to be made increases quadradically with the total number of observations considered.
 Music instruments, however, provide an interesting source of objective information for this problem.
 Based on the coarse approximation that all sounds produced by a single instrument are in some sense similar, regardless of pitch or loudness, class boundaries can be used to define a neighborhood of similar timbres.
 
@@ -258,81 +258,85 @@ This approach to defining timbre ``neighborhoods'' can be used to extend the wor
 Referred to by the authors as ``dimensionality reduction by learning an invariant mapping'' (DrLIM), a deep network was trained in a pairwise manner to minimize the distance between ``similar'' data points in a learned, nonlinear embedding space, and vice versa.
 Similarity was determined in an unsupervised manner by linking the $k$-nearest neighbors in the input space.
 Though left as future work, the authors propose that other information, such as class relationships, might be levereaged to learn different embeddings.
-This is an important consideration for the problem of timbre, because fundamental frequency and amplitude are likely to dominate the graph of nearest neighbors in the input space.
+This is an important consideration for the problem of timbre, because fundamental frequency and amplitude are likely to dominate the graph of nearest neighbors defined in the input space alone.
 
 The intution behind DrLIM is both simple and satisfying: datapoints that are deemed ``similar'' should be close together, while those that are ``dissimilar'' should be far apart.
 Though the precise distance metric is a flexible design decision, it is used here in the Euclidean sense.
-A collection of similar and dissimilar relationships can be viewed as a physical system of attractive and repulsive forces.
-Learning proceeds by finding a balance of these contrasting forces; and furthermore, this analogy illustrates the need for both positive and negative forces to maintain equilibrium.
+A collection of similar and dissimilar relationships can be understood by analogy to a physical system of attractive and repulsive forces, where learning proceeds by finding a balance between them; and furthermore, this analogy illustrates the need for contrasting forces to achieve equilibrium.
 
 % This first sentence blows, come back to this.
 At its core, DrLIM is ultimately a pairwise training strategy.
-First, a parameterized, differentiable function, $f(\dot | \Theta)$, e.g. a neural network, is designed for a given problem; for the purposes of dimensionality reduction, the output will be much smaller than the input, and typically either 2 or 3 for the purposes of visualization.
-During training, the function $f$ is copied and parameters, $\Theta$, \emph{shared} between both, such that $f_1(\dot | Theta) == f_2(\dot | Theta)$.
+First, a parameterized, differentiable function, $f(\dot | \Theta)$, e.g. a neural network, is designed for a given problem; in the case of dimensionality reduction, the output will be much smaller than the input, and typically either 2 or 3 for the purposes of visualization.
+During training, the function $f$ is copied and parameters, $\Theta$, \emph{shared} between both, such that $f_1(\dot | \Theta) == f_2(\dot | \Theta)$.
 Two inputs, $X_1$ and $X_2$, are transformed by their respective functions, $f_1$ and $f_2$, to produce the outputs, $Z_1$ and $Z_2$.
 A metric, e.g. Euclidean, is chosen to compute a distance, $D$ between these outputs.
 Finally, a similarity score, $Y$, representing the relationship between $X_1$ and $X_2$, is passed to a contrastive loss function, which penalizes similar and dissimilar pairs differently.
 When the pair is similar, the loss will be small when the distance is small; for dissimilar pairs, the loss will be small when the distance is outside a given margin, $m$.
-This is expressed symbolically by the following:
+This formal definition is summarized symbolically by the following:
 
 
-\begin{equation}
+\begin{align*}
 Z_1 = f_1(X_1 | Theta), Z_2 = f2(X_2 | Theta)\\
 D = || Z_1 - Z_2 ||_2\\
-\mathcal{L} = Y * D^2 + (1 - Y) * max(0, m - D)^2\\
-\end{equation}
+\mathcal{L}_{sim} = D^2\\
+\mathcal{L}_{diff} = max(0, m_{diff} - D)^2\\
+\mathcal{L} = Y * \mathcal{L}_{sim} + (1 - Y) * \mathcal{L}_{diff} \\
+\end{align*}
 
-\noindent~Note that similarity is given by $Y=1$, for consistency with boolean logic.
+\noindent Note that similarity is given by $Y=1$, for consistency with boolean logic.
 As a result, the first term of the loss function is only non-zero for similar pairs, and the inverse is true for the second term.
 
 %Training strategy
 Returning to the previous discussion regarding the dynamic range of the output layer, it should now be clear that the choice of margin only influences the learned embedding relative to a scale factor when the output is unbounded.
-The two loss terms are mirrored parabolas, and changing the margin, or horizontal offset, only serves to move the vertical line at which they reflect, and not the curvature of the space.
-In fact, this observation encourages a simple generalization of this loss function, where a second margin is introduced:
+The two loss terms are mirrored parabolas, and changing the margin, or horizontal offset, only serves to shift the vertical line about which they reflect.
+The curvature, and thus the gradient, of the loss function is left unchanged.
+This observation encourages a simple generalization of this loss function, where a second margin is introduced to the ``similar'' loss term:
 
-\begin{equation}
-\mathcal{L} = Y * max(0, D - m_{sim})^2 + (1 - Y) * max(0, m_{diff} - D)^2 \\
-\end{equation}
+\begin{align*}
+\mathcal{L}_{sim} = max(0, D - m_{sim})^2\\
+\mathcal{L}_{diff} = max(0, m_{diff} - D)^2\\
+\mathcal{L} = Y * \mathcal{L}_{sim} + (1 - Y) * \mathcal{L}_{diff} \\
+\end{align*}
 
 % This generalized square-square loss is shown in Figure \ref{fig:double_margin} for various margin values.
-Whereas the differential margin controls the variance of all points in space, the similar margin will control the variance of a similarity neighborhood.
+Whereas the differential margin controls the spread of all points in space, the similar margin will control the spread of a similarity neighborhood.
 In the original formulation, where implicitly $m_{sim} = 0$, the loss is lowest when all inputs are mapped to \emph{exactly} the same point; for the purposes of similarity, a more diffuse distribution of points is desirable.
-It is worth noting the slight parallel to linear discriminant analysis, which seeks to minimize intraclass variance and maximize interclass variance.
-Given the relative nature of this trade-off, it is sufficient to pick a single ratio between the margins, eliminating the need to vary both hyperparameters.
+It is worth noting the slight parallel to linear discriminant analysis, a statistical method that seeks to jointly minimize intraclass variance and maximize interclass variance.
+Given the relative nature of this trade-off, it is sufficient to pick a single ratio between the margins, eliminating the need to vary both hyperparameters separately.
 
 
 In practice, training proceeded via minibatch stochastic gradient descent with a constant learning rate, set at 0.02 for 25k iterations, or until a batch returned a total loss of zero.
 Batches consisted of 100 comparisons, drawn such that a datapoint was paired with both a positive and negative example.
 
 
-\section{Experimental Methodology}
-\label{sec:example}
+\section{Methodology}
+\label{sec:methodology}
 
 % Here's the explanation of what was done.
 % What are the questions we want to address?
 
-To assess the viability of data-driven nonlinear semantic embeddings for timbre similarity, and thus address the goals outlined at the outset of Section \ref{sec:timbre?}, two experiments are used to quantify different performance criteria.
+To assess the viability of data-driven nonlinear semantic embeddings for timbre similarity, and thus address the goals outlined at the outset of Section \ref{sec:timbre_similarity}, two experiments are used to quantify different performance criteria.
 First, the local structure and class boundaries of the learned embeddings are explored with a classification task.
 Second, global organization of the space is measured by a ranked retrieval task.
-Additionally, in lieu of a subjective evaluation of perceptual ``smoothness'' of the resulting timbre space, the learned embeddings are investigated qualitatively.
+Additionally, in lieu of a subjective evaluation of perceptual ``smoothness'' of the resulting timbre space, the learned embeddings are investigated through confusion analysis and visualization.
 In each instance, the approach presented here is compared to a conceptually similar, albeit admittedly simpler, system.
 
 Finally, the formulation described in the previous section presents two system variables, thus giving rise to two additional considerations:
 
 \begin{enumerate}
 \item What is the effect of using different margin ratios?
-\item How does the set of instruments considered impact the learned embedding?
+\item How does the sonic palette considered impact the learned embedding?
 \end{enumerate}
 
 
 \subsection{Data}
-The data source used herein is drawn from the Vienna Symphonic Library (VSL), a truly massive collection of studio-grade orchestral instrument samples recorded over a variety of performance techniques \footnote{VSL Link}.
+The data source used herein is drawn from the Vienna Symphonic Library (VSL), a truly massive collection of studio-grade orchestral instrument samples recorded over a variety of performance techniques\footnote{\url{https://vsl.co.at/en}}.
 In aggregate, the VSL contains over 400k sound recordings from more than 40 different instruments, both pitched and percussive.
 Sorting instrument classes by sample count yields 27 instruments with at least 5k samples; three of these instruments, however, are not reasonably distinct from other sources, e.g. ``flute-1'' and ``flute-2'', and discarded rather than risk introducing conflicting information.
 This decision yields the set of instruments contained in Table \ref{table:all_insts} for experimentation.
 
 
-\begin{table*}[h]
+\begin{table*}[t]
 \begin{center}
 \caption{Instruments considered and their corresponding codes.}
 \begin{tabular}{l | c || l | c}
@@ -352,7 +356,7 @@ Distorted Guitar & eg & Tenor Saxophone & sxt \\
 Flute & fl & Alto Flute & afl \\
 \hline
 \end{tabular}
-\label{tab:things}
+\label{tab:all_insts}
 \end{center}
 \end{table*}
 
@@ -360,9 +364,9 @@ Flute & fl & Alto Flute & afl \\
 The distribution of sound files for these instruments, grouped by class, is given in Figure \ref{fig:c24_dist}.
 As discussed previously, it is an inherent difficulty of pairwise similiarty models that the resulting relationships are limited by the number of unique classes considered.
 Fortunately, there is no added cost to considering a wider palette of sound sources here because the label information is objective.
-Therefore, building upon previous work \cite{Humphrey2011}, three configuration subsets are repeated from the pilot study as well as a fourth consisting of all 24 classes, given in Table \ref{table:configs}.
+Therefore, building upon previous work \cite{Humphrey2011}, three configuration subsets are repeated from the pilot study as well as a fourth consisting of all 24 classes, given in Table \ref{table:palette}.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{raw_vsl_distribution.png}
 \caption{Distribution of instrument samples in the Vienna Symphonic Library.}
@@ -370,7 +374,7 @@ Therefore, building upon previous work \cite{Humphrey2011}, three configuration 
 \end{figure}
 
 
-\begin{table*}[h]
+\begin{table*}[t]
 \begin{center}
 \caption{Instrument set configurations.}
 \begin{tabular}{l | l }
@@ -382,7 +386,7 @@ c12 & c8 + \{tp, tu, fa, fl\} \\
 c24 & c12 + \{bp, akg, bt, eg, ci, pt, bkl, wt, kfa, kb, sxs, afl\} \\
 \hline
 \end{tabular}
-\label{tab:things}
+\label{tab:palette}
 \end{center}
 \end{table*}
 
@@ -394,9 +398,9 @@ The partitions are circularly rotated such that each is used as the test set onc
 
 \subsection{Margin Ratios}
 
-Though the pairwise training strategy described in Section \ref{subsec:pairwise} consists of two margin hyperparameters, it is ultimately the ratio between the two that governs how the space will be shaped.
+Though the pairwise training strategy described in Section \ref{subsec:timbre_pairwise} consists of two margin hyperparameters, it is ultimately the ratio between the two that governs how the space will be shaped.
 In isolation, the exact choice of dissimilar term's margin, $m_{diff}$, is inconsequential and determines the radius of the bounding sphere.
-Going forward, this value is arbitrarily fixed to $\sqrt{12}$, corresponding to the radius of the sphere that intersects the coordinate $(2, 2, 2)$.
+Going forward, this value is fixed to $\sqrt{12}$, corresponding to the radius of the sphere that intersects the coordinate $(2, 2, 2)$.
 Moving the similar term's margin, $m_{same}$, relative to this value will lead to different embeddings, and three ratios of $m_{same}:m_{diff}$ are considered here: 0, $\frac{1}{4}$, and $\frac{1}{2}$.
 The corresponding loss functions are shown in Figure \ref{fig:margins}.
 
@@ -415,7 +419,7 @@ The corresponding loss functions are shown in Figure \ref{fig:margins}.
 For the purposes of comparison, a similarly motivated system is constructed using the combination of principal components analysis (PCA) and linear discriminant analysis (LDA).
 Previous work explored the application of PCA alone and locally linear embedding as alternative approaches to dimensionality reduction.
 Both are unsupervised methods, and do not make for the most fair comparison against a supervised neural network.
-LDA, however, is a supervised approach to dimensionality reduction, and shares at least a conceptual parallel to the proposed system, as discussed in previously in Section \ref{subsec:pairwise}.
+LDA, however, is a supervised approach to dimensionality reduction, and shares at least a conceptual parallel to the proposed system, as mentioned briefly in Section \ref{subsec:timbre_pairwise}.
 
 It is important to note though that LDA can exhibit odd behavior in high dimensional spaces, and projecting into a PCA subspace first can help alleviate these issues \cite{PCASubspace?}.
 This subspace projection is further motivated by computational efficiency concerns, where the input dimensionality is prohibitive to training.
@@ -425,9 +429,9 @@ The principal 256 components are preserved, based on an empirical exploration of
 After applying the PCA transform to the training sample, an LDA transform is fit to the same data and its corresponding instrument classes, yielding a 3-dimensional embedding.
 
 
-\subsection{Quantitative Analysis}
+\subsection{Experimental Results}
 
-As an initial quantitative inquiry, trained models are tested on a classification task using the k-Nearest Neighbors classifier in scikit-learn\footnote{}.
+As an initial quantitative inquiry, trained models are tested on a classification task using the k-Nearest Neighbors classifier in scikit-learn\footnote{\url{http://scikit-learn.org/stable/}}.
 First, networks are trained across the 4 instrument configurations, 3 margin ratios, and 5 folds, and all data are projected into the resulting embedding space.
 From here, a collection of points are sampled from each parition --50k, 10k, 25k-- for training, validation, and test, respectively.
 The training set is used to fit the classifier, while the validation set is used to identify an optimal setting for the parameter $k$, corresponding to the number of neighbors considered in the decision rule.
@@ -450,7 +454,7 @@ Classification accuracy is then computed across all three sets, and tallied acro
 
 \hline
 \end{tabular}
-\label{tab:things}
+\label{tab:train}
 \end{center}
 \end{table*}
 
@@ -469,7 +473,7 @@ config & c5  & c8 & c12   & c24     \\
  PCA-LDA & $59.97\pm0.96$ & $52.49\pm2.68$ & $39.25\pm2.01$ & $24.32\pm0.97$ \\
 \hline
 \end{tabular}
-\label{tab:things}
+\label{tab:valid}
 \end{center}
 \end{table*}
 
@@ -488,7 +492,7 @@ config & c5  & c8  & c12   & c24   \\
  PCA-LDA  & $59.91\pm0.77$ & $50.24\pm1.52$ & $39.32\pm0.86$ & $24.77\pm0.51$ \\
 \hline
 \end{tabular}
-\label{tab:things}
+\label{tab:test}
 \end{center}
 \end{table*}
 
@@ -498,7 +502,7 @@ Most striking is the performance discrepancy between the NLSE and the PCA-LDA mo
 Previous work demonstrated a significant margin between the unsupervised dimensionality reduction methods, and this result shows that the difference is indeed a function of complexity, not just the supervised learning process.
 To a lesser extent, all models show some degree of over-fitting, but the effect is more severe for the PCA-LDA model than any NLSE.
 Somewhat surprisingly, using a non-zero similiarty margin leads to slightly better classification results than the centered loss function.
-One explanation for such behavior is that introducing a small degree of freedom within a class may allow it to more easily form non-spherical or irregular shapes within the zero-loss volume afforded by the margin.
+One explanation for such behavior is that introducing a small region of zero-loss within a class may allow the network to emphasize dissimilar relationships more as training proceeds.
 It would appear too much freedom, on the other hand, leads to fuzzy boundaries between classes and begins to compromise local structure.
 
 
@@ -555,7 +559,7 @@ vc &   0.27 &  0.53 &  0.24 &  1.51 &  0.79 &  0.49 &  2.68 &  0.27 &  0.63 &  2
 vi &   0.49 &  0.23 &  0.61 &  2.44 &  0.46 &  1.20 &  2.46 &  0.48 &  2.05 &  0.41 &  2.06 & \textbf{87.32} \\
 \hline
 \end{tabular}
-\label{tab:things}
+\label{tab:confmat_nlse}
 \end{center}
 \end{table*}
 \end{landscape}
@@ -609,24 +613,35 @@ vi &   0.49 &  0.23 &  0.61 &  2.44 &  0.46 &  1.20 &  2.46 &  0.48 &  2.05 &  0
  vi  &  0.93 &  1.78 &  2.63 &  5.04 &  1.62 &  3.22 & 13.43 &  1.44 &  7.86 &  1.43 &  4.49 & \textbf{56.47} \\
 \hline
 \end{tabular}
-\label{tab:things}
+\label{tab:confmat_pcalda}
 \end{center}
 \end{table*}
 \end{landscape}
 
-Though more confusions are to be expected in the PCA-LDA model, given the classification accuracy, it is important to note that these errors are distributed across all classes.
+Though more confusions are to be expected in the PCA-LDA model, given the classification accuracy, it is important to note that these errors are distributed across all classes, regardless of pairwise relationships.
 This higher noise-floor indicates that the instruments' distribution exhibit a good deal of overlap in space.
-The plots given in Figure \ref{fig:sample_scatter} confirm this conclusion visually, where samples are shown for all models in the c12 configuration.
 Some logical confusions seem unavoidable, such as french horn (ho) and trombone (tp), or flute (fl) and oboe (ob), occuring in both models.
 The former makes sense given common instrument families, i.e. brass, while the latter likely arises from the upper range of the instruments, which has fewer harmonics.
+
 
 Other instrument relationships also appear to confound some element of pitch height in similarity, particularly for the PCA-LDA model.
 This is observed in the confusions between tuba, bassoon, and French horn.
 In the NLSE model, tuba is confused with French horn more often than bassoon; for the PCA-LDA model, however, the inverse is true.
 Intutively, the two brass instruments should share the higher confusion rate, and thus pitch is being used by the LDA model as a feature with which to distinguish between classes.
-The convolutional model, on the other hand, is forced to embrace a considerable amount of pitch invariance.
+The convolutional model, on the other hand, is forced to embrace a considerable amount of pitch invariance, and is prevented from making the same error.
 
-% Perhaps look at the distribution of pitches per instrument?
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{embeddings_0x25.pdf}
+\caption{Embeddings of clarinet (blue circles), oboe (green diamonds), and cello (red squares) observations across models trained with the four different instrument configurations.}
+\label{fig:embeddings_0x25}
+\end{figure}
+
+To help demonstrate the semantic organization of the learned embedding, 3D scatter plots are given in Figure \ref{fig:embeddings_0x25} following observations of the three instruments common to all configurations --clarinet, oboe, cello-- across the different embeddings for $m = 0.25$.
+Other instruments are displayed as semi-transparent black, to clearly highlight the three instruments of interest while giving an impression of the overall space.
+The main takeaways from this visualization are two-fold.
+First, the various sonic palettes used to learn the embedding result in different organizations of points in space.
+That said, the relationship between the three sources is relatively consistent, as the cluster of clarinet always sits between oboe and cello.
 
 
 To further test the semantic organziation of the learned embeddings, the outputs are used as features for a ranked retrieval task, using Euclidean distance as a scoring function.
@@ -636,10 +651,10 @@ Recall-precision curves are computed using the scikit-learn toolkit and averaged
 \centering
 \includegraphics[width=\textwidth]{rp_curves.pdf}
 \caption{Recall-Precision curves over the four instrument configurations.}
-\label{fig:margins}
+\label{fig:rp_curves}
 \end{figure}
 
-Given the classification accuracy and confusion matrices above, the discrepancies between the NLSE and PCA-LDA models is unsurprising.
+Given the classification accuracy and confusion matrices above, the performance gap between the NLSE and PCA-LDA models is unsurprising.
 Still, it is interesting to consider what the shape of these recall-precision curves indicates.
 The two characteristics to observe are the concavity of the contour and the ``knee'' at which it breaks downward.
 In all instrument configurations, with the slight exception of ``c5'', the NLSE models and the PCA-LDA model exhibit opposite second-derivatives.
