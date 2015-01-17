@@ -234,9 +234,9 @@ Though similar in principle to that of Figure \ref{fig:expanded_major}, this exa
 \subsection{Chord Syntax}
 \label{sec:chord_syntax}
 
-It is a pragmatic but ultimately necessary prerquisite step to define a standard syntax for consistently referencing and describing chords.
+It is a pragmatic but ultimately necessary prerquisite step to define a standard notation for consistently referencing and describing chords.
 Much of the pioneering work in this space was performed by Harte \cite{Harte2010}, and many of these conventions are utilized here.
-For clarity, we stylize chords in this syntax with a fixed-width font, e.g. \texttt{A:min}.
+Going forward, chords expressed in this scheme are stylized with a fixed-width font, e.g. \texttt{A:min}.
 
 Firstly, Harte's general chord notation is described by the following four-part symbolic description:
 
@@ -244,9 +244,9 @@ Firstly, Harte's general chord notation is described by the following four-part 
 \{r\}:\{q\}(i)/\{b\}
 \end{equation}
 
-\noindent Every chord name begins with a root $r$ in the form of a valid pitch class, optionally modified by zero or more sharps or flats, or one of two reserved characters: \texttt{N} for the ``null'' no-chord condition, or \texttt{X} for the special case in which the musical content cannot be described harmonically.
+\noindent Every chord name begins with a root $r$ in the form of a pitch class, optionally modified by zero or more sharps or flats, or one of two reserved characters: \texttt{N} for the ``null'' no-chord condition, or \texttt{X} for the special case in which the musical content cannot be described harmonically.
 
-The root name is potentially followed by a quality shorthand, $q$, separated by a colon and implying a particular set of note intervals.
+The root is potentially followed by a quality shorthand, $q$, separated by a colon and implying a particular set of note intervals.
 Though there are a large number of possible chord qualities, this is often limited to a particular subset in practice.
 Those considered in this work are indicated in the following table:
 
@@ -279,13 +279,13 @@ Half-diminished 7 & \texttt{hdim7} & $\{0, 3, 6, 10\}$ \\
 The third field provides an interval set, $i$, wrapped by parentheses.
 In practice, there are two reasons for representing information intervallically.
 One such instance is, through a combination of additional degrees and asterisks, the modification of a quality shorthand in order to represent a non-standard, but related, chord.
-An example of this might be the chord name \texttt{A:min(\*b3, 7)}, which means that the minor third ($C$) is absent, but a major 7 ($A\flat$) has been added.
-The other instance occurs when the intervals are certain but the quality is ambiguous, such as \texttt{C:(1, 5)}; note that this is a valid spelling of the chord shown in Figure \ref{fig:powerchord_context}.
+An example of this might be the chord name \texttt{A:min(\*b3, b7)}, which means that the minor third ($C$) is absent, but a minor 7 ($G$) has been added.
+The other instance occurs when the intervals are certain but the spelling is ambiguous, such as \texttt{C:(1, 5)}. %; note that this is a valid spelling of the chord shown in Figure \ref{fig:powerchord_context}.
 
 The final field of this chord syntax is the bass interval, $b$, which indicates the scale degree at the bottom of the chord.
-Typically this is also the root of the chord, and is implied in the absence of an explicit bass interval.
+Typically this is also the root of the chord, and is implied as such in the absence of an explicit bass interval.
 However, it is necessary to state that the scale degrees of the chord --given by the quality shorthand and the interval set-- can be further augmented by the inclusion of a bass interval.
-For example, the chords \texttt{C:maj/b7} and \texttt{C:7} would be understood as containing the same pitch classes, but are spelled quite differently.
+For example, the chords \texttt{C:maj/b7} and \texttt{C:7} would be understood as containing the same pitch classes, but are spelled differently.
 
 
 \subsection{Motivation}
@@ -319,52 +319,39 @@ Beginners will likely prefer simple or more common descriptions, whereas experts
 
 \subsection{Limitations}
 \label{subsec:limitations}
-% automatically transcribing chords from polyphonic music recordings.
-
-In lieu of a general, perhaps impossible, definition of ``music'', we instead arrive at a confined concept through a set of constraints.
-Here, we are primarily interested in the tradition of tonal Western music, with a particular focus on popular contemporary music from the last century, built upon a 12-Tone Equal Temperament (12-TET) tuning system.
-Furthermore, music typically lives in two domains: one, \emph{symbolic}, in the form of scores, MIDI, or countless other forms of abstract musical representations; and two, rendered via synthesis as \emph{sound signals}, which may be transmitted through physical space as acoustic waves or stored in a persistent state as static information, e.g. a sound recording.
-% Framed in this way, this work is concerned with the machine audition of music, whereby sound signals are transformed into some form of symbolic notation.
-
-% Dimensions of music
-Continuing, it can be said that there are three fundamental dimensions to this kind of music:
-
-\begin{itemize}
-\item Rhythm: the understanding of loudness as a function of time.
-\item Harmony: the understanding of pitch as a function of time.
-\item Timbre: the understanding of sources as a function of time.
-\end{itemize}
-
-In all three dimensions, observable signal qualities give rise to sensory percepts.
-``Loudness'' is defined as the phenomena whereby sound stimuli can be compared with respect to intensity, and is closely related to signal power.
-Orthogonally,
-Lastly, and in spite of timbre's ambiguous nature, we constrain it here to mean the phenomena by which concurrent voices may be identified and differentiated in a single sound stimulus.
-
-% Historical context -> Harmonic analysis
-Contextualizing briefly, theorists have long sought to characterize musical works via analysis and reduction as a means to understanding.
-With sound recording being a relatively modern invention on the timescale of music history, much effort to this end has been invested in the analysis of symbolic notation, or scores.
-%, which cleanly delineate the three dimensions described previously; an example of this is given in Figure \ref{fig:notated_music}.
-Evolving over time from the counterpoint of J. S. Bach to the functional analysis of Heinrich Schenker or more recently Fred Lehrdal, traditional musical analysis revolves heavily around the harmonic facets of a musical piece by marginalizing the dimensions of rhythm and timbre.
-As a result, the harmonic language of ``chords'' developed as a rich yet compact vocabulary to describe a piece of music; an instance of such a harmonic analysis is given in Figure \ref{fig:notated_music}.
 
 % Limitations
-It should be acknowledged that such an inquiry is subject to certain limitations, and there are two worth mentioning here.
-The first derives from the philosophical limits of objective truth in an inherently subjective task.
-As outlined previously, the definition of a chord is open to interpretation, and may be influenced by individual experience, degree of skill, and intended purpose.
-This begs a potentially damning question: What hope is there for an automatic algorithm if you can't define your concepts?
-Furthermore, ``expert'' annotations used in the development and evaluation of computational systems is based on the assumption that all subjects apply the same rules to some unknown degree of consistency.
+It should be acknowledged that such an inquiry is subject to certain limitations, and there are several that should be discussed.
+% Scope of music considered
+First and foremost, this work is primarily interested in the tradition of tonal Western music, with a particular focus on popular contemporary music from the last century, in 12-TET.
+% Historical context -> Harmonic analysis
+Within this large body of content, the use of harmony and the language of chords has steadily evolved over time.
+Contextualizing briefly, music theorists have long sought to characterize musical works via analysis and reduction as a means to understanding.
+With sound recording being a relatively modern invention on the timescale of music history, much effort to this end has been invested in the analysis of symbolic notation, or scores.
+From the counterpoint of J. S. Bach to the functional analysis of Heinrich Schenker or more recently Fred Lehrdal, traditional musical analysis revolves heavily around the harmonic facets of a musical piece by marginalizing the dimensions of rhythm and timbre.
+As a result, the harmonic language of ``chords'' developed as an expressive, yet compact, vocabulary with which one might describe a piece of music harmonically.
+Western pop music, however, is not wont to consider the rules of conventional tonal theory or compose by traditional means.
+Therefore efforts to understand the former in the language of the latter is ultimately limited by the validity of this applied knowledge.
 
-The second notable limitation is related to the validity and relevance of chords as a means to describe musical content.
-Even in the constrained space of Western tonal music set forth here, not all musical works will be well-described by the language of harmonic analysis.
-Therefore a chord transcription may be a poor approach toward representing such a piece of music.
-In some cases an alternative approach to analysis, such as voice leading, might make more sense; in others, such as rap or math rock, a lack of clearly structured harmonic content may arguably render the goal of harmonic analysis altogether irrelevant.
+% -- previous blurb--
+%  still good, but redundant?
+% -------------------
+% The last notable limitation is related to the validity and relevance of chords as a means to describe musical content.
+% Even in the constrained space of Western tonal music set forth here, not all musical works will be well-described by the language of harmonic analysis, and thus chords may be a clumsy language with which to describe such music.
+% In some cases an alternative approach to analysis, such as voice leading, might make more sense; in others, such as rap or math rock, a lack of clearly structured harmonic content may arguably render the goal of harmonic analysis altogether irrelevant.
+% As a result, the application of, or conclusions resulting from, this inquiry can only be considered valid within this scope.
+
+This realization encourages due consideration of the philosophical limits of objective truth in an inherently subjective task.
+As outlined previously, the definition of a chord is open to interpretation, and one's understanding of a harmonic phrase may be influenced by individual experience, degree of skill, and intended purpose.
+Furthermore, the methodology of using ``expert'' annotations in the development and evaluation of computational systems is based on the assumption that all experts share one perspective.
 
 
 \section{Previous Efforts in Automatic Chord Estimation}
 \label{sec:background}
 
-In this section, we attempt to develop a formal defintion of the automatic chord estimation task, and detail the standard methodology used by the research community.
-We then close with a brief survey of the state of the art and the apparent trajectory of the research topic.
+% TODO: This is paltry....
+This section attempts to develop a formal defintion of the automatic chord estimation task, and detail the standard methodology used by the research community.
+It closes with a brief survey of the state of the art and the apparent trajectory of the research topic.
 
 
 \subsection{Problem Formulation}
