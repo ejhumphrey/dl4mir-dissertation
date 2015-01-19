@@ -20,7 +20,6 @@ A thorough investigation serves to not only offer insight into the application o
 In this section, the prerequisite knowledge necessary to appreciate a thorough treatment of automatic chord estimation systems is addressed.
 % Concepts - Build an understanding of musical harmony
 First, a basic review of Western tonal theory sets out to define key music concepts, and thus provides a language with which to discuss the problem.
-% To understand the chord estimation task is to understand the language of chords.
 % Practical considerations - Chord syntax
 This is followed by a brief outline of the syntax used here to compactly notate chords.
 % Motivation -- why
@@ -35,11 +34,13 @@ Finally, known limitations are detailed to contextualize both assumptions and an
 
 % Acoustics and perceptions -- pitch, tones, octaves, frequency
 % -------------------------
-To get to the top, start at the bottom.
+To understand the chord estimation task is to understand the concepts on which it is built.
+% To get to the top, start at the bottom.
 The most atomic unit in the acoustic realm of chords is a \emph{tone}, defined here as a pitched sound object.
 Pitch is defined as the perceptual phenomena whereby a sound stimulus can be matched to the frequency of a pure sinusoid, known as the fundamental frequency.
 As a result, sounds can be naturally ordered by fundamental frequency on a scale from low to high.
 An \emph{octave} is defined as the doubling of a quantity, and exhibits a special relationship in human perception by which two tones, differeing in fundamental frequency by an integer power of 2, are perceived as being similar; this phenomena is referred to as octave equivalence \cite{?}.
+% Pitch helix here?
 
 % Notes and tuning systems
 % ------------------------
@@ -49,7 +50,7 @@ The relationship between notes and tones in 12-TET is defined by the following:
 
 \begin{equation}
 \label{eq:tuning}
-f_{pitch} = f_{tuning} * 2 \exp((n_{index} - 48) / N)
+f_{pitch} = f_{tuning} * 2 \exp(\frac{n_{index} - 48}{N})
 \end{equation}
 
 \noindent where $N$ is the number of notes per octave, $n_{index}$ is an integer note index, $f_{tuning}$ is the reference frequency, in Hertz, on which , and $f_{pitch}$ is the fundamental frequency, in Hertz, of the corresponding tone.
@@ -138,7 +139,7 @@ These scales are known as each other's relative major and minor, respectively, a
 Proceeding from scales, a \emph{chord} is classically conceived as a simultaneous grouping of notes.
 One of the most important chord types in Western tonal theory is the \emph{triad}, on which many other theoretical constructs are built.
 Comprised of three notes, a triad is built by taking the second and fourth scale degrees from a chosen starting point, referred to as the root.
-In the C-major scale, this looks like the following:
+For example, this expansion is given for the C-major scale in Table \ref{tab:major_triads}.
 
 \begin{table}[h!]
 \begin{center}
@@ -162,18 +163,18 @@ I & Major & \{0, 4, 7\} & \{+4, +3\}\\
 
 For a given chord, the \emph{root} is defined as the home note on which the intervals are stacked, and the \emph{quality} determined by the relationship of the intervals to the root.
 An interval of 4 semitones is known as a \emph{major third} and 3 semitones a \emph{minor third}, sharing a commonality with the third scale degree of the major and minor scales, respectively.
-Therefore, the chords I-vi are named for their intersection with corresponding scales; the vii$^\circ$ chord, however, is named as such because it contains two minor thirds.
+Therefore, the qualities of the first six chords in the table are named for their relationship with the corresponding major and minor scales; the vii$^\circ$ chord, however, is named differently because it contains two minor thirds.
 
 % Key
 % ---
 Sharing much common ground with scales and chords, a \emph{key} identifies a point of harmonic stability in reference to a tonic and its corresponding triad.
-As a result, the keys conventionally take one of the pitch classes and either a major or minor quality, e.g. $E-major$ or $C\sharp-minor$.
+Accordingly, the keys conventionally take one of the pitch classes and either a major or minor quality, e.g. $E-major$ or $C\sharp-minor$.
 Key is integral to the discussion here, because its impression or expectation establishes a harmonic framework with which to parse musical information, leading to the understanding of notes and intervals as they relate to scales and chords.
 
 
 % Attempts to define a chord
 While much of this theory can be detailed specifically, real music is by no means so well behaved.
-In practice, unfortunately, the very definition of a ``chord'' is open to some interpretation and no singular definition exists.
+As a result, the practical definition of a ``chord'' is open to some interpretation, and may take multiple meanings.
 For example, \cite{McVicar2013} collects three possible definitions, restated here:
 
 \begin{enumerate}
@@ -183,25 +184,25 @@ For example, \cite{McVicar2013} collects three possible definitions, restated he
 \end{enumerate}
 
 % Pitch and notes
-Alternatively, \cite{Harte2010} expands the scope of (2) in order to describe all tonal music, ``allow[ing] a chord to comprise zero or more notes.''
+Additionally, \cite{Harte2010} expands the scope of (2) in order to describe all tonal music, ``allow[ing] a chord to comprise zero or more notes.''
 The various flavors of defintions begs an obvious question: what makes the concept of a chord so hard to pin down?
 
 % Chord composition
-Much of this difficulty stems from the fact that the significance of a pitch collection by notes alone.
-As a result, chords are named according to three criteria: its root, its contributing intervals, and its overall relationship to the key.
-Therefore, as we will shortly see, a chord can easily take a different name if any of these decisions are changed or reweighted.
+Much of this difficulty stems from the fact that the relative importance of the individual notes in a collection may change in different contexts.
+In practice, a chord is named based on three subjective criteria: its root, its contributing intervals, and how these two relate to the key.
+Therefore, as will be shown shortly, a chord can easily take a different name if any of these decisions are changed or reweighted.
 % A ``root'' is the note in a chord that serves as a point of \emph{internal} harmonic stability; conversely, a ``key'' is itself a chord which serves as a point of \emph{external} harmonic stability.
 
 % Why is it so hard to define a chord? Let's look at some examples
-Having briefly reviewed Western tonal theory, a deeper understanding of the variation inherent to defining a chord can be obtained by exploring a few specific, if simple, examples.
-The one invariant property shared by all defintions named previously is the idea that a pitch collection may be understood as a single object.
+Having briefly reviewed Western tonal theory, a deeper understanding of the variation inherent to defining a chord can be obtained by exploring a few simple examples.
+The one invariant property shared by all defintions named previously is the idea that a pitch collection may be understood as a single harmonic object.
 The time span over which this phenomena may unfold, however, is flexible.
 To illustrate the point, consider the three bars notated in Figure \ref{fig:expanded_major}, where a major chord is written as a true simultaneity, an arpeggiation, and as an series of non-overlapping quarter notes, respectively.
 In this instance, the degree of overlap in time is expanded until it no longer exists, and yet the collection of notes continues to function as a coherent harmonic object.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
-\includegraphics[width=5in]{expanded_major}
+\includegraphics[width=0.8\textwidth]{expanded_major}
 \caption{writeme}
 \label{fig:expanded_major}
 \end{figure}
@@ -209,37 +210,38 @@ In this instance, the degree of overlap in time is expanded until it no longer e
 On the other hand, as shown in Figure \ref{fig:nonchord_tones}, the simultaneous sounding of different notes does not necessarily give rise to the perception of different chords.
 Here, a major triad is sustained under the first several degrees of its scale.
 While three notes in the upper voice are contained in the C-major triad, the others --the D, F, and A-- are referred to as ``nonchord'' tones.
-These ``extra'' notes are explained away in the overall harmonic scene, as they fall on metrically weak beats, are comparatively short in duration, and quickly move to notes in the chord.
-As a result, these embellishments do not contribute to the harmonic center of the phrase, and the bar can still be understood as a stable C-major chord.
-
+These extra notes are explained away in the overall harmonic scene, as they fall on metrically weak beats, are comparatively short in duration, and quickly move to notes that \emph{are} in the chord.
+These embellishments do not contribute to the harmonic center of the phrase, and the bar can still be understood as a stable C-major chord.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=3in]{nonchord_tones}
+\includegraphics[width=0.8\textwidth]{nonchord_tones}
 \caption{writeme}
 \label{fig:nonchord_tones}
 \end{figure}
 
-A last example, shown in Figure \ref{fig:fifths_context}, demonstrates the role that context and the perception of key can play on the understanding of a chord.
-Here, a major and minor scale descend to identical pitch combinations, consisting of the tonic, fifth, and octave scale degrees.
-Therefore, even though the chords are absent their third scale degree, they will be perceived as having the quality of the preceding context, being major and minor respectively.
-Though similar in principle to that of Figure \ref{fig:expanded_major}, this example serves to demonstrate that ambiguous simultaneities can be resolved by incorporating contextual information.
+A last example, shown in Figure \ref{fig:mthomework}, demonstrates the level of complexity and inherent subjectivity that may arise in the process of describing real music with chords.
+Referred to as \emph{harmonic analysis}, this exercise is performed in an effort to understand the harmonic content in a theoretical manner.
+Here, an excerpt of a score has been analyzed, with chords notated under the original parts.
+Even in this instance, where the individual is able to operate directly on the symbolic representation, it is common to find alternate interpretations of the same musical content.
+Conversely, annotations resulting from sound recordings, as opposed to a score, are referred to as \emph{chord transcriptions}.
+Often the recording itself is the only musical artifact to consider, introducing even more room for subjectivity.
 
-% Real music on the other hand, like the first system of a Beethoven string quartet given in Figure \ref{fig:beethoven}, can be remarkably complex and require a good deal of expertise to complete a formal analysis of the score.
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\textwidth]{practicekey2.jpg}
+\caption{A sample harmonic analysis, performed as a music theory exercise.}
+\label{fig:mthomework}
+\end{figure}
+
+
 % Skilled musicans are quite robust in the ability to assign chord labels to musical scenes despite an occasionally opaque decision making process, and it is an exciting challenge to produce a computational system with a similar capacity.
-% However, as discussed in the following section, the topic is also motivated by a long research tradition in MIR.
 
-% \begin{figure}[!t]
-% \centering
-% \includegraphics[width=5in]{beethoven}
-% \caption{writeme}
-% \label{fig:beethoven}
-% \end{figure}
 
 \subsection{Chord Syntax}
 \label{sec:chord_syntax}
 
-It is a pragmatic but ultimately necessary prerquisite step to define a standard notation for consistently referencing and describing chords.
+It is a pragmatic, but ultimately necessary, preliminary step to define a standard syntax for compactly notating chords.
 Much of the pioneering work in this space was performed by Harte \cite{Harte2010}, and many of these conventions are utilized here.
 Going forward, chords expressed in this scheme are stylized with a fixed-width font, e.g. \texttt{A:min}.
 
