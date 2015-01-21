@@ -1185,8 +1185,11 @@ Lastly, it is necessary to recognize that, while this quality-wise macro-recall 
 \end{table}
 
 As a final investigation of algorithm performance with this particular collection of data, having the estimations of two very different computational systems affords the opportunity to explore where they do or do not agree.
-Table \ref{tab:algo_vs_algo} contains the micro-recall statistics when comparing the algorithmic estimations against each other, as well as the best track-wise match between either and the reference.
-This latter condition is similar in concept to model averaging, and serves to further highlight differences between estimations.
+Table \ref{tab:algo_vs_algo} contains the micro-recall statistics comparing algorithmic estimations, from ``XL-0.125'' and ``Cho'', against each other, as well as the best track-wise match between either and the reference;
+this latter condition is similar in concept to model averaging, and serves to further highlight differences between estimations.
+It is interesting to consider that, despite nearly equivalent performance on the metrics reported above, these two systems agree roughly to the same extent either matches the reference annotations.
+The conclusion to draw from this is that the errors made by one system are typically different than those of the other.
+Therefore, in considering the logical-OR of these estimations, it is clear that the ground truth chord label is often produced by one of the systems, perhaps encouraging the exploration of ensemble methods in future work.
 
 
 \begin{figure}[t]
@@ -1197,6 +1200,23 @@ This latter condition is similar in concept to model averaging, and serves to fu
 \end{figure}
 
 
+Expanding on this analysis, it is of considerable interest to compare scores between algorithms versus the best match with the reference on a trackwise basis; this is given in Figure \ref{trackwise_test_agreement} for the ``tetrads'' metric.
+Here, each track is represented as a point in coordinate space, with algorithmic agreement along the $x$-axis and best agreement with the ground truth annotations along the $y$-axis.
+For clarity, this scatter plot can be understood in the following way:
+the line $x=y$ corresponds to an equal level of agreement between all three chord transcriptions;
+bisecting the graph horizontally and vertically yields four quadrants, enumerated I-IV in a counterclockwise manner, starting from the upper right.
+Tracks that fall in each quadrant correspond to a different kind of behavior.
+Points in quadrant I indicate that both estimations and the reference have a high level of agreement ($x > 0.5$, $y > 0.5$).
+Quadrant II contains tracks where the algorithms disagree significantly ($x < 0.5$), but one estimation matches the reference well ($y > 0.5$).
+Tracks in quadrant III correspond to the condition that no transcription agrees with another, ($x < 0.5$, $y < 0.5$), and are particularly curious.
+Finally, quadrant IV contains tracks where the algorithms estimate the same chords ($x > 0.5$), but the reference disagrees with them both ($y < 0.5$).
+
+With this in mind, three-part annotations can be examined for a point in each quadrant, consisting of a reference (Ref), an estimation from a deep neural network (DNN), and an estimation from the baseline system (TMC).
+In all following examples, chords are shown as color bars changing over time, from left to right;
+as a convention, the pitch class of the chord's root is mapped to color hue, and the darkness is a function of chord quality, e.g. all \texttt{E:*} chords are a shade of green.
+No-chords are always black, and chords that do not fit into one of the 157 chord classes is shown as gray.
+
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{test_TRXHNQE149E2E0FFA2_annotations}
@@ -1204,6 +1224,16 @@ This latter condition is similar in concept to model averaging, and serves to fu
 \caption{Reference and estimated chord sequences for a track in quadrant I, where both algorithms agree with the reference.}
 \label{fig:test_quadI}
 \end{figure}
+
+
+A track from quadrant I is given in Figure \ref{fig:test_quadI}.
+As to be expected, the reference and both estimated chord sequences look quite similar.
+The most notable discrepancy between the human-provided transcription and the two from the automatic methods is at the end of the sequence.
+While the reference annotation claims that the transcription ends on a \texttt{G:maj}, both algorithms estimate the final chord as a \texttt{C:maj}.
+This occurs because the song is in the key of G major, and thus the human chooses to end the song on the tonic chord.
+However, the song ---``Against the Wind'' by Bob Seger--- is recorded with a fade-out, and the last audible part of the recording is in fact the \texttt{C:maj}, when playback volume is adjusted accordingly.
+Therefore, this is an instance of the automatic systems being more precise than the human annotator.
+
 
 \begin{figure}[t]
 \centering
@@ -1213,6 +1243,13 @@ This latter condition is similar in concept to model averaging, and serves to fu
 \label{fig:test_quadII}
 \end{figure}
 
+Next, a track from quadrant II ---``Smoking Gun'' by Robert Cray--- is considered in Figure \ref{fig:test_quadII}.
+While the baseline system, TMC, agrees strongly with the reference that the predominant chord is an \texttt{E:min7}, the deep network, DNN, prefers \texttt{E:min}, and produces a poor ``tetrads'' score as a result.
+This confusion is an understandable one, and highlights an interesting issue in automatic chord estimation evaluation.
+Depending on the instance, it could be argued that some chords are not fundamentally different classes, and thus ``confusions'' in the traditional machine learning sense, but rather a subset of a more specified chord, e.g. \texttt{E:min7} $\supset$ \texttt{E:min}.
+Traditional 1-of-k classifier schemes fail to encode this nuance, whereas a hierarchical representation would better capture this relationship.
+
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{test_TRVVMUA149E3780587_annotations}
@@ -1221,13 +1258,35 @@ This latter condition is similar in concept to model averaging, and serves to fu
 \label{fig:test_quadIII}
 \end{figure}
 
+The track drawn from quadrant III ---``Nowhere to Run'' by Martha Reeves and the Vandellas--- is shown in Figure \ref{test_quad_III}, and especially interesting for three reasons.
+First, most of the considerable disagreement between the reference and both estimated chord sequences can be explained by a tuning issue.
+The automatic systems predict the tonic as \texttt{G}, while the human reference is based on \texttt{Ab}.
+Matching a pure tone to this recording places the tonic around 400 Hz;
+for reference to absolute pitch, the notes \texttt{G3} and \texttt{Ab3} correspond to roughly 391 Hz and 415 Hz, respectively.
+Therefore, the human annotator and automatic systems disagree on how this non-standard tuning should be quantized.
+Second, the two automatic systems again differ on whether to label the chord a \texttt{maj} or \texttt{7} chord; however, despite the tuning discrepancy, this time the reference annotation prefers the triad.
+Lastly, there are three instrumental ``breaks'' in the piece where the backing band drops out to solo voice and drumset.
+While this is indicated in the reference annotation in the first third of the song by an \texttt{X} chord label, the other two occurrences are not marked similarly.
+The deep network model labels all three of these instances as no-chord, shown as black regions in the middle track.
+
+
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{test_TREQOWO149E370718B_annotations}
-\includegraphics[width=\textwidth]{test_TREQOWO149E370718B_legend}
+\includegraphics[width=\textwidth]{test_TRNFEEU149E38D3E18_annotations}
+\includegraphics[width=\textwidth]{test_TRNFEEU149E38D3E18_legend}
 \caption{Reference and estimated chord sequences for a track in quadrant IV, the condition where both algorithms agree with each other, but neither agrees with the reference.}
 \label{fig:test_quadIV}
 \end{figure}
+
+As a final example from this analysis of two-part estimations, a track is considered from quadrant IV, shown in Figure \ref{fig:test_quadIV}, corresponding to ``Some Like It Hot'' by The Power Station.
+Evidenced by the large regions of estimated no-chord, both automatic systems struggle on this particular track.
+Listening through, there are likely two contributing factors.
+One, the song is very percussive, and heavily compressed wideband noise probably disrupts the harmonic estimates made by the models.
+Two, and perhaps more problematic, is that the song makes very little use of true pitch simultaneities, and much of the harmony in this song is implied.
+Much of the song is sparsely populated from an instrumental perspective, and this less common musical arrangement results in erroneous estimations.
+Importantly, both systems appear to fall victim to this deficiency, thus identifying an possible research area for future endeavors.
+
+
 
 
 
