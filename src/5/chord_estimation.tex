@@ -7,7 +7,7 @@
 
 % Context / Purpose
 The previous chapter was able to reformulate timbre similarity as a well-defined task that used objective information for development and evaluation.
-Automatic chord recognition, one of the oldest subtopics in the field of content-based MIR, embodies nearly the polar opposite scenario, being rather ill-defined and depending on subjective information almost exclusively.
+Automatic chord estimation, one of the oldest subtopics in the field of content-based MIR, embodies nearly the polar opposite scenario, being rather ill-defined and depending on subjective information almost exclusively.
 As such, it provides an interesting case study with which to test the limits of deep learning.
 % Goal
 In addition to the standard objective of looking to advance the state of the art in a chosen application domain, this chapter seeks to explore the limitations of deep learning as applied to complex music intelligence task.
@@ -702,7 +702,7 @@ Therefore, all chord classes benefit equally from data augmentation, which is ch
 \begin{figure}[!t]
 \centering
 \includegraphics[width=5in]{FF-TT_Mm-vs-other}
-\caption{Effects of transposition on recognition accuracy as a function explicitly labeled Major-Minor chords (dark bars), versus other chord types (lighter bars) that have been resolved to their nearest Major-Minor equivalent, for training (blue) and test (green) in standard (left) and transposed (right) conditions.}
+\caption{Effects of transposition on classification accuracy as a function explicitly labeled Major-Minor chords (dark bars), versus other chord types (lighter bars) that have been resolved to their nearest Major-Minor equivalent, for training (blue) and test (green) in standard (left) and transposed (right) conditions.}
 \label{fig:strict_vs_others}
 \end{figure}
 
@@ -849,10 +849,10 @@ Y = \sum_{k=0}^{K-1} g_k * \frac{V}{S_k} \\
 One of the key findings from the previous study of deep networks for ACE, consistent with previous research, is the importance of enforcing or encouraging root-invariance in the model.
 With GMMs, this is typically achieved by rotating all data, i.e. chroma features, to the same root and fitting a model for each quality.
 Then, when applying the model, likelihoods are estimated for each root by circularly rotating chroma through all twelve positions to recover the full space of chord classes.
-In the pilot study on chord recognition, this concept was mimicked by rotating the data in the input domain.
+In the pilot study on chord estimation, this concept was mimicked by rotating the data in the input domain.
 While it led to improved results, rotating the data is less than ideal for at least two reasons.
 One, it is an implicit, rather than explicit, association between classes, and the model is tasked with learning redundant relationships.
-In the case of chord recognition, the model needs to learn the same behavior 12 times over to represent each quality in every root.
+During training, the model needs to learn the same behavior 12 times over to represent each quality in every root.
 Two, rotating data in the input space may create unnatural artifacts in the kinds of data the model learns to expect, and it is not clear what, if any, side effects this may have.
 It is assumed that this does not fundamentally change the latent distribution of the data used for training, but it may cause a mismatch with real data at test time.
 
@@ -998,16 +998,8 @@ The best model and self-transition penalty are chosen by finding the configurati
 \subsection{Experimental Results}
 \label{subsec:quantitative_results}
 
-Following from the setup defined above, the three model complexities --X, XL, and XXL-- are trained with four dropout values, $p_{dropout} \in \{0.0, 0.125, 0.25, 0.5\}$ across five folds of the data.
-Note that when $p_{dropout} = 0.0$, this is equivalent to training a model without dropout.
-% First, we are curious to investigate if and how the weight tying in the classifier has enforced the notion of root invariant representations.
-% TODO: Observe that it learns a root invariant representation of qualities
-% Distance matrix between qualities
-% Ave vectors for same qualities in different roots
-Micro-recall for the various comparison functions, averaged across folds, is given in Tables \ref{tab:recall_train} and \ref{tab:recall_test} for the trainin and test splits, respectively.
-% , using with the system and evaluation methodology presented in Cho \cite{Cho2014PhD}:
 
-\begin{table}[h]
+\begin{table}[t]
 \scriptsize
 \begin{center}
 \caption{Micro-recall across metrics for over the training data.}
@@ -1039,7 +1031,13 @@ Micro-recall for the various comparison functions, averaged across folds, is giv
 \end{center}
 \end{table}
 
-\begin{table}[h]
+Following from the setup defined above, the three model complexities --X, XL, and XXL-- are trained with four dropout values, $p_{dropout} \in \{0.0, 0.125, 0.25, 0.5\}$ across five folds of the data.
+Note that when $p_{dropout} = 0.0$, this is equivalent to training a model without dropout.
+Additionally, the system presented in \cite{Cho2014PhD}, referred to here simply as ``Cho'', is trained on identical partitions of the data and evaluated alongside the deep networks.
+Micro-recall for the various comparison functions, averaged across folds, is given in Tables \ref{tab:recall_train} and \ref{tab:recall_test} for the training and test splits, respectively.
+
+
+\begin{table}[t]
 \scriptsize
 \begin{center}
 \caption{Micro-recall across metrics for over the holdout (test) data.}
@@ -1071,15 +1069,24 @@ L & 0.0 &   0.7939 & 0.8442 &  0.8102 &    0.6583 &     0.6725 &   0.8135 &   0.
 \end{center}
 \end{table}
 
-% Deep net models overfit the training set like crazy; dropout brings this down, but the ROI appears marginal.
-% The biggest deep net is sufficiently complex to overfit the training data. This serves as a good upper bound on complexity.
-% A little dropout (0.125, 0.25) has a slight positive effect on training; too much dropout (0.5), on the other hand, is definitely a bad thing, and seems to destabilize estimations.
-% The best deep net appears essentially equivalent to the state of the art comparison system; XL-0.125 just barely eclipses the SotA system in every metric but 'mirex', XXL-0.125 is on its heels.
-% The different metrics indicate that confusions at the strict level are predominantly musically related, i.e. descending order from root, thirds, triads, sevenths, tetrads.
+There are several observations that may be drawn from these two tables.
+First, in the absence of dropout, the deep network models considered here are able to overfit the training data.
+This is an important finding in so far as making sure that the fully-convolutional architecture is not overly constrained, and indicates that the XXL model is a reasonable upper bound on complexity.
+The effect of dropout on performance over the training set is significant, as it reduces overfitting consistent with increased values.
+
+Shifting focus to performance on the test set, it is obvious that these differences in training set performance have little impact on generalization, and all models appear to be roughly equivalent.
+A small amount of dropout --0.125 or 0.25-- has a slight positive effect on generalization; too much dropout, on the other hand, seems to have a negative effect on performance.
+There are two possible explanations for this behavior:
+one, a high degree of convolutional dropout is more destabilizing than in the fully-connected setting;
+and two, these models were not finished learning, and stopped prematurely.
+
+Overall, the best deep networks appear to be essentially equivalent to the state of the art comparison system; XL-0.125 just barely eclipses ``Cho'' in every metric but ``mirex'', while XXL-0.25 is right on its heels.
+The different metrics indicate that confusions at the strict level are predominantly musically related, i.e. descending in order from root, thirds, triads, sevenths, tetrads.
+Interestingly, the performance gap between the ``root'' and ``triads'' scores is quite small, $\approx 5\%$, while the gap between ``root'' and ``tetrads'' is nearly $20\%$, for all models considered.
+One way to interpret this result is that these systems are quite robust in the estimation of three-note chords, but struggle to match the way in which reference annotators use sevenths.
 
 
-
-\begin{table}[h]
+\begin{table}[t]
 \begin{center}
 \caption{Quality-wise macro-recall statistics.}
 \label{tab:qwise_macro_recall}
@@ -1094,17 +1101,25 @@ L & 0.0 &   0.7939 & 0.8442 &  0.8102 &    0.6583 &     0.6725 &   0.8135 &   0.
  test   &    0.0 &   0.125 &   0.25 &    0.5 \\
 \hline
  L      & 0.4306 &  0.5029 & 0.5240 & 0.5135 \\
- XL     & 0.4174 &  0.4887 & 0.5281 & 0.5253 \\
+ XL     & 0.4174 &  0.4887 & \textbf{0.5281} & 0.5253 \\
  XXL    & 0.3935 &  0.4825 & 0.5127 & 0.5257 \\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
-\begin{table}[h]
+Moving on, the results for the quality-wise macro-recall, or average chord quality accuracy, is given in Table \ref{tab:qwise_macro_recall}.
+While dropout again able to considerably reduce overfitting in the training set, it appears to have a more profound effect here towards generalization.
+Whereas before a 0.5 dropout ratio seemed to result in the ``worst'' deep networks, here it leads to the best generalization across all chord qualities.
+Furthermore, the best performing models, according to micro-recall, are not the best performing models in this Table.
+Thus these results allude to the notion that micro-recall over all data may have an inverse relationship with quality-wise macro-recall.
+
+
+\begin{table}[t]
 \begin{center}
 \scriptsize
 \caption{Individual chord quality accuracies for the XL-model over test data, averaged across all folds.}
+\label{tab:ind_qwise_macro}
 \begin{tabular}{l|ccccc|c}
 \hline
     &   support (min) &    0.0 &   0.125 &   0.25 &    0.5 & Cho, 2014\\
@@ -1131,23 +1146,30 @@ L & 0.0 &   0.7939 & 0.8442 &  0.8102 &    0.6583 &     0.6725 &   0.8135 &   0.
 \end{center}
 \end{table}
 
-
-There are sharp distribution effects in the validation and test splits. Performance for chord qualities is typically quite high.
-Dominant 7's seem relatively low; this is likely a result of V vs V7 confusions, but the annotations don't provide this information to validate the hypothesis.
-The only chord quality to decrease with dropout is major, indicating that in the absence of dropout, the class is over-predicted. This makes sense, as it is the majority class.
+To further assess this claim, the individual chord quality accuracies are broken out by class for ``XL-0.125'', and compared alongside ``Cho'', given in Table \ref{tab:ind_qwise_macro}.
+Immediately obvious is the influence of sharp distribution effects in generalization.
+Performance for the majority chord qualities, in the upper half of the table, is noticeably higher than the minority classes, in the lower half.
+The one exception is that of dominant 7 chords, which seems relatively low, especially compared to ``Cho'';
+this is likely a result of V vs V7 confusions, but the annotations do not easily provide this functional information to validate the hypothesis\footnote{The Billboard dataset \emph{does} provide tonic information, and thus this relationship could be recovered from the data; however, it is left here as a fertile area for future work}.
 XXL-0.25 yields near identical micro statistics to TMC, but achieves a significant increase in QW macro-recall, 0.5127 to 0.4546 (0.0581).
-TMC does noticeably better on C:7; deep nets do noticeably better on N.
-It seems impossible to determine a global ``best'' model, as dropout appears to only move the decision boundaries between classes.
-Therefore the representational power of the model doesn't really seems to change, simply where the boundaries between classes fall, and thus model selection may ultimately be a function of use-case.
-Is it better to have a model that safely predicts simpler chords, i.e. major, most of the time? Or to have a model that makes use of a wider vocabulary of chords?
+
+
+Notably, the only chord quality to decrease in accuracy with dropout is major, indicating that, with the addition of dropout, the decision boundary between major and its related classes, e.g. major 7 and dominant 7, shift.
+However, because of the significant imbalance in the support of each quality, given here in minutes, a small drop in accuracy for major yields a considerable drop in micro-recall overall.
+To illustrate, between the 0.125 and 0.25 dropout ratios, major accuracy drops 6\%, while dominant 7 and major 7 accuracy increase 6\% and 5\%, respectively.
+In terms of overall time though, this comes at the expense of 24 minutes of major now being classified ``incorrectly'', compared to a combined 5 minutes of dominant and major 7's now being ``correct''.
+Therefore, it seems there is a trade-off between these two measures, and thus the representational power of the model does not really change.
+Rather, the decision boundaries between overlapping classes must prefer one over the other, and thus model selection may ultimately be a function of use-case.
+For example, is it better to have a model that predicts simpler chords, i.e. major, most of the time? Or to have a model that makes use of a wider vocabulary of chords?
+Lastly, it is necessary to recognize that, while this quality-wise macro-recall statistic provides a glimpse into more nuanced system behavior, the severe class imbalance results in a rather volatile metric.
 
 
 % Consider how the algorithms agree with each other
-\begin{table}[h]
+\begin{table}[t]
 \begin{center}
 \scriptsize
 \caption{Micro-recall scores for the two algorithms against each other, and the better match of either algorithm against the reference.}
-\label{tab:qwise_macro_recall}
+\label{tab:algo_vs_algo}
 
 \begin{tabular}{lrrrrrrr}
 \hline
@@ -1161,6 +1183,10 @@ Is it better to have a model that safely predicts simpler chords, i.e. major, mo
 \end{tabular}
 \end{center}
 \end{table}
+
+As a final investigation of algorithm performance with this particular collection of data, having the estimations of two very different computational systems affords the opportunity to explore where they do or do not agree.
+Table \ref{tab:algo_vs_algo} contains the micro-recall statistics when comparing the algorithmic estimations against each other, as well as the best track-wise match between either and the reference.
+This latter condition is similar in concept to model averaging, and serves to further highlight differences between estimations.
 
 
 \begin{figure}[t]
