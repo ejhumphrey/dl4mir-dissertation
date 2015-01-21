@@ -1,0 +1,63 @@
+\graphicspath{{8/figures/}}
+\chapter{Conclusion}
+\label{chp:conclusion}
+
+\section{Summary of Results}
+Carrot cake croissant tart bonbon candy biscuit donut liquorice muffin.
+Jelly beans gummies cheesecake cotton candy bonbon chocolate cake croissant gingerbread macaroon.
+Tiramisu liquorice brownie sesame snaps dragee sugar plum tiramisu jelly-o.
+Pastry bonbon pastry cheesecake applicake powder candy tart.
+Marzipan dessert ice cream brownie wafer cookie marshmallow.
+Carrot cake pudding brownie carrot cake dessert icing brownie chocolate.
+
+
+\section{The Future of Deep Learning in MIR}\label{sec:conclusions}
+\label{sec:future}
+
+In this article, we have sought to better understand the current state of affairs in content-based music informatics and diagnose potential deficiencies in state of the art approaches, finding three specific shortcomings: hand-crafted feature design is not sustainable, shallow architectures are fundamentally limited, and short-time analysis alone fails to capture long-term musical structure.
+Several arguments then motivate the position that deep learning is particularly well-suited to address each of these difficulties.
+By embracing feature learning, it is possible to optimize a system's internal feature representation, perhaps even discovering it outright, while deep architectures are especially well-suited to characterize the hierarchical nature of music.
+It was further shown that the community is already beginning to naturally adopt parts of the broader deep learning landscape, and that these methods can be seen as the next logical step in the research trajectory.
+As we look toward exploring these methods further in the context of MIR, it is beneficial to outline domain-specific challenges and the impact such a conceptual reformulation might have on the discipline.
+
+
+\subsection{Outstanding Challenges}
+
+Reflecting on the entire discourse, there are a few legitimate obstacles to this line of research.
+The most immediate hurdle facing the adaptation of deep learning to music signal processing is merely a matter of literacy and the successful application of these methods to classic problems in MIR.
+There is an empirical sense of skepticism regarding neural networks among many in the various perceptual AI communities, including MIR, due in no small part to the exaggerated promises of very early research, and popular opinion has not evolved with the science.
+One step toward updating this perspective is through discussions like this one, by demystifying the proverbial ``black box'' and understanding what, how, and why these methods work.
+Additionally, reframing traditional problems in the viewpoint of deep learning serves as an established starting point to begin developing a good comprehension of implementing and realizing these systems.
+In a similar vein, the MIR community also possesses a mastery of digital signal theory and processing techniques, insight that could, and should, be applied to deep networks to better formulate novel or alternative theoretical foundations.
+
+Another, more widely known problem is the practical difficulty behind getting such methods to ``work,'' which takes a few different forms.
+Though the features, and more specifically the parameters, learned by the model are data-driven, the successful application of deep learning necessitates a thorough understanding of these methods and how to apply them to the problem at hand.
+Various design decisions, such as model selection, data pre-processing, and carefully choosing the building blocks of the system, can impact performance on a continuum from negligible differences in overall results to whether or not training can, or will, converge to anything useful.
+Likewise, the same kind of intuition holds for adjusting the various hyperparameters ---learning rate, regularizers, sparsity penalties--- that may arise in the course of training.
+The important thing to recognize though is that these are skills to be learned.
+Using deep learning presents a design problem not altogether different from the one with which we are familiar, but the approach is overtly more abstract and conceptual, placing a greater emphasis on high-level decisions like the choice of network topology or appropriate loss function.
+
+That said, one of the more enticing challenges facing music informatics is that time-frequency representations, though two-dimensional, are fundamentally \emph{not} images.
+When considering the application of deep learning to MIR problems, it is prudent to recognize that the majority of progress has occurred in computer vision.
+While this gives our community an excellent starting point, there are many assumptions inherent to image processing that start to break down when working with audio signals.
+One such instance is the use of local receptive fields in deep learning, common in CNNs and, more recently, tiled networks \cite{Le2010}.
+In these architectures, it is known that the strongest correlations in an image occur within local neighborhoods, and this knowledge is reflected in the architectural design.
+Local neighborhoods in frequency do not share the same relationship, so the natural question becomes, ``what architectures \emph{do} make sense for time-frequency representations?''
+As we saw previously, CNNs yield encouraging results on time-frequency representations of audio, but there are certainly better models to be discovered.
+This is but one open question facing deep learning in music signal processing, and a concerted research effort will likely reveal more.
+
+
+\subsection{Potential Impact}
+
+
+In addition to hopefully advancing the discipline beyond current glass ceilings, there are several potential benefits to the adoption and research of deep learning in music informatics.
+Though learning can discover useful features that were previously overlooked or not considered, this advantage is amplified for new challenges and applications that do not offer much guiding intuition.
+For tasks like artist identification or automatic mixing, it is difficult to comprehend, much less articulate, exactly what signal attributes are informative to the task and how an implementation might robustly capture this information.
+These problems can, however, be quantified by an objective function ---these songs are by the same artist, or this is a better mix than that one--- which allows for an automated exploration of the solution space.
+In turn, such approaches may subsequently provide insight into the latent features that inform musical judgements, or even lead to deployable systems that could adapt to the nuances of an individual.
+
+Deep learning also offers practical advantages toward accelerating research.
+Rather than trying to compare the instances from one class of functions, evaluation can take place at the class level.
+This process has the potential to be significantly faster than current research approaches because numerical methods attempt to automatically optimize the same objective function we do by hand.
+Additionally, unsupervised learning is able to make use of all recorded sound, and the data-driven prior that it leverages can be steered by creating specific distributions, e.g., learn separate priors for rock versus jazz.
+Finally, music signals provide an interesting setting in which to further explore the role of \emph{time} in perceptual AI systems, and has the potential to influence other time-series domains like video or motion capture data.
