@@ -1428,7 +1428,8 @@ Again, the system tends to be rather literal in its interpretation of solo vocal
 Finally, a track from Quadrant IV ---``Every Breath You Take'' by The Police--- is given in Figure \ref{fig:rc_quadIV}.
 Similar to the track considered from the same region before, the estimation is consistently a half-step flat from the references.
 This pattern is indicative of a similar tuning discrepancy as before, and tuning a pure sinusoid to the track finds the tonic at approximately 426Hz, putting the song just over a quartertone flat.
-Though functionally equivalent to the previous example of tuning being an issue, this instance is interesting because two independent annotators arrived at the same decision.
+Though functionally equivalent to the previous example of tuning being an issue, this instance is interesting because two annotators independently arrived at the same decision.
+% Why would they both make the same mistake? Maybe it's not a mistake!
 One reason this might have occurred is that, as a rock song, it makes far more sense to play in \texttt{A:maj} on guitar than \texttt{Ab:maj}.
 The chord shapes involved are much easier to form in \texttt{A:maj}, and therefore more likely.
 Additionally, a guitarist would probably need to change tunings to play the \texttt{Eb:maj} in the right voicing.
@@ -1436,19 +1437,70 @@ Taken together, it is noteworthy that such extrinsic knowledge can, and perhaps 
 
 
 
-\subsection{Conclusions}
+\subsection{Conclusions \& Future Work}
 \label{subsec:conclusions}
 
 % Quantitative observations
-Overall, considering the research questions posed, we find that the deep learning approach outperforms the state of the art in the typical measures of quantitative evaluation.
-We
+Based on conventional methodology, the proposed deep learning approach leads to results on par with the state of the art, just eclipsing the baselie in the various metrics considered.
+Though fully convolutional models can be complex enough to overfit the dataset, a small amount of dropout during training helps reduce this overfitting, while leading to slightly better generalization.
+Dropout also raises quality-wise recall in minority classes significantly.
+Given the significant imbalance of chord classes in the dataset, however, this is a very unstable measure of system performance.
+Small shifts in the macro-recall of a majority class can result in large performance swings, and vice versa.
+Thus, the criteria for what makes for a ``good'' system may be motivated by use case, to determine which of these metrics correspond to the desired behavior.
 
-% Qualitative observations
-We need to develop better means of curating datasets such that objective measures better correspond with subjective experience.
+Additionally, the suite of chord comparison functions demonstrate that most errors between reference and estimation are hierarchical, and increase with specificity of the chord, e.g. from root to triads to tetrads.
+One-of-K classifiers struggle to encode these relationships between certain chords, e.g. \texttt{A:maj} and \texttt{A:maj7}.
+By analogy, this is like building a classifer that discriminates between, among other classes, animals and cats, respectively; all cats are animals, but not all animals are cats.
+This is problematic in a flat classifier, because it is attempting to linearly separate a pocket of density contained within another.
+To address this issue, a structured output and loss function would be better suited to model these relationships.
+Directly encoding the knowledge that \texttt{maj7} chords are a subset of \texttt{maj}, will make it easier for a machine to learn these boundaries.
+One such hierarchy for the chords considered in this work is given in Figure \ref{fig:chord_hierarchy}.
+Here, the degree of specificity increases as the decision tree is traversed to a leaf node, and could be achieved with more structured output, such as a hierarchical softmax or conditional estimator.
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{chord_hierarchy}
+\caption{A possible chord hierarchy for structured prediciton of classes. Decisions blocks are rectangular, with the result of the previous node shown in parentheses, the semantic meaning of the node is given before a colon, and the set of valid responses is pipe-separated. Stopping conditions are given as octagons.}
+\label{fig:chord_hierarcy}
+\end{figure}
+
+
+% On having mutliple estimators
+In comparing the estimations of the two computational systems, deeper insight is gained into the ground truth data used for development, and the kinds of behavior, both the good and bad, that such approaches are prone to exhibit.
+First, it is observed that they make rather different predictions and their responses could be combined, motivating the exploration of ensemble methods.
+Looking at performance at the track-level, alternatively, helps identify problematic or noisy data in a collection.
+This is similar in spirit to a growing body of work in MIR \cite{Holzapfel}, but it also provides some unique insight into the ACE task itself.
+Computational systems tend to be precise in ways humans are not, such as continuing to predict chords during a fade-out, or reporting ``no-chord'' during a musical break.
+The issue of hierarchical class relationships manifests in both models, but instances of algorithm disagreement point to music content that falls near a boundary between classes.
+Such knowledge could be used to single out and review the reference chord annotation more closely.
+These systems can also be sensitive to inexact tuning, and half-step deviations can be a large source of error.
+Additionally, implied harmony or stacatto patterns can be especially problematic, resulting in an over-estimation of the ``no-chords'' class.
+
+
+% On having multiple annotators
+Conversely, leveraging multiple annotations for a given track provides a deeper understanding of the errors a computational system might make.
+As seen here, the assessment of a system will change depending on which interpretation is taken as a reference, and a computational system may agree with another human's perspective, consistent with the work of McVicar \cite{McVicar}.
+Most imporant is the recognition that human annotators do not agree all the time, and that describing some music content in the language of chords is inherently subjective.
+In such cases, there is no ``ground truth'' to speak of, and multiple chord labels may be acceptable.
+This is a critcal observation, and one that cuts strongly against the long-standing methodology of curating ground truth references in ACE.
+Stated previously, the sole purpose of an objective measure is that it serves as a reasonable proxy for subjective experience.
+If the goal of ACE is to produce a chord annotation on par with that of a qualified human ---a musical Turing test of sorts--- then the reference annotation at hand may be only one of many valid perspectives.
+As a result, evaluating against a singular perspective is leading to results that may be inconsistent with subjective experience.
+
+Instead, embracing multiple perspecives, rather than attempting to resolve them into a canonical target, would allow for more stable evaluation of computational models.
+One such way this could be achived is by obtaining multiple chord annotations and creating a time-aligned bag of words reference.
+For example, knowing that 97 of 100 annotators labeled a chord as \texttt{A:7} is very different from the scenario that 52 did, while the other 48 reported \texttt{A:maj}.
+Curating a dataset with so many perspectives is unlikely to happen, but perhaps multiple computational systems could be used to find boundary chords that \emph{do} warrant multiple perspectives.
+Ultimately, this study demonstrates that future chord datasets should strive to capture the degree of subjectivity in an annotation, thus enabling objective measures better correspond with subjective experience.
 
 
 \section{Summary}
 \label{sec:summary}
 
-In this chapter we have thoroughly explored the application of deep learning methods to the classic MIR task of ACE.
-By standard evaluation practices, we demonstrate competitive performance in a Major-minor formulation of the task, and an improvement over the state of the art with considerably larger chord vocabularies.
+In this chapter, the application of deep learning to ACE has been thoroughly explored.
+By standard evaluation practices, competitive performance is demonstrated on both a major-minor and large-vocabularly formulation of the task.
+Importantly, much effort is invested in understanding both the behavior of the computational systems discussed, as well as the reference data used to evaluate performace.
+Perhaps the most important finding is that the current state of the art may have truly hit a glass ceiling, due to the conventional practice of building and testing against ``ground truth'' datasets for an inherently subjective task.
+This challenge is further compounded by approaches to prediction and evaluation, which attempt to perform flat classification of a hierarchically structured chord taxonomy.
+Thus, while there is almost certainly room for improvement, the exploration here indicates that the vast majority of error in modern chord recognition systems is a result of invalid assumptions baked into the very task.
