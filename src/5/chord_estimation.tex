@@ -834,7 +834,7 @@ S_k = max(S_k, \mu_{S_k}) \\
 Y = \sum_{k=0}^{K-1} g_k * \frac{V}{S_k} \\
 \end{align*}
 
-\noindent To illustrate the benefit of this piecewise combination, an example track is given in Figure \ref{lcn_mods}, both with and without the octave-dependent modification.
+\noindent To illustrate the benefit of this piecewise combination, an example track is given in Figure \ref{fig:lcn_mods}, both with and without the octave-dependent modification.
 
 \begin{figure}[!t]
 \centering
@@ -1200,7 +1200,7 @@ Therefore, in considering the logical-OR of these estimations, it is clear that 
 \end{figure}
 
 
-Expanding on this analysis, it is of considerable interest to compare scores between algorithms versus the best match with the reference on a trackwise basis; this is given in Figure \ref{trackwise_test_agreement} for the ``tetrads'' metric.
+Expanding on this analysis, it is of considerable interest to compare scores between algorithms versus the best match with the reference on a trackwise basis; this is given in Figure \ref{fig:trackwise_test_agreement} for the ``tetrads'' metric.
 Here, each track is represented as a point in coordinate space, with algorithmic agreement along the $x$-axis and best agreement with the ground truth annotations along the $y$-axis.
 For clarity, this scatter plot can be understood in the following way:
 the line $x=y$ corresponds to an equal level of agreement between all three chord transcriptions;
@@ -1258,7 +1258,7 @@ Traditional 1-of-k classifier schemes fail to encode this nuance, whereas a hier
 \label{fig:test_quadIII}
 \end{figure}
 
-The track drawn from quadrant III ---``Nowhere to Run'' by Martha Reeves and the Vandellas--- is shown in Figure \ref{test_quad_III}, and especially interesting for three reasons.
+The track drawn from quadrant III ---``Nowhere to Run'' by Martha Reeves and the Vandellas--- is shown in Figure \ref{fig:test_quad_III}, and especially interesting for three reasons.
 First, most of the considerable disagreement between the reference and both estimated chord sequences can be explained by a tuning issue.
 The automatic systems predict the tonic as \texttt{G}, while the human reference is based on \texttt{Ab}.
 Matching a pure tone to this recording places the tonic around 400 Hz;
@@ -1288,42 +1288,23 @@ Importantly, both systems appear to fall victim to this deficiency, thus identif
 
 
 
-
-
-
 \subsection{Rock Corpus Analysis}
 \label{subsec:qualitative_analysis}
 
-Much can and has been said about the consistency, and thus quality, of the annotations used for development and evaluation of chord estimation systems.
+Much can and has been said about the consistency, and thus quality, of the reference annotations used for development and evaluation of chord estimation systems.
 The majority of human-provided chord annotations are often singular, either being performed by one person or as the result of a review process to resolve disagreements.
-The notion of annotator disagreements is an interesting one, because there are two reasons why this might occur.
-The first is simply a matter of human error, typos and the like.
-The second, and far more interesting cause, is that there is some ambiguity in the musical content, leading to different acceptable annotations.
-Since most dataset curation efforts have made an explicit effort to iron out these discrepancies, it isn't possible to explore any such instances in the data used so far.
+The idea of examining, rather than resolving, annotator disagreements is an interesting one, because there are two reasons why such discrepancies might occur.
+The first is simply a matter of human error, resulting from typographical errors and other similar oversights.
+The second, and far more interesting cause, is that there is indeed some room for interpretation in the musical content, leading to different acceptable annotations.
+Most chord annotation curation efforts have made an explicit effort to resolve all discrepancies to a canonical transcription, however, and it is not possible to explore any such instances in the data used so far.
 
 
-% Is quality-wise even a good measure?
 
-% \begin{figure}[!t]
-% \centering
-% \includegraphics[width=5in]{bigswing}
-% \caption{Validation performance as a function of iteration; overall (solid) and quality-wise (dashed) recall are shown for multiple self-transition penalties.}
-% \label{fig:bigswing}
-% \end{figure}
-
-% Considering the comparison function
-
-
-% Pull in multiple perspectives : Introducing the Rock Corpus
-% One way to address this is to call into question the validity of the ground truth transcriptions themselves.
-% Recall that the various chord annotation collections used in development and evaluation here were all curated through a review process, whereby disagreements or judgement calls where ironed out as ``errors'', in the effort of producing singular chord names over time.
-% As a result, the notion of ground truth is baked into the data itself.
-
-
-Fortunately, the \emph{Rock Corpus} dataset, first introduced in \cite{deClerqc2010}, is a set of, at the time of writing, 200 popular rock tracks with time-aligned chord and melody transcriptions performed by two expert musicians.
-% one, a pianist, and the other, a guitarist. This background adds an interesting dimension to the inquiry, when considering points of aggrement or disagreement between annotators and algorithmic methods.
+Fortunately, the \emph{Rock Corpus} dataset, first introduced in \cite{deClerqc2010}, is a set of 200 popular rock tracks with time-aligned chord and melody transcriptions performed by two expert musicians:
+one, a pianist, and the other, a guitarist.
+This insight into musical expertise adds an interesting dimension to the inquiry when attempting to understand alternate interpretations by the annotators.
 This collection of chord transcriptions has seen little use in the ACE literature, as its initial release lacked timing data for the transcriptions, and the chord names are provided in a Roman Numeral syntax.
-A subsequent release fixed the former issue, however, in addition to doubling the size of the collection from 100 to the now 200 tracks.
+A subsequent release fixed the former issue, however, in addition to doubling the size of the collection.
 The latter issue is more a matter of convenience, as key information is provided with the transcriptions and this format can be translated to absolute chord names, consistent with the syntax in Section \ref{subsec:chord_syntax}.
 This dataset provides a previously uncapitalized opportunity to explore the behavior of ACE systems as a function of multiple reference transcriptions.
 
@@ -1336,13 +1317,20 @@ This dataset provides a previously uncapitalized opportunity to explore the beha
 % What if either is ground truth? We can look at C(A, B) vs max(C(A, M), C(B, M)), over the rock corpus alone, to obtain many datapoints.
 %
 
+As an initial step, the two annotators, referred to here as DT and TdC, are each used as a reference and estimation perspective in order to quantify the agreement between them.
+% Importantly, the chord vocabulary used by the RockCorpus transcriptions is a subset of all chords considered in this work, and no ef
+The results, given in Table \ref{tab:rc_agreement}, indicate a high, but imperfect level of consistency between the two human perspectives.
+Following earlier trends, this is also a function of the chord spelling complexity, whereby equivalence at the ``root'' is much higher than for ``tetrads''.
+Additionally, it is worth noting the asymmetry in chord comparisons.
+Thus, depending on the perspective used as the reference, a estimation may match better or worse with it.
+Finally, it is curious that the ``MIREX'' score is not perfect, a measure that focuses on pitch composition rather than contextual spelling.
+One would assume that the difficulty in naming a chord is more a function of the latter than the former, but this proves not to be the case.
 
-
-\begin{table}[h]
+\begin{table}[t]
 \begin{center}
 \scriptsize
 \caption{Micro-recall scores for the two references against each other, each as the reference against a deep network, and either against the deep network.}
-\label{tab:rc_}
+\label{tab:rc_agreement}
 
 \begin{tabular}{lrrrrrrr}
 \hline
@@ -1360,21 +1348,26 @@ TdC vs DNN  & 0.7182 & 0.7939 & 0.7314  &   0.5786  &    0.5822 &   0.7444 &   0
 \end{center}
 \end{table}
 
-Experts don't agree, even after error-checking.
-There is asymmetry in chord comparisons!
-Depending on who gets used as the reference, a comparison may match better or worse.
-DT's vocabulary is a superset of TdC's, hence the consistent difference.
-Even the MIREX score isn't perfect, which is surprising.
-Typically, one would think that the difficulty in naming a chord isn't identifying the contributing pitches, but spelling the name in the context of the piece.
-However, even humans aren't sure which pitches matter.
+Continuing, the deep network used in the previous analysis, XL-0.125, is again considered here.
+Adopting a similar methodology as before, the estimations of the deep network are compared against both references seperately, as well as against the references together and taking the better match.
+Overall performance is generaly worse than that observed over the holdout data in the previous investigation.
+This is predominantly caused by a mismatch in the chord distributions between the datasets, as the RockCorpus only contains half the chords known to the automatic system.
+Scores at the comparison of the ``root'' are much closer than that of the ``tetrads'' level, for example.
+Comparing the algorithmic estimations against the intersection of the human references results in a small performance boost across all scores, indicating that the machine's ``errors'' are musically plausible, and might be validated by an additional perspective.
 
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.8\textwidth]{trackwise_rc_agreement}
 \caption{Trackwise agreement between anotators versus the best match between either annotator and the best performing deep network.}
-\label{fig:trackwise_test_agreement}
+\label{fig:trackwise_rc_agreement}
 \end{figure}
+
+Keeping with previous methodology, annotator agreement is compared to the better match between the estimation and either reference on a trackwise basis; this is given in Figure \ref{fig:trackwise_rc_agreement} for the ``tetrads'' metric.
+In contrast to Figure \ref{fig:trackwise_test_agreement}, the former is shown along the $x$-axis, and the latter along the $y$-axis.
+This scatter plot can be understood similarly to before, with a few slight differences.
+As before, Quadrant I contains tracks where all transcriptions agree estimation ($x > 0.5$, $y > 0.5$), and Quadrant III, where all transcriptions disagree ($x < 0.5$, $y < 0.5$).
+Quadrant II now contains tracks where the \emph{annotators} disagree significantly ($x < 0.5$), but one annotator matches the reference well ($y > 0.5$), and Quadrant IV contains tracks where the annotators agree ($x > 0.5$), but the estimation disagrees with them both ($y < 0.5$).
 
 
 \begin{figure}[t]
@@ -1385,6 +1378,12 @@ However, even humans aren't sure which pitches matter.
 \label{fig:rc_quadI}
 \end{figure}
 
+Figure \ref{fig:rc_quadI} shows the three-part transcription for ``The Weight'' by The Band, a track in Quandrant I.
+Again, the three chord sequences score well against each other, and offer a high degree of visual similarity.
+Notably though, the algorithmic estimation independently agrees more with the interpretation of TdC than DT.
+For example, there are slight discrepancies in root movement at the end of the sequence, where DT expands the \textt{A:maj} of TdC and DNN into \textt{A:maj}-\textt{F\#:min}-\textt{C\#:min}, or relatively, I-vi-iii.
+This motion occurs multiple times in the song, and each perspective is consistent in its interpretation.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{rc_TRJAZCU14A0814BC9D_annotations}
@@ -1393,22 +1392,33 @@ However, even humans aren't sure which pitches matter.
 \label{fig:rc_quadII}
 \end{figure}
 
+``All Apologies'' by Nirvana.
+DT says major, TdC says dominant 7, deep network says both, but only the dominant seven when the flat-seventh is played by a string part (27 seconds in).
+This causes considerable mismatch between annotators and, to an extent, in evaluating the automatic system, because everyone is in some sense correct.
+
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{rc_TRVHWAR14A080AB412_annotations}
-\includegraphics[width=\textwidth]{rc_TRVHWAR14A080AB412_legend}
+\includegraphics[width=\textwidth]{rc_TRUVQBD14A081682DB_annotations}
+\includegraphics[width=\textwidth]{rc_TRUVQBD14A081682DB_legend}
 \caption{Reference and estimated chord sequences for a track in quadrant III, the condition where neither annotator agrees with the algorithm, nor each other.}
 \label{fig:rc_quadIII}
 \end{figure}
+
+``Papa's Got a Brand New Bag'' by James Brown.
+Monophonic riffs,
+
+
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{rc_TRXVZFX14A0816D7D2_annotations}
 \includegraphics[width=\textwidth]{rc_TRXVZFX14A0816D7D2_legend}
-\caption{Reference and estimated chord sequences for a track in quadrant IV, the condition where both annotators agree with each other, but neither agrees with the algorithm.}
+\caption{Reference and estimated chord sequences for a track in Quadrant IV, the condition where both annotators agree with each other, but neither agrees with the algorithm.}
 \label{fig:rc_quadIV}
 \end{figure}
 
+``Every Breath You Take'' by The Police.
+A4 is approximately 426Hz, putting the song roughly a quartertone flat.
 
 
 
