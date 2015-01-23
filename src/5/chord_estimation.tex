@@ -1381,8 +1381,8 @@ Quadrant II now contains tracks where the \emph{annotators} disagree significant
 Figure \ref{fig:rc_quadI} shows the three-part transcription for ``The Weight'' by The Band, a track in Quandrant I.
 Again, the three chord sequences score well against each other, and offer a high degree of visual similarity.
 Notably though, the algorithmic estimation independently agrees more with the interpretation of TdC than DT.
-For example, there are slight discrepancies in root movement at the end of the sequence, where DT expands the \textt{A:maj} of TdC and DNN into \textt{A:maj}-\textt{F\#:min}-\textt{C\#:min}, or relatively, I-vi-iii.
-This motion occurs multiple times in the song, and each perspective is consistent in its interpretation.
+For example, there are slight discrepancies in root movement at the end of the sequence, where DT expands the \texttt{A:maj} of TdC and DNN into \texttt{A:maj}-\texttt{F\#:min}-\texttt{C\#:min}, or relatively in Roman numeral form, I-vi-iii.
+This motion occurs multiple times in the song, and each annotator's interpretation is internally consistent.
 
 \begin{figure}[t]
 \centering
@@ -1392,9 +1392,14 @@ This motion occurs multiple times in the song, and each perspective is consisten
 \label{fig:rc_quadII}
 \end{figure}
 
-``All Apologies'' by Nirvana.
-DT says major, TdC says dominant 7, deep network says both, but only the dominant seven when the flat-seventh is played by a string part (27 seconds in).
-This causes considerable mismatch between annotators and, to an extent, in evaluating the automatic system, because everyone is in some sense correct.
+Being that the human annotators tend to agree more with each other than the two automatic systems previously considered, fewer tracks fall in the left half of the scatter plot in Figure \ref{fig:trackwise_rc_agreement} than Figure \ref{fig:trackwise_test_agreement}.
+One of these from Quadrant II, ``All Apologies'' by Nirvana, is shown in Figure \ref{fig:rc_quadII}.
+Here, the human annotators have disagreed on the harmonic spelling of the verse, with DT and TdC reporting \texttt{C\#:maj} and \texttt{C\#:7}, respectively.
+On closer inspection, it would appear that both annotators are in some sense correct;
+the majority of the verse is arguably \texttt{C\#:maj}, but a cello sustains the flat-$7^{th}$ of this key intermittently.
+% 27 seconds in
+These regions that this occurs are clearly captured in the DNN annotation, corresponding to its \texttt{C\#:7} predictions.
+This proves to be an interesting discrepancy, because one annotator (DT) is using long-term structural information about the song to apply a single chord to the entire verse.
 
 \begin{figure}[t]
 \centering
@@ -1404,9 +1409,12 @@ This causes considerable mismatch between annotators and, to an extent, in evalu
 \label{fig:rc_quadIII}
 \end{figure}
 
-``Papa's Got a Brand New Bag'' by James Brown.
-Monophonic riffs,
-
+Another of these select few, this time from Quadrant III, is ``Papa's Got a Brand New Bag'' by James Brown, shown in Figure \ref{fig:rc_quadIII}.
+In this instance, all perspectives involved disagree substantially, not only at the level of sevenths but also the quality of the third.
+Exploring why this might be the case, one finds the song consists of unison riffs and syncopated rhythms with liberal use of rests.
+In the absence of sustained simultaneities, most of the harmony in the song is implied, creating even more room for subjectivity on behalf of the annotators.
+The automatic system, alternatively, flips back and forth between the various perspectives of the two reference annotations.
+Again, the system tends to be rather literal in its interpretation of solo vocal phrases, and labels such regions ``no-chord'' in the middle of the song.
 
 
 \begin{figure}[t]
@@ -1417,9 +1425,14 @@ Monophonic riffs,
 \label{fig:rc_quadIV}
 \end{figure}
 
-``Every Breath You Take'' by The Police.
-A4 is approximately 426Hz, putting the song roughly a quartertone flat.
-
+Finally, a track from Quadrant IV ---``Every Breath You Take'' by The Police--- is given in Figure \ref{fig:rc_quadIV}.
+Similar to the track considered from the same region before, the estimation is consistently a half-step flat from the references.
+This pattern is indicative of a similar tuning discrepancy as before, and tuning a pure sinusoid to the track finds the tonic at approximately 426Hz, putting the song just over a quartertone flat.
+Though functionally equivalent to the previous example of tuning being an issue, this instance is interesting because two independent annotators arrived at the same decision.
+One reason this might have occurred is that, as a rock song, it makes far more sense to play in \texttt{A:maj} on guitar than \texttt{Ab:maj}.
+The chord shapes involved are much easier to form in \texttt{A:maj}, and therefore more likely.
+Additionally, a guitarist would probably need to change tunings to play the \texttt{Eb:maj} in the right voicing.
+Taken together, it is noteworthy that such extrinsic knowledge can, and perhaps should, play a role in the process of automatic chord estimation.
 
 
 
