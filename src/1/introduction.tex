@@ -9,23 +9,102 @@
 \chapter{Introduction}
 \label{chp:introduction}
 
-Bear claw biscuit muffin croissant oat cake cotton candy brownie applicake oat cake. Cupcake bear claw bonbon jujubes marzipan pie pastry sweet roll. Chocolate dragee jelly cheesecake sweet roll. Pudding muffin cookie tiramisu jujubes cookie gummi bears muffin. Bear claw powder jujubes marshmallow gingerbread. Jelly-o topping pastry sesame snaps jujubes halvah sweet cheesecake. Bonbon dragee tart tart liquorice bonbon. Marshmallow carrot cake cake applicake lollipop.
+% Information overload, yo
+Given the proliferation of digital information in the last two decades, there is a significant research effort behind the development of computational methods and algorithms to help make information universally accessible and useful. %, and this is particularly evident in the realm of music.
+The quintessential response to this challenge is embodied in Google, whose collective \emph{raison d'etre} is the organization and indexing of the world's information.
+To appreciate the value and reach of this technology, one only needs to imagine trying to make sense of the Internet without it.
+This domain is broadly referred to as \emph{information retrieval} (IR), and has grown rapidly in recent years, with various subdomains coalescing around application-specific topics.
+
+% IR Formulation
+At a high level, tackling this problem of ``information overload'' can be formulated rather simply: from a massive collection of items, or more generally \emph{documents}, how does one find those \emph{relevant} to a given \emph{query}?
+To answer this question, any system, computational or otherwise, must typically address two related aspects: the \emph{intrinsic} document description, and the \emph{extrinsic} relationships between these documents.
+Emphasizing this distinction, the former focuses on a single document in isolation, whereas the latter is concerned with a document's place in a collection.
+% Human provided descriptions and relationships
+To date, the most successful approaches to large-scale information retrieval leverage human-provided \emph{signals} to accomplish this.
+% Human signals about the content
+For example, the Netflix Challenge\footnote{netflix link} ---an open contest to find the best system for automatically predicting a user's enjoyment of a movie--- was built exclusively on movie ratings provided by a large collection of other users.
+% Links between content
+On the other hand, Google's \emph{PageRank} algorithm\footnote{pagerank link} associates websites based on how users have linked these pages together, thus facilitating the process of navigating this web of information.
+% Importantly, in this paradigm, it is of little consequence what a document actually \emph{is} or represents once a user is able to provide a compact description of it.
+
+% Music is a different ballgame, y'all; document description is wicked hard.
+While the strategy of leveraging human signals has proven successful in large-scale music recommendation, such as Pandora Radio\footnote{pandora website}, its application to more general music information systems is fundamentally limited by manual music description, manifesting in three related ways.
+First, human signals commonly used in such systems ---clicks, likes, views and shares--- are easily captured as a natural by-product of the typical user interacting with a system.
+It is one thing to obtain a simple ``thumbs up'' for a song; it is quite another to ask that same user to provide a chord transcription of it.
+Second, and by the same token, these descriptions may require a high degree of expertise or effort to perform.
+The average music listener is not capable of chord transcription, whether or not she possesses the time or willingness to attempt it.
+Finally, even given the skill, motivation, and infrastructure to manually describe music, this approach does scale to the volumes of music content that already exists.
+The Music Genome Project, for example, has managed to manually annotate some 1M commercial recordings, at a pace of 20-30 minutes per track; the iTunes Music Store, however, now offers over 28M tracks for purchase.
+To illustrate how vast this discrepancy is, consider the following: even assuming the lower bound of 20 minutes, it would still take one poor individual \emph{1,000 years} of non-stop annotation to close that gap.
+More importantly, this only considers ``commercial'' music recordings, neglecting amateur or unpublished content, the addition of which makes this goal even more insurmountable.
+Given the sheer impossibility for humans to meaningfully describe all recorded music, now and in the future, truly scalable music information systems will require good computational algorithms to perform this task.
+
+% Music description is good, state of the art is bad
+Thus, the development of computational systems to describe audio, and particularly music, signals ---to make computers \emph{hear} like humans \emph{hear}--- is both a valuable and fascinating problem.
+This problem is also very much unsolved, and recently some in the field of music informatics have begun to question the efficacy of traditional research methods given an apparent decceleration of progress.
+% Statement of the issues?
+Simultaneously, in the related fields of computer vision and automatic speech recognition, a branch of machine learning, referred to as \emph{deep learning}, has shown great performance in machine perception domains, toppling many long-standing benchmarks.
+On closer inspection, one recognizes considerable conceptual overlap between deep learning and conventional MIR systems, further encouraging this promising union.
+
+% Research goal
+Synthesizing these observations, the goal of this study is the exploration of deep learning methods as an general approach to system design in music informatics.
+More specifically, the proposed research method proceeds thusly:
+first, it is necessary to assess why progress in content-based MIR may have stalled, and, in doing so, identify possible deficiencies in this methodology;
+having built this understanding, standard approaches to music signal processing are reformulated in the language and concepts of deep learning, and subsequently applied to classic MIR problems;
+finally, the performance and behavior of these deep learning systems is deconstructed in order to illustrate the advantages and challenges inherent to this paradigm.
+
 
 \section{Scope of this Study}
 \label{sec:scope}
 
-Souffle chupa chups croissant donut. Muffin cotton candy cookie marzipan chupa chups. Jelly-o gummi bears topping caramels pudding. Marzipan applicake jujubes souffle sweet roll. Lemon drops dessert fruitcake carrot cake cotton candy lollipop tiramisu. Gummi bears oat cake bear claw liquorice tootsie roll jelly cookie. Lemon drops croissant applicake. Toffee applicake pie carrot cake. Wafer dragee souffle toffee. Powder tart apple pie pie sweet cotton candy sesame snaps.
+Content-based music description is a crucial area of study in \emph{music informatics}, based on the premise that if a human expert can make some observation about an audio signal, it should be possible to design a machine to behave similarly.
+recorded music signals;
+tradition of tonal western music, with an emphasis on contemporary popular music.
+
+% Behaviorist view of intelligence
+This is compounded by the observation that such information processing systems are not necessarily performing the task at hand, so much as modeling the behavior of the annotators.
+The perception of music is ultimately a subjective experience; seemingly well-defined tasks in music informatics are often those where the majority of listeners share a common experience.
+As a result, many annotators for a highly subjective task, such as genre identification, can lead to situations where the ground-truth can conflict with itself.
+Therefore, performance ceilings are often lower than 100\%, but are otherwise unknown in practice.
+Though some might contend that this amounts to labeling error, the problem ---multiple valid interpretations--- is especially characteristic to music and must be acknowledged.
+
+These two realities can be synthesized into a singular observation about not just music informatics, but much of machine perception as a whole.
+As alluded to in the opening paragraph, the classic view of these problems is functional in nature.
+Such computational systems attempt to model a human expert by producing an equivalent output for a given input, and often implicitly build on two assumptions: that such mappings can be obtained, and that generalization ---accurate outputs for never-before-seen inputs--- is synonymous with interpolation.
+The limits of this research trajectory are intrinsically linked to the extent that this is or can be a valid problem formulation, but recent progress has aptly demonstrated that the state of the art is well within these bounds.
+
+
 
 \section{Motivation}
+% Significance
 
-Icing toffee gummi bears bear claw caramels chocolate bar apple pie. Apple pie biscuit jelly jelly. Jelly beans tiramisu gingerbread gummi bears. Souffle topping bonbon chupa chups pie fruitcake. Souffle topping muffin jelly beans gummies liquorice tiramisu. Gummi bears tiramisu danish. Liquorice dessert chocolate powder macaroon gummies apple pie croissant. Topping jelly-o gingerbread unerdwear.com bonbon sugar plum candy canes. Croissant gummies cupcake gummi bears sesame snaps macaroon biscuit. Sweet roll liquorice apple pie sweet roll.
+
+The proposed research is primarily motivated by two complementary observations:
+one, large scale music signal processing systems are now necessary to help humans navigate and make sense of an ever-increasing volume of music information;
+two ---and, more notably, the specific problem this work seeks to address--- the conventional research tradition in content-based music information retrieval is yielding diminishing returns across the board, despite many research areas remaining unsolved.
+
+
+
+As will be addressed in the following chapter, despite steady scientific advances to address these issues in music informatics, progress in content-based MIR has slowed or altogether stalled well below satisfactory levels. %, leading some to question the direction of the discipline.
+
+
 
 \section{Dissertation Outline}
 \label{sec:outline}
 \begin{description}
-\item Chapter \ref{chp:background} Tiramisu wafer wafer icing fruitcake powder brownie macaroon dessert. 
+\item Chapter \ref{chp:context} Tiramisu wafer wafer icing fruitcake powder brownie macaroon dessert.
 
-\item Chapter \ref{chp:conclusion} concludes this thesis. Candy gingerbread chupa chups carrot cake danish. 
+\item Chapter \ref{chp:deep_learning} Tiramisu wafer wafer icing fruitcake powder brownie macaroon dessert.
+
+\item Chapter \ref{chp:timbre_sim} explores the application of deep learning toward the development of objective timbre similarity spaces.
+
+\item Chapter \ref{chp:timbre_sim}
+
+\item Chapter \ref{chp:guitar} extends the previous work of automatic chord estimation to directly estimate  human readable representations
+
+\item Chapter \ref{chp:reproducibility} documents the software contributions resulting from this study, contributing to the greater cause of reproducible research efforts.
+
+\item Chapter \ref{chp:conclusion} concludes this thesis. Candy gingerbread chupa chups carrot cake danish.
 \end{description}
 
 \section{Contributions}
@@ -33,8 +112,8 @@ The primary contributions of this dissertation are listed below:
 
 \begin{itemize}
   \onehalfspacing
-\item Carrot cake macaroon brownie chupa chups powder sesame snaps bear claw souffle biscuit. 
-\item Sweet roll chocolate chocolate cake. 
+\item Carrot cake macaroon brownie chupa chups powder sesame snaps bear claw souffle biscuit.
+\item Sweet roll chocolate chocolate cake.
 \end{itemize}
 
 \section{Associated Publications by the Author}
@@ -47,7 +126,7 @@ This thesis covers much of the work presented in the publications listed below:
 \begin{itemize}
 \onehalfspacing
 \item Sugar plum jelly beans cookie tootsie roll jelly-o.
-\item Tootsie roll sugar plum cotton candy pastry chocolate cake pudding oat cake gummi bears. 
+\item Tootsie roll sugar plum cotton candy pastry chocolate cake pudding oat cake gummi bears.
 \end{itemize}
 
 \subsection{Peer-Reviewed Conference Papers}
@@ -55,8 +134,8 @@ This thesis covers much of the work presented in the publications listed below:
 \begin{itemize}
 \onehalfspacing
 \item Cheesecake pudding marzipan gingerbread cheesecake oat cake applicake.
-\item  Dragee marzipan unerdwear.com powder icing croissant pastry. 
-\item  Dessert macaroon sweet roll macaroon wafer topping croissant. 
+\item  Dragee marzipan unerdwear.com powder icing croissant pastry.
+\item  Dessert macaroon sweet roll macaroon wafer topping croissant.
 
 \end{itemize}
 
