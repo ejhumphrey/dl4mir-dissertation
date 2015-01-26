@@ -57,21 +57,44 @@ finally, the performance and behavior of these deep learning systems is deconstr
 \section{Scope of this Study}
 \label{sec:scope}
 
-Content-based music description is a crucial area of study in \emph{music informatics}, based on the premise that if a human expert can make some observation about an audio signal, it should be possible to design a machine to behave similarly.
-recorded music signals;
-tradition of tonal western music, with an emphasis on contemporary popular music.
-
+% Computationally model music descriptions
+% How far can you get from an audio signal alone
+% Input-output systems / functions
 % Behaviorist view of intelligence
-This is compounded by the observation that such information processing systems are not necessarily performing the task at hand, so much as modeling the behavior of the annotators.
+% Quantitative evaluation; how well can these input / output pairs be modeled.
+%
+
+This study focuses on computationally modeling the relationship between stimuli (inputs) and observable behaviors (outputs) of a given system.
+Here, ``inputs'' are digital signals representing acoustic waves, or sounds, and ``outputs'' correspond to semantic descriptions of these observations in a particular namespace, e.g. chords.
+Typically, although not necessarily, the system being modeled is that of an intelligent human behavior, e.g. recognizing chords from music audio.
+Note that this formulation attempts to characterize any complex system as a \emph{function}, consistent with a behaviorist view of intelligence.
+As such, a computational model of some intelligent act might be deemed satisfactory if it passes a sort of ``Turing test'', where the responses of a machine are comparable to that of a human.
+
+% What does this mean for the computational model
+Given the clear relationship to the field of artificial intelligence (AI), it is a useful and necessary step to address the limits of this perspective, sucicntly captured by John Searle's famous thought experiment \cite{Searle1960?}.
+Imagine an enclosed room, where messages in a strange language arrive on paper in one mailbox, and responses returned through another.
+It is accompanied by a rather verbose instruction manual, enabling one unfamiliar with this particular language to reply appropriately.
+Though a clueless individual operating in this room might be able to carry on a perfectly coherent dialogue with someone, perhaps even convincing the outsider of comprehension, one would not claim this system to be ``intelligent'' due to a lack of \emph{intentionality} and \emph{comprehension}.
+Therefore, ``strong'' AI requires one not only acts intelligently, but does so with purpose and expectation.
+It is important, then, to recognize that the notion of ``behaving intelligently'' is not synonomous with ``being intelligent'', and the work here focuses entirely on the former.
+
+Music signal processing systems are fundamentally limited by two closely related issues: objective truth and subjective agreement.
+The conceptual abstraction inherent to music spans the most literal events ---a drum is struck--- to the most intangible ---a \emph{sad} melody is performed.
+Therefore, any attempt to semantically describe music is constrained to the extent that the response can be consistently derived from the signal alone.
+
+This is compounded by the observation that such information processing systems are not necessarily  performing the task at hand, so much as attempting to mimic the behavior of one or several human perspectives.
 The perception of music is ultimately a subjective experience; seemingly well-defined tasks in music informatics are often those where the majority of listeners share a common experience.
 As a result, many annotators for a highly subjective task, such as genre identification, can lead to situations where the ground-truth can conflict with itself.
 Therefore, performance ceilings are often lower than 100\%, but are otherwise unknown in practice.
 Though some might contend that this amounts to labeling error, the problem ---multiple valid interpretations--- is especially characteristic to music and must be acknowledged.
 
-These two realities can be synthesized into a singular observation about not just music informatics, but much of machine perception as a whole.
-As alluded to in the opening paragraph, the classic view of these problems is functional in nature.
-Such computational systems attempt to model a human expert by producing an equivalent output for a given input, and often implicitly build on two assumptions: that such mappings can be obtained, and that generalization ---accurate outputs for never-before-seen inputs--- is synonymous with interpolation.
-The limits of this research trajectory are intrinsically linked to the extent that this is or can be a valid problem formulation, but recent progress has aptly demonstrated that the state of the art is well within these bounds.
+
+% The computational models considered here exhibit three important and related properties.
+% They are deterministic, time-invariant, and respond precisely to a given input.
+% In other words, the same input will always yield the same input, regardless of when it processed.
+% concepts like ``learning'' are used in the metaphorical sense.
+% and often implicitly build on two assumptions: that such mappings can be obtained, and that generalization ---accurate outputs for never-before-seen inputs--- is synonymous with interpolation.
+% The limits of this research trajectory are intrinsically linked to the extent that this is or can be a valid problem formulation, but recent progress has aptly demonstrated that the state of the art is well within these bounds.
 
 
 
@@ -83,28 +106,44 @@ The proposed research is primarily motivated by two complementary observations:
 one, large scale music signal processing systems are now necessary to help humans navigate and make sense of an ever-increasing volume of music information;
 two ---and, more notably, the specific problem this work seeks to address--- the conventional research tradition in content-based music information retrieval is yielding diminishing returns across the board, despite many research areas remaining unsolved.
 
+In the most immediate sense, the proposed research will develop systems to tackle various applications in music informatics.
+This will at least serve to explore an alternative approach to conventional problems in the field.
+Based on preliminary results, there is good reason to believe that deep learning may in fact push the state of the art in some, if not all, of the tasks considered.
+Sufficiently advanced systems could be deployed in end-user applications, such as navigating music libraries or computer-aided composition and performance.
 
+A thorough exploration and successful extension of deep learning to music signal processing has the significant potential to encourage others in the community to also conduct research in this area.
+The impacts of such a development could be far reaching, but there are two of particular note.
+First and foremost, drawing attention to a promising, but otherwise uncharted, research area opens new opportunities for fresh ideas and perspectives.
+Additionally, deep learning automatically optimizes a system to the data on hand, accelerating research and simplifying the overall design problem.
+Therefore these methods yield flexible systems that can easily adapt to new data as well as new \emph{problems}, allowing researchers to seek out novel, exciting applications.
 
-As will be addressed in the following chapter, despite steady scientific advances to address these issues in music informatics, progress in content-based MIR has slowed or altogether stalled well below satisfactory levels. %, leading some to question the direction of the discipline.
+Beyond the scope of music informatics, deep learning research in the context of a different domain, with its own unique challenges, is likely to produce discoveries beneficial to the broad audience of computer science and information processing.
+One such area where this is likely to occur is in the handling of time-domain signals and sequences.
+Computer vision, the field in which most breakthroughs in deep learning have occurred, mostly ignores the temporal aspect of images.
+Some effort has explored this in motion capture and natural language processing, as we will discuss in the following chapter, but the tradition of music signal processing draws heavily from digital signal theory, a field of study focused almost entirely on an analytical understanding of time.
 
+Therefore, this work offers several potential contributions, both theoretical and practical, to a diverse audience, spanning users of technology, music informatics, and the deep learning community on the whole.
 
 
 \section{Dissertation Outline}
 \label{sec:outline}
 \begin{description}
-\item Chapter \ref{chp:context} Tiramisu wafer wafer icing fruitcake powder brownie macaroon dessert.
 
-\item Chapter \ref{chp:deep_learning} Tiramisu wafer wafer icing fruitcake powder brownie macaroon dessert.
+\item Chapter \ref{chp:context} reviews the current state of affairs in music informatics research, providing context for this work.
+
+\item Chapter \ref{chp:deep_learning} surveys the body of literature in deep learning, outlining core concepts and definitions.
 
 \item Chapter \ref{chp:timbre_sim} explores the application of deep learning toward the development of objective timbre similarity spaces.
 
-\item Chapter \ref{chp:timbre_sim}
+\item Chapter \ref{chp:chord_estimation} considers the application of deep learning toward automatic chord estimation, as a means to both improve the state of the art and better understand the task at hand.
 
-\item Chapter \ref{chp:guitar} extends the previous work of automatic chord estimation to directly estimate  human readable representations
+\item Chapter \ref{chp:guitar} extends this chord estimation efforts to directly estimate human-readable representations in the form of guitar tablature.
 
 \item Chapter \ref{chp:reproducibility} documents the software contributions resulting from this study, contributing to the greater cause of reproducible research efforts.
 
-\item Chapter \ref{chp:conclusion} concludes this thesis. Candy gingerbread chupa chups carrot cake danish.
+\item Chapter \ref{chp:conclusion} concludes this thesis.
+There will be tables and chairs, there'll be pony rides and dancing bears, there'll even be a band.
+
 \end{description}
 
 \section{Contributions}
