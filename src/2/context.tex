@@ -11,21 +11,18 @@
 
 % Goals of this chapter
 % ------------
-% state of MIR
+% State of MIR
 % Reassessment of common practice
-%   Summary of findings
+% Summary of findings
 % Proposed solution -- deep learning
-% Deeper architectures in MIR
-% Previous work
+%   Deep architectures
+%   Feature learning
+% Previous work in MIR
 
 
 \section{State of Affairs in MIR}
 
-It goes without saying that we live in the Age of Information, our day to day experiences awash in a flood of data.
-We buy, sell, consume and produce information in unprecedented quantities, with countless applications lying at the intersection of our physical world and the virtual one of computers.
-As a result, a variety of specialized disciplines have formed under the auspices of Artificial Intelligence (AI) and information processing, with the intention of developing machines to help us navigate and ultimately make sense of this data.
-Coalescing around the turn of the century, music informatics is one such discipline, drawing from several diverse fields including electrical engineering, music psychology, computer science, machine learning, and music theory, among others.
-Now encompassing a wide spectrum of application areas and the kinds of data considered---from audio and text to album covers and online social interactions---music informatics can be broadly defined as the study of information related to, or is a result of, musical activity.
+
 
 From its inception, many fundamental challenges in content-based music informatics, and more specifically those that focus on music audio signals, have received a considerable and sustained research effort from the community.
 This area of study falls under the umbrella of perceptual AI, operating on the premise that if a human expert can experience some musical event from an audio signal, it should be possible to make a machine respond similarly.
@@ -50,7 +47,7 @@ And, are there other approaches to building computational systems to solve these
 
 \begin{figure}
 \begin{centering}
-\includegraphics[height=1.5 in]{mirex2}
+\includegraphics[width=\textwidth]{mirex2}
 \caption{\emph{Losing Steam}: The best performing systems at MIREX since 2007 are plotted as a function of time for Chord Estimation (blue diamonds), Genre Recognition (red circles), and Mood Prediction (green triangles).}
 \label{fig:mirex}
 \end{centering}
@@ -73,7 +70,7 @@ Therefore, while early research mainly employed simple classification strategies
 
 \begin{figure}
 \begin{centering}
-\includegraphics[width=0.8\textwidth]{mtb_mfccs}
+\includegraphics[width=\textwidth]{mtb_mfccs}
 \caption{\emph{What story do your features tell?} Sequences of MFCCs are shown for a real music excerpt (left), a time-shuffled version of the same sequence (middle), and an arbitrarily generated sequence of the same shape (right). All three representations have equal mean and variance along the time axis, and could therefore be modeled by the exact same distribution.}
 \label{fig:mfccs}
 \end{centering}
@@ -104,7 +101,7 @@ Similarly, chroma features are produced by applying a constant-Q filterbank (aff
 
 \begin{figure}[t]
 \begin{centering}
-\includegraphics[width=0.8\textwidth]{simplearch}
+\includegraphics[width=\textwidth]{simplearch}
 \caption{\emph{State of the art}: Standard approaches to feature extraction proceed as the cascaded combination of a few simpler operations; on closer inspection, the main difference between chroma and MFCCs is the parameters used.}
 \label{fig:simplearch}
 \end{centering}
@@ -188,7 +185,7 @@ Various periodicity tracking methods were simultaneously explored, including osc
 
 \begin{figure}
 \begin{centering}
-\includegraphics[width=0.8\textwidth]{hierarchicaltecture}
+\includegraphics[width=\textwidth]{hierarchicaltecture}
 \caption{\emph{A complex system of simple parts}: Tempo estimation has, over time, naturally converged to a deep architecture with strong parallels to a CNN. Note how each processing layer absorbs a different type of variance ---absolute amplitude, pitch and timbre, and phase--- to transform two different signals into nearly identical representations.}
 \label{fig:deeparchs}
 \end{centering}

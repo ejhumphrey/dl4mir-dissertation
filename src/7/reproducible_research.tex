@@ -6,80 +6,211 @@
 % the code below specifies where the figures are stored
 \graphicspath{{7/figures/}}
 
-\chapter{Background}
-\label{chp:background}
+\chapter{Workflows for Reproducible Research}
+\label{chp:reproducibility}
 
-\section{Bonbon Jelly Jelly}
-\label{sec:part1}
+This chapter details the various open source contributions made in the course of this work, culminating in a single code repository used to produce the results contained herein.
+These work items consist of the following:
+Section \ref{sec:jams} describes JAMS, a JSON annotated music specification;
+Section \ref{sec:biggie} introduces Biggie, an HDF5 interface for interacting with notoriously big data;
+Section \ref{sec:optimus} details a user-friendly library for building and serializing arbitrary acyclic processing graphs;
+Section \ref{sec:mir_eval} discusses relevant contributions to \texttt{mir\_eval}, a transparent framework for evaluating MIR systems;
+and finally, Section \ref{sec:dl4mir} outlines the framework used here to complete this research.
 
-Cookie sweet roll chocolate bar tiramisu apple pie. 
-Danish fruitcake sweet cupcake bonbon sugar plum icing bear claw \cite{Watson1830}. 
-Tart biscuit cotton candy. 
-Liquorice chocolate donut.
-Pudding chocolate bar caramels toffee cookie jelly-o candy canes tiramisu tart. 
-Bonbon oat cake cake jelly-o muffin cotton candy tiramisu. 
-Chupa chups unerdwear.com pastry croissant carrot cake caramels \citeyear{Ross1999}.
-Cake biscuit cupcake fruitcake pastry jelly beans. 
-Candy muffin gummies powder tootsie roll croissant. 
-Wafer cupcake pastry croissant danish.
 
-\section{Example}
-\label{sec:example}
 
-Sesame snaps tart jelly apple pie fruitcake marzipan jelly-o muffin. 
-Donut bear claw cheesecake jujubes tart. 
-Toffee croissant dessert fruitcake chocolate gingerbread bonbon.
+\section{JAMS: A JSON Annotated Music Specification}
+\label{sec:jams}
 
-\subsection{Toffee}
-Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate. 
-Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}. 
-Croissant cotton candy chupa chups. 
+Music annotations ---the collection of observations made by one or more agents about an acoustic music signal--- are an integral component of content-based Music Information Retrieval (MIR) methodology, and are necessary for designing, evaluating, and comparing computational systems.
+For clarity, we define the scope of an annotation as corresponding to time scales at or below the level of a complete song, such as semantic descriptors (tags) or time-aligned chords labels.
+Traditionally, the community has relied on plain text and custom conventions to serialize this data to a file for the purposes of storage and dissemination, collectively referred to as ``lab-files''.
+Despite a lack of formal standards, lab-files have been, and continue to be, the preferred file format for a variety of MIR tasks, such as beat or onset estimation, chord estimation, or segmentation.
+
+Meanwhile, the interests and requirements of the community are continually evolving, thus testing the practical limitations of lab-files.
+By our count, there are three unfolding research trends that are demanding more of a given annotation format:
+
+\begin{itemize}
+\item \textbf{Comprehensive annotation data}:
+Rich annotations, like the Billboard dataset\cite{burgoyne2011expert}, require new, content-specific conventions, increasing the complexity of the software necessary to decode it and the burden on the researcher to use it; such annotations can be so complex, in fact, it becomes necessary to document how to understand and parse the format\cite{de2012parsing}.
+
+\item \textbf{Multiple annotations for a given task}:
+The experience of music can be highly subjective, at which point the notion of ``ground truth'' becomes tenuous.
+Recent work in automatic chord estimation \cite{ni2013understanding} shows that multiple reference annotations should be embraced, as they can provide important insight into system evaluation, as well as into the task itself.
+
+\item \textbf{Multiple concepts for a given signal}:
+Although systems are classically developed to accomplish a single task, there is ongoing discussion toward integrating information across various musical concepts \cite{vincent2010roadmap}.
+This has already yielded measurable benefits for the joint estimation of chords and downbeats \cite{papadopoulos2011joint} or chords and segments \cite{mauch2009using}, where leveraging multiple information sources for the same input signal can lead to improved performance.
+\end{itemize}
+
+
+\noindent It has long been acknowledged that lab-files cannot be used to these ends, and various formats and technologies have been previously proposed to alleviate these issues, such as RDF \cite{cannam2006sonic}, HDF5\cite{bertin2011million}, or XML \cite{mckay2005ace}.
+However, none of these formats have been widely embraced by the community.
+We contend that the weak adoption of any alternative format is due to the combination of several factors.
+For example, new tools can be difficult, if not impossible, to integrate into a research workflow because of compatibility issues with a preferred development platform or programming environment.
+Additionally, it is a common criticism that the syntax or data model of these alternative formats is non-obvious, verbose, or otherwise confusing.
+This is especially problematic when researchers must handle format conversions.
+Taken together, the apparent benefits to conversion are outweighed by the tangible costs.
+
+
+\subsection{Core Design Principles}
+\label{subsec:design}
+
+%Unlike RDF, which places an emphasis on graphs and relationships, JSON is hierarchical, and furthermore was designed with two specific goals in mind: maximal readability and maximal efficiency.
+%Other structured data formats, like YAML (YAML is A Markup Language), are perhaps slightly more readable, but the speed with which data can be serialized is unparalleled.
+%It is no wonder then that the entirety of the Web Development community has embraced JSON, full stop, and nearly every programming language has its share of JSON libraries and support.
+
+In order to craft an annotation format that might serve the community into the foreseeable future, it is worthwhile to consolidate the lessons learned from both the relative success of lab-files and the challenges faced by alternative formats into a set of principles that might guide our design.
+With this in mind, we offer that usability, and thus the likelihood of adoption, is a function of three criteria:
+
+\subsubsection{Simplicity}
+\label{subsubsec:simplicity}
+The value of simplicity is demonstrated by lab-files in two specific ways.
+First, the contents are represented in a format that is intuitive, such that the document model clearly matches the data structure and is human-readable, i.e. uses a lightweight syntax.
+This is a particular criticism of RDF and XML, which can be verbose compared to plain text.
+Second, lab-files are conceptually easy to incorporate into research workflows.
+The choice of an alternative file format can be a significant hurdle if it is not widely supported, as is the case with RDF, or the data model of the document does not match the data model of the programming language, as with XML.
+
+\subsubsection{Structure}
+\label{subsubsec:structure}
+It is important to recognize that lab-files developed as a way to serialize tabular data (i.e. arrays) in a language-independent manner.
+Though lab-files excel at this particular use case, they lack the structure required to encode complex data such as hierarchies or mix different data types, such as scalars, strings, multidimensional arrays, etc.
+This is a known limitation, and the community has devised a variety of ad hoc strategies to cope with it: folder trees and naming conventions, such as ``\{X\}/\{Y\}/\{Z\}.lab'', where X, Y, and Z correspond to ``artist'', ``album'', and ``title'', respectively\footnote{\url{http://www.isophonics.net/content/reference-annotations}}; parsing rules, such as ``lines beginning with `\#' are to be ignored as comments''; auxiliary websites or articles, decoupled from the annotations themselves, to provide critical information such as syntax, conventions, or methodology.
+Alternative representations are able to manage more complex data via standardized markup and named entities, such as fields in the case of RDF or JSON, or IDs, attributes and tags for XML.
+
+\subsubsection{Sustainability}
+\label{subsubsec:sustainability}
+
+Recently in MIR, a more concerted effort has been made toward sustainable research methods, which we see positively impacting annotations in two ways.
+First, there is considerable value to encoding methodology and metadata directly in an annotation, as doing so makes it easier to both support and maintain the annotation while also enabling direct analyses of this additional information.
+Additionally, it is unnecessary for the MIR community to develop every tool and utility ourselves; we should instead leverage well-supported technologies from larger communities when possible.
+
+
+\section{Biggie}
+\label{sec:optimus}
+
+Key-value stores
+Random data access
+HDF5, scales to massive data sets.
+
+\subsection{Stash}
+
+Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
+Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
+Croissant cotton candy chupa chups.
 Cheesecake tart bear claw brownie sugar plum.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{pink_muffin.png}
-\caption{Cupcake caramels gingerbread cake.}
-\label{fig:muffin}
-\end{figure}
+\subsection{Entities}
+
+Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
+Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
+Croissant cotton candy chupa chups.
+Cheesecake tart bear claw brownie sugar plum.
 
 
-\begin{equation}
-\nabla^2p = \frac{1}{c^2} \frac{\partial^2 p}{\partial t^2}
-\label{eq:wave}
-\end{equation}
+\section{Optimus}
+\label{sec:optimus}
 
-Muffin dragee caramels sweet pudding danish bonbon jelly-o \gls{tcap}. 
-Dessert chocolate bar marzipan. 
-Tiramisu cheesecake caramels cake lemon drops. Icing pastry lollipop marshmallow jujubes.
-Gingerbread carrot cake marzipan souffle halvah. Bear claw cheesecake toffee pie donut. 
-Dessert pastry applicake biscuit caramels marzipan croissant muffin \ref{tab:things}.
+Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
+Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
+Croissant cotton candy chupa chups.
+Cheesecake tart bear claw brownie sugar plum.
 
-\begin{table*}[h]
-\begin{center}
-\caption{Halvah danish liquorice sesame snaps}
-\begin{tabular}{l l l l l l l}
-Dessert & Love \\
-\hline
-Cookie & 5.8\\
-Macaroon & 9.3\\
-Sugar plum & 0.78\\
-\hline
-\end{tabular}
-\label{tab:things}
-\end{center}
-\end{table*}
+\subsection{Goals}
+
+Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
+Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
+Croissant cotton candy chupa chups.
+Cheesecake tart bear claw brownie sugar plum.
+
+\subsection{Example}
+
+Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
+Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
+Croissant cotton candy chupa chups.
+Cheesecake tart bear claw brownie sugar plum.
 
 
-\noindent 
-Icing cheesecake biscuit pudding marshmallow. 
-Cake toffee fruitcake gummi bears. 
-Macaroon macaroon lollipop marzipan. 
-Ice cream tiramisu pie powder halvah.
+\section{mir\_eval}
+\label{sec:mir_eval}
+
+Much of the research in Music Information Retrieval (MIR) involves the development of systems that process raw music data to produce semantic information.
+The goal of these systems is frequently defined as attempting to duplicate the
+performance of a human listener given the same task~\cite{downie2003toward}.
+A natural way to determine a system's effectiveness might be for a human to study the output produced by the system and judge its correctness.
+However, this would yield only subjective ratings, and would also be extremely time-consuming when evaluating a system's output over a large corpus of music.
+
+Instead, objective metrics are developed to provide a well-defined way of computing a score which indicates each system's output's correctness.
+These metrics typically involve a heuristically-motivated comparison of the system's output to a reference which is known to be correct.
+Over time, certain metrics have become standard for each task, so that the performance
+of systems created by different researchers can be compared when they are evaluated
+over the same dataset~\cite{downie2003toward}.
+Unfortunately, this comparison can be confounded by small details of the implementations or procedures that can have disproportionate impacts on the resulting scores.
+
+% MIREX is the standard, but it's not community-developed, not transparent, not well-documented, uses multiple languages, is coupled to NEMA, not easy to use, dependencies, not used outside of MIREX, etc.
+For the past 10 years, the yearly Music Information Retrieval Evaluation eXchange
+(MIREX) has been a forum for comparing MIR algorithms over common datasets~\cite{downie2008music}.
+By providing a standardized shared-task setting, MIREX has become critically useful for tracking progress in MIR research.
+MIREX is built upon the Networked Environment for Music Analysis (NEMA)~\cite{west2010networked}, a large-scale system which includes exhaustive functionality for evaluating, summarizing, and displaying evaluation results.
+The NEMA codebase includes multiple programming languages and dependencies (some of which, Matlab, are proprietary) so compiling and running it at individual sites is nontrivial.
+%
+%Due to its scale, characteristics, and intended use,
+In consequence, the NEMA system is rarely used for evaluating MIR algorithms outside of
+the setting of MIREX~\cite{downie2008music}.
+Instead, researchers often create their own implementations of common metrics for evaluating their algorithms.
+These implementations are thus not standardized, and may contain differences in details, or even bugs, that confound comparisons.
+
+These factors motivate the development of a standardized software package which implements the most common metrics used to evaluate MIR systems.
+Such a package should be straightforward to use and well-documented so that it can be easily adopted by MIR researchers.
+In addition, it should be community-developed and transparently implemented so that all design decisions are easily understood and open to discussion and improvement.
+
+\subsection{Chords}
+
+Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord estimation is an ongoing topic of discussion, due to issues with vocabularies, comparison semantics, and other lexicographical challenges unique to the task~\cite{pauwels2013evaluating}.
+One source of difficulty stems from an inherent subjectivity in ``spelling'' a chord name and the level of detail a human observer can provide in a reference annotation~\cite{ni2013understanding}.
+As a result, a consensus has yet to be reached regarding the single best approach to comparing two sequences of chord labels, and instead are often compared over a set of rules, i.e Root, Major-Minor, and Sevenths, with or without inversions.
+
+To efficiently compare chords, a given chord label is first separated into its
+constituent parts, based on the syntax of~\cite{harte2010towards}.
+For example, the chord label \texttt{G:maj(6)/5} is mapped to three pieces of information: the root (``G''), the root-invariant active semitones as determined by the quality shorthand (``maj'') and scale degrees (``6''), and the bass interval (``5'').
+Based on this representation, an estimated chord label can be compare with a reference by defining a comparison function between these invariant representations.
+Any encoded chords that are deemed to be ``out of gamut'' return a negative score to be easily filtered.
+
+Track-wise scores are computed by weighting each comparison by the duration of its interval, over all intervals in an audio file.
+This is achieved by forming the union of the boundaries in each sequence, sampling the labels, and summing the time intervals of the ``correct'' ranges.
+The cumulative score, referred to as \emph{weighted chord symbol recall}, is tallied over a set audio files by discrete summation, where the importance of each score is weighted by the duration of each annotation~\cite{cho2013mirex}.
 
 
+\section{Deep Learning for MIR}
+\label{sec:dl4mir}
+
+Shell scripts for feature extraction, training, and evaluation.
+Results tabulated in iPython notebooks for reference and repeatability.
+
+\subsection{Timbre}
+
+Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
+Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
+Croissant cotton candy chupa chups.
+Cheesecake tart bear claw brownie sugar plum.
+
+\subsection{Chords}
+
+Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
+Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
+Croissant cotton candy chupa chups.
+Cheesecake tart bear claw brownie sugar plum.
 
 
+\subsection{Guitar}
+
+Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
+Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
+Croissant cotton candy chupa chups.
+Cheesecake tart bear claw brownie sugar plum.
 
 
+\section{Summary}
+\label{sec:summary}
 
+Everything necessary to repeat all research reported here is available online.
