@@ -9,48 +9,62 @@
 \chapter{Introduction}
 \label{chp:introduction}
 
+% Information age
+It goes without saying that we live in the Age of Information, our day to day experiences awash in a flood of data.
+As a society, we buy, sell, consume and produce information in unprecedented quantities.
+% More data than anyone can handle
+Given the accelerating rate at which digital information is created, one of the fundamental challenges facing the modern world is simply the navigation of it.
+% Google bitches
+The quintessential response to this challenge is embodied by Google, whose collective \emph{raison d'\^etre} is the organization and indexing of the world's information.
+To appreciate the value and reach of this technology, one only needs to imagine how difficult it is to browse the Internet without a search engine.
+
+ % is a significant research effort behind the development of computational methods and algorithms to help make information universally accessible and useful. %, and this is particularly evident in the realm of music.
+
 % Information overload, yo
-Given the proliferation of digital information in the last two decades, there is a significant research effort behind the development of computational methods and algorithms to help make information universally accessible and useful. %, and this is particularly evident in the realm of music.
-The quintessential response to this challenge is embodied in Google, whose collective \emph{raison d'\^etre} is the organization and indexing of the world's information.
-To appreciate the value and reach of this technology, one only needs to imagine trying to make sense of the Internet without it.
-This domain is broadly referred to as \emph{information retrieval} (IR), and has grown rapidly in recent years, with various subdomains coalescing around application-specific topics.
+
+% This domain is broadly referred to as \emph{information retrieval} (IR), and has grown rapidly in recent years, with various subdomains coalescing around application-specific topics.
+
+Understandably, a variety of specialized disciplines have formed under the auspices of developing systems to help people navigate and ultimately make sense of massive amounts of information.
+Coalescing around the turn of the century, music informatics is one such instance, drawing from several diverse fields including electrical engineering, music psychology, computer science, machine learning, and music theory, among others.
+Now encompassing a wide spectrum of application areas and the kinds of data considered---from audio and text to album covers and online social interactions---music informatics can be broadly defined as the study of information related to, or is a result of, musical activity.
 
 % IR Formulation
-At a high level, tackling this problem of ``information overload'' can be formulated rather simply: from a massive collection of items, or more generally \emph{documents}, how does one find those \emph{relevant} to a given \emph{query}?
-To answer this question, any system, computational or otherwise, must typically address two related aspects: the \emph{intrinsic} document description, and the \emph{extrinsic} relationships between these documents.
-Emphasizing this distinction, the former focuses on a single document in isolation, whereas the latter is concerned with a document's place in a collection.
+At a high level, tackling this problem of information overload can be formulated as a retrieval problem: from a large collection of music items, how does one find those relevant to a given query?
+To answer this question, any system, computational or otherwise, must typically solve two related problems: describe the \emph{intrinsic} qualities of an item in isolation, and determine the \emph{extrinsic} relationships between those in a collection.
+Emphasizing this distinction, the former focuses on absolute representation, whereas the latter is concerned with relative associations.
 % Human provided descriptions and relationships
-To date, the most successful approaches to large-scale information retrieval leverage human-provided \emph{signals} to accomplish this.
+To date, the most successful approaches to large-scale information systems leverage human-provided \emph{signals} to achieve rich representations of content.
 % Human signals about the content
 For example, the Netflix Challenge\footnote{netflix link} ---an open contest to find the best system for automatically predicting a user's enjoyment of a movie--- was built exclusively on movie ratings provided by a large collection of other users.
 % Links between content
-On the other hand, Google's \emph{PageRank} algorithm\footnote{pagerank link} associates websites based on how users have linked these pages together, thus facilitating the process of navigating this web of information.
+On the other hand, Google's \emph{PageRank} algorithm\footnote{pagerank link} associates websites based on how users have linked different pages together, thus facilitating the process of traversing this web of information.
 % Importantly, in this paradigm, it is of little consequence what a document actually \emph{is} or represents once a user is able to provide a compact description of it.
 
 % Music is a different ballgame, y'all; document description is wicked hard.
-While the strategy of leveraging human signals has proven successful in large-scale music recommendation, such as Pandora Radio\footnote{pandora website}, its application to more general music information systems is fundamentally limited by manual music description, manifesting in three related ways.
-First, human signals commonly used in such systems ---clicks, likes, views and shares--- are easily captured as a natural by-product of the typical user interacting with a system.
+While this strategy of leveraging human signals has proven successful in large-scale music recommendation, such as Pandora Radio\footnote{pandora website}, its application to more general music information problems is fundamentally limited, manifesting in three related ways.
+First, human signals commonly used in such systems ---clicks, likes, views and shares--- are easily captured as a natural by-product of the typical user interaction paradigm.
 It is one thing to obtain a simple ``thumbs up'' for a song; it is quite another to ask that same user to provide a chord transcription of it.
-Second, and by the same token, these descriptions may require a high degree of expertise or effort to perform.
-The average music listener is not capable of chord transcription, whether or not she possesses the time or willingness to attempt it.
-Finally, even given the skill, motivation, and infrastructure to manually describe music, this approach does scale to the volumes of music content that already exists.
+Second, manual music description may require a high degree of expertise or effort to perform.
+The average music listener is not capable of accurate chord transcription, whether or not she possesses the time or willingness to attempt it.
+Finally, even given the skill, motivation, and infrastructure to manually describe music, this approach cannot scale to \emhp{all} music content, now or in the future.
 The Music Genome Project, for example, has managed to manually annotate some 1M commercial recordings, at a pace of 20-30 minutes per track; the iTunes Music Store, however, now offers over 28M tracks for purchase.
-To illustrate how vast this discrepancy is, consider the following: even assuming the lower bound of 20 minutes, it would still take one poor individual \emph{1,000 years} of non-stop annotation to close that gap.
-More importantly, this only considers ``commercial'' music recordings, neglecting amateur or unpublished content, the addition of which makes this goal even more insurmountable.
+To illustrate how vast this discrepancy is, consider the following: even assuming the lower bound of 20 minutes, it would still take one sad individual \emph{1,000 years} of non-stop annotation to close that gap.
+More importantly, this only considers commercial music recordings, neglecting amateur or unpublished content, the addition of which makes this goal even more insurmountable.
 Given the sheer impossibility for humans to meaningfully describe all recorded music, now and in the future, truly scalable music information systems will require good computational algorithms to perform this task.
 
 % Music description is good, state of the art is bad
-Thus, the development of computational systems to describe audio, and particularly music, signals ---to make computers \emph{hear} like humans \emph{hear}--- is both a valuable and fascinating problem.
-This problem is also very much unsolved, and recently some in the field of music informatics have begun to question the efficacy of traditional research methods given an apparent decceleration of progress.
+Thus, the development of computational systems to describe music signals, referred to as machine listening or computer audition, is both a valuable and fascinating problem.
+In addition to facilitating the search and retrieval of large music collections, automatic systems capable of expert-level music description are invaluable to users who are unable to perform the task themselves, e.g. music transcription.
+Notably, this problem is also very much unsolved, and given an apparent decceleration of progress, some in the field of music informatics have begun to question the efficacy of traditional research methods.
 % Statement of the issues?
-Simultaneously, in the related fields of computer vision and automatic speech recognition, a branch of machine learning, referred to as \emph{deep learning}, has shown great performance in machine perception domains, toppling many long-standing benchmarks.
-On closer inspection, one recognizes considerable conceptual overlap between deep learning and conventional MIR systems, further encouraging this promising union.
+Simultaneously, in the related fields of computer vision and automatic speech recognition, a branch of machine learning, referred to as \emph{deep learning}, has shown great performance in various domains, toppling many long-standing benchmarks.
+On closer inspection, one recognizes considerable conceptual overlap between deep learning and conventional music information systems, further encouraging this promising union.
 
 % Research goal
-Synthesizing these observations, the goal of this study is the exploration of deep learning methods as an general approach to system design in music informatics.
+Synthesizing these observations, the goal of this study is the exploration of deep learning methods as a general approach to the design of machine listening systems for music applications.
 More specifically, the proposed research method proceeds thusly:
 first, it is necessary to assess why progress in content-based MIR may have stalled, and, in doing so, identify possible deficiencies in this methodology;
-having built this understanding, standard approaches to music signal processing are reformulated in the language and concepts of deep learning, and subsequently applied to classic MIR problems;
+having built an understanding, standard approaches to music signal processing are reformulated in the language and concepts of deep learning, and subsequently applied to classic MIR problems;
 finally, the performance and behavior of these deep learning systems is deconstructed in order to illustrate the advantages and challenges inherent to this paradigm.
 
 
@@ -82,11 +96,11 @@ Music signal processing systems are fundamentally limited by two closely related
 The conceptual abstraction inherent to music spans the most literal events ---a drum is struck--- to the most intangible ---a \emph{sad} melody is performed.
 Therefore, any attempt to semantically describe music is constrained to the extent that the response can be consistently derived from the signal alone.
 
-This is compounded by the observation that such information processing systems are not necessarily  performing the task at hand, so much as attempting to mimic the behavior of one or several human perspectives.
-The perception of music is ultimately a subjective experience; seemingly well-defined tasks in music informatics are often those where the majority of listeners share a common experience.
+This is compounded by the observation that such information processing systems are not necessarily  performing the task at hand, so much as attempting to mimic the decision making processes of one or more humans.
+However, the perception of music is predominantly a subjective experience; seemingly well-defined tasks in music informatics are often those where the majority of listeners share a common experience.
 As a result, many annotators for a highly subjective task, such as genre identification, can lead to situations where the ground-truth can conflict with itself.
 Therefore, performance ceilings are often lower than 100\%, but are otherwise unknown in practice.
-Though some might contend that this amounts to labeling error, the problem ---multiple valid interpretations--- is especially characteristic to music and must be acknowledged.
+Though some might contend that this amounts to labeling error, the problem faced by multiple valid interpretations is especially characteristic to music and must be acknowledged.
 
 
 % The computational models considered here exhibit three important and related properties.
@@ -104,7 +118,7 @@ Though some might contend that this amounts to labeling error, the problem ---mu
 
 The proposed research is primarily motivated by two complementary observations:
 one, large scale music signal processing systems are now necessary to help humans navigate and make sense of an ever-increasing volume of music information;
-two ---and, more notably, the specific problem this work seeks to address--- the conventional research tradition in content-based music information retrieval is yielding diminishing returns across the board, despite many research areas remaining unsolved.
+two ---and, more notably, the specific problem this work seeks to address--- the conventional research tradition in content-based music information retrieval is yielding diminishing returns, despite many research areas remaining unsolved.
 
 In the most immediate sense, the proposed research will develop systems to tackle various applications in music informatics.
 This will at least serve to explore an alternative approach to conventional problems in the field.
