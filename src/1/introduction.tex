@@ -46,7 +46,7 @@ First, human signals commonly used in such systems ---clicks, likes, views and s
 It is one thing to obtain a simple ``thumbs up'' for a song; it is quite another to ask that same user to provide a chord transcription of it.
 Second, manual music description may require a high degree of expertise or effort to perform.
 The average music listener is not capable of accurate chord transcription, whether or not she possesses the time or willingness to attempt it.
-Finally, even given the skill, motivation, and infrastructure to manually describe music, this approach cannot scale to \emhp{all} music content, now or in the future.
+Finally, even given the skill, motivation, and infrastructure to manually describe music, this approach cannot scale to \emph{all} music content, now or in the future.
 The Music Genome Project, for example, has managed to manually annotate some 1M commercial recordings, at a pace of 20-30 minutes per track; the iTunes Music Store, however, now offers over 28M tracks for purchase.
 To illustrate how vast this discrepancy is, consider the following: even assuming the lower bound of 20 minutes, it would still take one sad individual \emph{1,000 years} of non-stop annotation to close that gap.
 More importantly, this only considers commercial music recordings, neglecting amateur or unpublished content, the addition of which makes this goal even more insurmountable.
@@ -71,45 +71,43 @@ finally, the performance and behavior of these deep learning systems is deconstr
 \section{Scope of this Study}
 \label{sec:scope}
 
-% Computationally model music descriptions
-% How far can you get from an audio signal alone
-% Input-output systems / functions
-% Behaviorist view of intelligence
-% Quantitative evaluation; how well can these input / output pairs be modeled.
-%
+% Functionally model intelligent behavior
+% how to judge whether or not the description is good? and what is good?
+% hinges on how quality is defined
+% assessment is driven by how the system behaves compared to
 
-This study focuses on computationally modeling the relationship between stimuli (inputs) and observable behaviors (outputs) of a given system.
-Here, ``inputs'' are digital signals representing acoustic waves, or sounds, and ``outputs'' correspond to semantic descriptions of these observations in a particular namespace, e.g. chords.
-Typically, although not necessarily, the system being modeled is that of an intelligent human behavior, e.g. recognizing chords from music audio.
-Note that this formulation attempts to characterize any complex system as a \emph{function}, consistent with a behaviorist view of intelligence.
-As such, a computational model of some intelligent act might be deemed satisfactory if it passes a sort of ``Turing test'', where the responses of a machine are comparable to that of a human.
+This study explores the use of deep learning in the development of systems for automatic music description.
+Consistent with the larger body of machine perception research, the work presented here aims to computationally model the relationship between stimuli and observations made by an intelligent agent.
+In this case, ``stimuli'' are digital signals representing acoustic waves, e.g. sound, ``observations'' are semantic descriptions in a particular namespace, e.g. timbre or harmony, and the agent being modeled is a intelligent human, e.g. an expert music listener.
+In practice, the namespace of descriptions considered is constrained to a particular task or application, such as instrument recognition or chord estimation.
 
-% What does this mean for the computational model
-Given the clear relationship to the field of artificial intelligence (AI), it is a useful and necessary step to address the limits of this perspective, sucicntly captured by John Searle's famous thought experiment \cite{Searle1960?}.
-Imagine an enclosed room, where messages in a strange language arrive on paper in one mailbox, and responses returned through another.
-It is accompanied by a rather verbose instruction manual, enabling one unfamiliar with this particular language to reply appropriately.
-Though a clueless individual operating in this room might be able to carry on a perfectly coherent dialogue with someone, perhaps even convincing the outsider of comprehension, one would not claim this system to be ``intelligent'' due to a lack of \emph{intentionality} and \emph{comprehension}.
-Therefore, ``strong'' AI requires one not only acts intelligently, but does so with purpose and expectation.
-It is important, then, to recognize that the notion of ``behaving intelligently'' is not synonomous with ``being intelligent'', and the work here focuses entirely on the former.
+Furthermore, if the relationship between stimuli and observation is not a function of the agent, this mapping is said to be ``objective''.
+Objective relationships are those that are true absolutely by definition, such as the statement ``A C Major triad consists of the pitches C, E, and G.''
+Elaborating, all sufficiently capable agents should always produce the same output given the same input.
+Discrepancies between observations of the same stimuli are understood as one or more of these perspectives being erroneous, resulting from either simple error or a deficiency of knowledge.
+For objective relationships, the \emph{quality} of a model in question is determined by how well it is able to reproduce the ``correct'' expert perspective exactly.
 
-Music signal processing systems are fundamentally limited by two closely related issues: objective truth and subjective agreement.
-The conceptual abstraction inherent to music spans the most literal events ---a drum is struck--- to the most intangible ---a \emph{sad} melody is performed.
-Therefore, any attempt to semantically describe music is constrained to the extent that the response can be consistently derived from the signal alone.
+Conversely, input-output relationships that \emph{are} a function of the agent are said to be ``subjective''.
+In contrast to the objective case, which is fundamentally concerned with \emph{facts}, a subjective observation is ultimately an \emph{opinion}.
+As such, an opinion can only be true or false insofar as it is held by a competent agent.
+This is embodied, for example, in the statement ``That sounds like a saxophone.''
+Whether or not the stimuli originated from a saxophone is arguably of little consequence; an agent made the observation, and thus it is in some sense valid.
+Assessing the quality of a computational model at a subjective task must therefore take one of two slightly different formulations.
+The first transforms a subjective problem to an objective one by considering the perspective of single agent as truth, and thus the quality of a model is a function of how well it can mimic the behavior of that \emph{one} agent.
+Alternatively, the other approach attempts to determine whether or not a model makes observations on par with other competent agents
+%\footnote{It has been said that ``Reality is a shared delusion, albeit a persistent one.''},
+, forming the premise of Alan Turing's test for intelligence.
+In this view, a computational system's capacity to perform some intelligent task is measured by its ability to convince other humans that it is equally competent.
 
-This is compounded by the observation that such information processing systems are not necessarily  performing the task at hand, so much as attempting to mimic the decision making processes of one or more humans.
-However, the perception of music is predominantly a subjective experience; seemingly well-defined tasks in music informatics are often those where the majority of listeners share a common experience.
-As a result, many annotators for a highly subjective task, such as genre identification, can lead to situations where the ground-truth can conflict with itself.
-Therefore, performance ceilings are often lower than 100\%, but are otherwise unknown in practice.
-Though some might contend that this amounts to labeling error, the problem faced by multiple valid interpretations is especially characteristic to music and must be acknowledged.
+The notions of, and inherent conflict between, objectivity and subjectivity in audition and music perception are central to the challenge posed by the computational modeling of it.
+Arguably most facets of music perception are subjective and vary in degree from task to task.
+However, while a Turing test might be better suited toward evaluating the quality or usability of some computational model, the human involvement required by such assessments make them prohibitively costly in both time and money to conduct with any regularity.
+As a result, conventional research methodolgy in engineering and computer science greatly prefers \emph{quantitative} evaluation as a proxy to \emph{qualitative} responses collected from human subjects.
+Typically quantitative methods proceed by collecting some number of input-output pairs from one or more human subjects \emph{first} and treating this data sample as absolute or ``ground'' truth.
+Therefore, regardless of whether or not a given task is actually objective, it is a significant simplification in methodology to treat it as one.
 
-
-% The computational models considered here exhibit three important and related properties.
-% They are deterministic, time-invariant, and respond precisely to a given input.
-% In other words, the same input will always yield the same input, regardless of when it processed.
-% concepts like ``learning'' are used in the metaphorical sense.
-% and often implicitly build on two assumptions: that such mappings can be obtained, and that generalization ---accurate outputs for never-before-seen inputs--- is synonymous with interpolation.
-% The limits of this research trajectory are intrinsically linked to the extent that this is or can be a valid problem formulation, but recent progress has aptly demonstrated that the state of the art is well within these bounds.
-
+This is all to say that the validity and quality of a music description is ultimately determined by an objective fitness measure, not necessarily out of correctness but rather tractability and practicality.
+Thus, any quantitative measure is only valid so long as this assumption of objectivity is not invalidated.
 
 
 \section{Motivation}
