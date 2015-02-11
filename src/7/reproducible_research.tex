@@ -9,8 +9,20 @@
 \chapter{Workflows for Reproducible Research}
 \label{chp:reproducibility}
 
-This chapter details the various open source contributions made in the course of this work, culminating in a single code repository used to produce the results contained herein.
-These work items consist of the following:
+In recent years, the philosophy of open source software has begun taking root in scientific research, particularly among computer science efforts.
+There are several reasons why open research is beneficial to the greater body of human knowledge, but three are of particular value here.
+First, sharing code and data allows others to reproduce previous results, a fundamental tenet of the scientific method.
+Open source implementations are invaluable for sufficiently complex systems.
+It may be near impossible to describe every minute detail in a publication necessary for someone else to replicate the obtained results; for some cases, in fact, the only artifact that can do this unambiguously is the source code itself.
+Second, and in a related vein, open research makes is both easier and faster to build upon and extend the previous work of others.
+Even in the instance a researcher is able to recreate a published system, the time and effort necessary to get to this point is significant and arguably unnecessary.
+Granted, while there is an educational component inherent to the re-implementation of previous work, the situation is akin to long division: it is certainly valuable to learn \emph{how} to divide by hand, but no one shuns the use of a calculator on a day to day basis.
+Lastly, it is a good and responsible act to contribute tools and software back to the larger research community.
+All research stands on the shoulders of previous efforts, from improving on a recently published algorithm to the decades-old linear algebra routines doing all its number crunching.
+The reality is that no one individual has ever truly solved anything on their own, and sharing the fruits of one's research endeavors serves the common good.
+
+With these motivations in mind, this chapter details the various open source contributions made in the course of this work, culminating in a single code repository used to produce the results contained herein.
+These software tools consist of the following:
 Section \ref{sec:jams} describes JAMS, a JSON annotated music specification;
 Section \ref{sec:biggie} introduces Biggie, an HDF5 interface for interacting with notoriously big data;
 Section \ref{sec:optimus} details a user-friendly library for building and serializing arbitrary acyclic processing graphs;
@@ -18,35 +30,34 @@ Section \ref{sec:mir_eval} discusses relevant contributions to \texttt{mir\_eval
 and finally, Section \ref{sec:dl4mir} outlines the framework used here to complete this research.
 
 
-
 \section{JAMS: A JSON Annotated Music Specification}
 \label{sec:jams}
 
-Music annotations ---the collection of observations made by one or more agents about an acoustic music signal--- are an integral component of content-based Music Information Retrieval (MIR) methodology, and are necessary for designing, evaluating, and comparing computational systems.
-For clarity, we define the scope of an annotation as corresponding to time scales at or below the level of a complete song, such as semantic descriptors (tags) or time-aligned chords labels.
+Music annotations ---the collection of observations made by one or more agents about an acoustic music signal--- are an integral component of content-based music informatics methodology, and are necessary for designing, evaluating, and comparing computational systems.
+For clarity, the scope of an annotation is constrained to time scales at or below the level of a complete song, such as semantic descriptors (tags) or time-aligned chords labels.
 Traditionally, the community has relied on plain text and custom conventions to serialize this data to a file for the purposes of storage and dissemination, collectively referred to as ``lab-files''.
-Despite a lack of formal standards, lab-files have been, and continue to be, the preferred file format for a variety of MIR tasks, such as beat or onset estimation, chord estimation, or segmentation.
+Despite a lack of formal standards, lab-files have been, and continue to be, the preferred file format for a variety of music description tasks, such as beat or onset estimation, chord estimation, or segmentation.
 
 Meanwhile, the interests and requirements of the community are continually evolving, thus testing the practical limitations of lab-files.
-By our count, there are three unfolding research trends that are demanding more of a given annotation format:
+Reflecting on this tradition, there are three unfolding research trends that are demanding more of a given annotation format:
 
 \begin{itemize}
 \item \textbf{Comprehensive annotation data}:
-Rich annotations, like the Billboard dataset\cite{burgoyne2011expert}, require new, content-specific conventions, increasing the complexity of the software necessary to decode it and the burden on the researcher to use it; such annotations can be so complex, in fact, it becomes necessary to document how to understand and parse the format\cite{de2012parsing}.
+Rich annotations, like the Billboard dataset\cite{Burgoyne2011expert}, require new, content-specific conventions, increasing the complexity of the software necessary to decode it and the burden on the researcher to use it; such annotations can be so complex, in fact, it becomes necessary to document how to understand and parse the format\cite{De2012parsing}.
 
 \item \textbf{Multiple annotations for a given task}:
 The experience of music can be highly subjective, at which point the notion of ``ground truth'' becomes tenuous.
-Recent work in automatic chord estimation \cite{ni2013understanding} shows that multiple reference annotations should be embraced, as they can provide important insight into system evaluation, as well as into the task itself.
+Recent work in automatic chord estimation, both here and in \cite{ni2013understanding}, has shown that multiple reference annotations should be embraced, as they can provide important insight into both system evaluation and the problem formulation itself.
 
 \item \textbf{Multiple concepts for a given signal}:
-Although systems are classically developed to accomplish a single task, there is ongoing discussion toward integrating information across various musical concepts \cite{vincent2010roadmap}.
+Although systems are classically developed to describe observations in a single namespace, e.g. chords, there is ongoing discussion toward integrating information across various musical concepts \cite{vincent2010roadmap}.
 This has already yielded measurable benefits for the joint estimation of chords and downbeats \cite{papadopoulos2011joint} or chords and segments \cite{mauch2009using}, where leveraging multiple information sources for the same input signal can lead to improved performance.
 \end{itemize}
 
 
 \noindent It has long been acknowledged that lab-files cannot be used to these ends, and various formats and technologies have been previously proposed to alleviate these issues, such as RDF \cite{cannam2006sonic}, HDF5\cite{bertin2011million}, or XML \cite{mckay2005ace}.
 However, none of these formats have been widely embraced by the community.
-We contend that the weak adoption of any alternative format is due to the combination of several factors.
+Considering this options, the weak adoption of alternative formats is likely due to the combination of multiple factors.
 For example, new tools can be difficult, if not impossible, to integrate into a research workflow because of compatibility issues with a preferred development platform or programming environment.
 Additionally, it is a common criticism that the syntax or data model of these alternative formats is non-obvious, verbose, or otherwise confusing.
 This is especially problematic when researchers must handle format conversions.
@@ -56,12 +67,8 @@ Taken together, the apparent benefits to conversion are outweighed by the tangib
 \subsection{Core Design Principles}
 \label{subsec:design}
 
-%Unlike RDF, which places an emphasis on graphs and relationships, JSON is hierarchical, and furthermore was designed with two specific goals in mind: maximal readability and maximal efficiency.
-%Other structured data formats, like YAML (YAML is A Markup Language), are perhaps slightly more readable, but the speed with which data can be serialized is unparalleled.
-%It is no wonder then that the entirety of the Web Development community has embraced JSON, full stop, and nearly every programming language has its share of JSON libraries and support.
-
-In order to craft an annotation format that might serve the community into the foreseeable future, it is worthwhile to consolidate the lessons learned from both the relative success of lab-files and the challenges faced by alternative formats into a set of principles that might guide our design.
-With this in mind, we offer that usability, and thus the likelihood of adoption, is a function of three criteria:
+In order to craft an annotation format that might serve the community into the foreseeable future, it is worthwhile to consolidate the lessons learned from both the relative success of lab-files and the challenges faced by alternative formats into a set of principles that might guide the design of a new format.
+With this in mind, it is argued that usability, and thus the likelihood of adoption, is a function of three criteria:
 
 \subsubsection{Simplicity}
 \label{subsubsec:simplicity}
@@ -85,28 +92,69 @@ Recently in MIR, a more concerted effort has been made toward sustainable resear
 First, there is considerable value to encoding methodology and metadata directly in an annotation, as doing so makes it easier to both support and maintain the annotation while also enabling direct analyses of this additional information.
 Additionally, it is unnecessary for the MIR community to develop every tool and utility ourselves; we should instead leverage well-supported technologies from larger communities when possible.
 
+\subsection{The JAMS Schema}
+\label{subsec:schema}
+
+The primary record is an annotation.
+Core element is an observation.
+time, duration, value, confidence, namespace.
+Sparse data, dense data, repeated.
+Namespaces are key.
+They allow for the filtering and semantic interpretation of the data in an annotation.
+
+Annotations have metadata.
+Metadata objects allow for rich descriptions of \emph{who} made the observations.
+
+Annotations are repeated to form a JAMS file.
+JAMS files have a top-level file metadata object.
+This sponges absolute information about the audio file to which the annotations correspond.
+Duration, file identifiers, and such.
+
+
+\subsection{Python API}
+\label{subsec:jams_tools}
+
+Python library: \url{http://github.com/marl/jams}
+Allows a simple interface for acting on these files.
+Also preconverted many common datasets to this format.
+Makes it easier to use other tools to augment audio and the corresponding annotations in parallel \url{http://github.com/bmcfee/muda}.
+
+Example of using JAMS v2.
+
 
 \section{Biggie}
-\label{sec:optimus}
+\label{sec:biggie}
 
-Key-value stores
-Random data access
-HDF5, scales to massive data sets.
+Audio signals are high dimensional data, and it is useful to develop ways of capturing signal level information and associating it all with the same conceptual object, i.e. a recording.
+In this way, \emph{biggie} is the high-dimensional, signal-level equivalent to JAMS.
+Allows the user to compute an arbitrary set of time-aligned representations from a given audio signal and sponge this information together.
+This data is then associated in a key-value store, where each object is given a unique key, making it easy to align signal descriptions with human annotations.
+Biggie also allows random access, facilitating bootstrap sampling and stochastic training (see pescador).
+Being based on HDF5, biggie scales to arbitrarily large datasets; however, as it shares a common interface with common dictionaries, the memory footprint scales gracefully with available computational resources.
 
-\subsection{Stash}
-
-Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
-Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
-Croissant cotton candy chupa chups.
-Cheesecake tart bear claw brownie sugar plum.
 
 \subsection{Entities}
+\label{subsec:entities}
 
 Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
 Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
 Croissant cotton candy chupa chups.
 Cheesecake tart bear claw brownie sugar plum.
 
+\subsection{Stash}
+\label{subsec:stash}
+
+Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
+Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
+Croissant cotton candy chupa chups.
+Cheesecake tart bear claw brownie sugar plum.
+
+
+
+\subsection{Python API}
+\label{subsec:biggie_tools}
+
+\url{http://github.com/ejhumphrey/biggie}.
 
 \section{Optimus}
 \label{sec:optimus}
@@ -117,6 +165,7 @@ Croissant cotton candy chupa chups.
 Cheesecake tart bear claw brownie sugar plum.
 
 \subsection{Goals}
+\label{subsec:goals}
 
 Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
 Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
@@ -124,11 +173,14 @@ Croissant cotton candy chupa chups.
 Cheesecake tart bear claw brownie sugar plum.
 
 \subsection{Example}
+\label{subsec:example}
 
 Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
 Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
 Croissant cotton candy chupa chups.
 Cheesecake tart bear claw brownie sugar plum.
+
+\url{http://github.com/ejhumphrey/optimus}.
 
 
 \section{mir\_eval}
