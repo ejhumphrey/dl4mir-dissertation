@@ -132,3 +132,39 @@ In lieu of measuring subjective experience of using the system, we evaluate the 
 To also quantify the impact of the guitar-specific constraints, we define a second model with the same parameter complexity outlined in Subsection \ref{subsec:params}, but modify the transformation of $f_3$ to be a fully-connected layer like $f_2$ and use a linear softmax classifier rather than the RBF-templates, trained to minimize the negative log-likelihood.
 This allows us to control for model complexity and determine the influence of the design constraints on the learning problem.
 Both models are run for 30k iterations.
+
+
+\begin{table}[t]
+\begin{center}
+\scriptsize
+\caption{Micro-recall scores for }
+\label{tab:rc_agreement}
+\begin{tabular}{c|rrrrrrr}
+
+\hline
+\multicolumn{3}{l}{Cho, 2014} & & & & & \\
+\hline
+ & triads &   root &   mirex &   tetrads &   sevenths &   thirds &   majmin \\
+\hline
+Train & 0.8053 & 0.8529 &  0.8205 & 0.6763 & 0.6823 & 0.8261 & 0.8109 \\
+Test & 0.7970 & 0.8475 & 0.8147 & 0.6592 & 0.6704 & 0.8197 & 0.8057 \\
+\hline
+\hline
+\multicolumn{3}{l}{Unconstrained (Chapter 5)} & & & & & \\
+\hline
+ & triads &   root &   mirex &   tetrads &   sevenths &   thirds &   majmin \\
+\hline
+Train & 0.8899 & 0.9145 & 0.8962 & 0.8217 & 0.8214 & 0.9049 & 0.8908 \\
+Test  & 0.7995 & 0.8493 & 0.8145 & 0.6673 & 0.6788 & 0.8227 & 0.8077 \\
+\hline
+\hline
+\multicolumn{3}{l}{Fretboard Model} & & & & & \\
+\hline
+ & triads &   root &   mirex &   tetrads &   sevenths &   thirds &   majmin \\
+\hline
+Train & 0.8974 & 0.9240 & 0.9037 & 0.8136 & 0.8353 & 0.9098 & 0.9114 \\
+Test & \textbf{0.8234} & \textbf{0.8705} & \textbf{0.8352} & \textbf{0.6855} & \textbf{0.7084} & \textbf{0.8376} & \textbf{0.8394} \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}

@@ -220,3 +220,20 @@ Recent research has found that more complex optimization methods are sufficient 
 There has also been initial work investigating discriminative recursive models that also leverage unsupervised training \cite{Rolfe2013}.
 This research is particularly exciting, as it demonstrates that such models are actually within reach.
 Reflecting on the corpus of deep learning work in the past decade however, it should be noted that the majority of these breakthroughs ignore audio, and even more so music, signals, focusing instead on vision or natural language processing tasks.
+
+
+\section{Previous Efforts in Automatic Music Description}
+
+This realization is beginning to spread throughout the MIR community, and there is, understandably, an increasing interest in the application of deep learning methods to these problems.
+Among the first uses of deep learning were the application of CNNs to the detection of onsets \cite{Lacoste2007} and long short-term memory to model symbolic music sequences \cite{Eck2008}.
+Deep Belief Networks quickly gained popularity for genre recognition \cite{Hamel2009}, mood estimation \cite{Schmidt2011}, note transcription \cite{Nam2011}, and artist recognition \cite{Dieleman2011}, but somewhat surprisingly many of these methods operate on single, short-time observations of the music signal.
+Incorporating longer time-scales, CNNs have also been used to classify inputs on the order of seconds for, again, genre recognition \cite{Li2010}, instrument classification \cite{Humphrey2010} and chord estimation \cite{Humphrey2011, Humphrey2012b}.
+Predictive Sparse Decomposition (PSD) and methods inspired by sparse coding have also seen a spike in activity over the last two years for a variety of tasks \cite{Henaff2011, Nam2012}, but despite being developed for deep learning, neither of these systems are actually hierarchical.
+
+% It is worthwhile to note that many, if not all, of these works have achieved state of the art performance on their respective tasks, often in the first application of the method to the area.
+% Any instances where this has occurred, however, deep learning techniques have simply been directly some kind of derived audio representation with minimal modification.
+% It is therefore important to realize that these methods have never been tailored to address the nuances of music signals, and more importantly time.
+% Overall, only CNNs make an effort to consider observations on the order of seconds, but do so in an admittedly awkward way, requiring the observation length be defined \emph{a priori}.
+% The machine is ultimately limited to the amount of information it sees in its analysis, and there is obviously no fixed duration in which all musical behavior resides.
+
+\section{Summary}
