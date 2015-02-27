@@ -95,31 +95,35 @@ Additionally, it is unnecessary for the MIR community to develop every tool and 
 \subsection{The JAMS Schema}
 \label{subsec:schema}
 
-The primary record is an annotation.
-Core element is an observation.
-time, duration, value, confidence, namespace.
-Sparse data, dense data, repeated.
-Namespaces are key.
-They allow for the filtering and semantic interpretation of the data in an annotation.
+A JAMS object is hierarchically structured to capture all relevant information in a logically organized manner.
+The primary record is an \emph{annotation}, of which a JAMS object may contain zero or more.
+Annotations are comprised of \emph{observations}, which maintain a set of properties: time, duration, value, confidence, namespace.
+Observations have two variants, to better handle \emph{sparse} or \emph{dense} data, such as onsets or melody, respectively.
+The semantic context of an observation is specified by its \emph{namespace}, providing information about how the data in the observation should be understood.
+Thus a namespace allows for easy filtering and interpretation of the data in an annotation for different music description tasks.
 
-Annotations have metadata.
-Metadata objects allow for rich descriptions of \emph{who} made the observations.
+An annotation also maintains a \emph{metadata} object.
+Annotation metadata allows for rich descriptions of \emph{who} and \emph{how} a particular record was produced.
+Currently, metadata has properties such as \emph{corpus}, \emph{annotator}, \emph{validation}, \emph{curator}, to name a few fields.
+Not only does this information make it easier to develop and evaluate systems with an eye to subjectivity, but it enables deeper meta-analyses of the annotations themselves.
+This could be achieved by considering the observations made by annotators with different musical backgrounds or degrees of formal training, for example.
 
-Annotations are repeated to form a JAMS file.
-JAMS files have a top-level file metadata object.
-This sponges absolute information about the audio file to which the annotations correspond.
-Duration, file identifiers, and such.
+In addition to an array of annotations, JAMS objects also maintain a top-level file metadata object.
+While annotation metadata sponges information about observer, file metadata tracks global information about the corresponding audio signal, with properties like \emph{title}, \emph{artist}, \emph{duration}, or \emph{indentifiers}.
+As there is currently no standard convention for uniquely specifying audio recordings in a global manner, file metadata exists to help link the JAMS object with the appropriate signal.
+
+Finally, \emph{sandboxes} exist in both the top-level and annotation objects to facilitate the growth and extensibility of the format.
+These are unconstrained objects that can be used as needed for anything not covered by the formal schema.
+This is done in the hope that sandboxes might identify information that could be incorporated into future versions.
 
 
 \subsection{Python API}
 \label{subsec:jams_tools}
 
-Python library: \url{http://github.com/marl/jams}
-Allows a simple interface for acting on these files.
-Also preconverted many common datasets to this format.
-Makes it easier to use other tools to augment audio and the corresponding annotations in parallel \url{http://github.com/bmcfee/muda}.
-
-Example of using JAMS v2.
+To faciliate the use and integration of JAMS in software projects, a Python library is publicly available and under active development\footnote{\url{http://github.com/marl/jams}}.
+This application programming interface (API) provides a simple interface for reading, writing, and manipulating the information in a JAMS object.
+Many common datasets are also provided in this format to further encourage adoption.
+Complementing the creation and use of human annotations, JAMS makes it easier to operate on this information, such as augmenting audio and annotations in parallel \footnote{\url{http://github.com/bmcfee/muda}}.
 
 
 \section{Biggie}

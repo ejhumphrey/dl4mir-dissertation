@@ -13,9 +13,9 @@
 It goes without saying that we live in the Age of Information, our day to day experiences awash in a flood of data.
 As a society, we buy, sell, consume and produce information in unprecedented quantities.
 % More data than anyone can handle
-Given the accelerating rate at which digital information is created, one of the fundamental challenges facing the modern world is simply the navigation of it.
+Given the accelerating rate at which information is created, one of the fundamental challenges facing the modern world is simply making sense of all this data.
 % Google bitches
-The quintessential response to this challenge is embodied by Google, whose collective \emph{raison d'\^etre} is the organization and indexing of the world's information.
+The quintessential response to this obstacle is embodied by Google, whose collective \emph{raison d'\^etre} is the organization and indexing of the world's information.
 To appreciate the value and reach of this technology, one only needs to imagine how difficult it is to browse the Internet without a search engine.
 
  % is a significant research effort behind the development of computational methods and algorithms to help make information universally accessible and useful. %, and this is particularly evident in the realm of music.
@@ -24,25 +24,30 @@ To appreciate the value and reach of this technology, one only needs to imagine 
 
 % This domain is broadly referred to as \emph{information retrieval} (IR), and has grown rapidly in recent years, with various subdomains coalescing around application-specific topics.
 
-Understandably, a variety of specialized disciplines have formed under the auspices of developing systems to help people navigate and ultimately make sense of massive amounts of information.
+Understandably, a variety of specialized disciplines have formed under the auspices of developing systems to help people navigate and understand massive amounts of information.
 Coalescing around the turn of the century, music informatics is one such instance, drawing from several diverse fields including electrical engineering, music psychology, computer science, machine learning, and music theory, among others.
 Now encompassing a wide spectrum of application areas and the kinds of data considered---from audio and text to album covers and online social interactions---music informatics can be broadly defined as the study of information related to, or is a result of, musical activity.
 
 % IR Formulation
-At a high level, tackling this problem of information overload can be formulated as a retrieval problem: from a large collection of music items, how does one find those relevant to a given query?
-To answer this question, any system, computational or otherwise, must typically solve two related problems: describe the \emph{intrinsic} qualities of an item in isolation, and determine the \emph{extrinsic} relationships between those in a collection.
-Emphasizing this distinction, the former focuses on absolute representation, whereas the latter is concerned with relative associations.
+At a high level, tackling the problem of ``information overload'' is captured by a simple analogy: how exactly \emph{does} one find a needle in a haystack?
+To answer this question, any system, computational or otherwise, must solve two related problems.
+First, it is necessary to describe the intrinsic qualities of the item of interest, e.g. a needle is metal, sharp, thin, etc.
+And second, it is necessary to evaluate the extrinsic relationships between items to determine relevance.
+A piece of hay is certainly not a needle, for example, but is a pin sufficiently similar?
+Will any needle do, or is there specific criteria to satisfy?
+Emphasizing the distinction, \emph{description} focuses on absolute representation, whereas \emph{comparison} is concerned with relative associations.
+
 % Human provided descriptions and relationships
-To date, the most successful approaches to large-scale information systems leverage human-provided \emph{signals} to achieve rich representations of content.
+To date, the most successful approaches to large-scale information processing leverage human-provided descriptions to achieve robust representations of content.
+Building computational systems on top of this data simplifies the problem greatly, and good progress has been made toward the development of useful applications.
 % Human signals about the content
-For example, the Netflix Challenge\footnote{netflix link} ---an open contest to find the best system for automatically predicting a user's enjoyment of a movie--- was built exclusively on movie ratings provided by a large collection of other users.
+For example, the Netflix Challenge\footnote{netflix link} ---an open contest to find the best system for automatically predicting a user's enjoyment of a movie--- was built exclusively on movie ratings contributed by a large collection of other users.
 % Links between content
-On the other hand, Google's \emph{PageRank} algorithm\footnote{pagerank link} associates websites based on how users have linked different pages together, thus facilitating the process of traversing this web of information.
-% Importantly, in this paradigm, it is of little consequence what a document actually \emph{is} or represents once a user is able to provide a compact description of it.
+Similarly, Google's \emph{PageRank} algorithm\footnote{pagerank link} associates websites based on how users have linked different pages together, thus facilitating the process of traversing the world's information.
 
 % Music is a different ballgame, y'all; document description is wicked hard.
-While this strategy of leveraging human signals has proven successful in large-scale music recommendation, such as Pandora Radio\footnote{pandora website}, its application to more general music information problems is fundamentally limited, manifesting in three related ways.
-First, human signals commonly used in such systems ---clicks, likes, views and shares--- are easily captured as a natural by-product of the typical user interaction paradigm.
+While this strategy of leveraging manual content description has proven successful in large-scale music recommendation, such as Pandora Radio\footnote{pandora website}, its application to more general music information problems is fundamentally limited, manifesting in three related ways.
+First, human-provided information commonly used in such systems ---clicks, likes, views or shares--- are easily captured as a natural by-product of the typical user interaction paradigm.
 It is one thing to obtain a simple ``thumbs up'' for a song; it is quite another to ask that same user to provide a chord transcription of it.
 Second, manual music description may require a high degree of expertise or effort to perform.
 The average music listener is not capable of accurate chord transcription, whether or not she possesses the time or willingness to attempt it.
@@ -53,18 +58,18 @@ More importantly, this only considers commercial music recordings, neglecting am
 Given the sheer impossibility for humans to meaningfully describe all recorded music, now and in the future, truly scalable music information systems will require good computational algorithms to perform this task.
 
 % Music description is good, state of the art is bad
-Thus, the development of computational systems to describe music signals, referred to as machine listening or computer audition, is both a valuable and fascinating problem.
+Thus, the development of computational systems to describe music signals, a flavor of \emph{computer audition} referred to as content-based music informatics, is both a valuable and fascinating problem.
 In addition to facilitating the search and retrieval of large music collections, automatic systems capable of expert-level music description are invaluable to users who are unable to perform the task themselves, e.g. music transcription.
 Notably, this problem is also very much unsolved, and given an apparent decceleration of progress, some in the field of music informatics have begun to question the efficacy of traditional research methods.
 % Statement of the issues?
 Simultaneously, in the related fields of computer vision and automatic speech recognition, a branch of machine learning, referred to as \emph{deep learning}, has shown great performance in various domains, toppling many long-standing benchmarks.
-On closer inspection, one recognizes considerable conceptual overlap between deep learning and conventional music information systems, further encouraging this promising union.
+On closer inspection, one recognizes considerable conceptual overlap between deep learning and conventional music signal processing systems, further encouraging this promising union.
 
 % Research goal
-Synthesizing these observations, the goal of this study is the exploration of deep learning methods as a general approach to the design of machine listening systems for music applications.
+Synthesizing these observations, the goal of this study is the exploration of deep learning methods as a general approach to the design of computer audition systems for music applications.
 More specifically, the proposed research method proceeds thusly:
-first, it is necessary to assess why progress in content-based MIR may have stalled, and, in doing so, identify possible deficiencies in this methodology;
-having built an understanding, standard approaches to music signal processing are reformulated in the language and concepts of deep learning, and subsequently applied to classic MIR problems;
+first, it is necessary to assess why progress in content-based music informatics may have stalled, and, in doing so, identify possible deficiencies in this methodology;
+having built an understanding, standard approaches to music signal processing are reformulated in the language and concepts of deep learning, and subsequently applied to classic music informatics problems;
 finally, the performance and behavior of these deep learning systems is deconstructed in order to illustrate the advantages and challenges inherent to this paradigm.
 
 
@@ -85,18 +90,16 @@ Furthermore, if the relationship between stimuli and observation is not a functi
 Objective relationships are those that are true absolutely by definition, such as the statement ``A C Major triad consists of the pitches C, E, and G.''
 Elaborating, all sufficiently capable agents should always produce the same output given the same input.
 Discrepancies between observations of the same stimuli are understood as one or more of these perspectives being erroneous, resulting from either simple error or a deficiency of knowledge.
-For objective relationships, the \emph{quality} of a model in question is determined by how well it is able to reproduce the ``correct'' expert perspective exactly.
+For objective relationships, the \emph{quality} of a model is determined by how often it is able to produce ``right'' answers to the questions being asked.
 
 Conversely, input-output relationships that \emph{are} a function of the agent are said to be ``subjective''.
 In contrast to the objective case, which is fundamentally concerned with \emph{facts}, a subjective observation is ultimately an \emph{opinion}.
 As such, an opinion can only be true or false insofar as it is held by a competent agent.
 This is embodied, for example, in the statement ``That sounds like a saxophone.''
-Whether or not the stimuli originated from a saxophone is arguably of little consequence; an agent made the observation, and thus it is in some sense valid.
+Whether or not the stimuli originated from a saxophone is actually irrelevant; an agent made the observation, and thus it is in some sense valid.
 Assessing the quality of a computational model at a subjective task must therefore take one of two slightly different formulations.
 The first transforms a subjective problem to an objective one by considering the perspective of single agent as truth, and thus the quality of a model is a function of how well it can mimic the behavior of that \emph{one} agent.
-Alternatively, the other approach attempts to determine whether or not a model makes observations on par with other competent agents
-%\footnote{It has been said that ``Reality is a shared delusion, albeit a persistent one.''},
-, forming the premise of Alan Turing's test for intelligence.
+Alternatively, the other approach attempts to determine whether or not a model makes observations on par with other competent agents, forming the premise of Alan Turing's test for intelligence.
 In this view, a computational system's capacity to perform some intelligent task is measured by its ability to convince other humans that it is equally competent.
 
 The notions of, and inherent conflict between, objectivity and subjectivity in audition and music perception are central to the challenge posed by the computational modeling of it.
@@ -132,7 +135,7 @@ Therefore these methods yield flexible systems that can easily adapt to new data
 Beyond the scope of music informatics, deep learning research in the context of a different domain, with its own unique challenges, is likely to produce discoveries beneficial to the broad audience of computer science and information processing.
 One such area where this is likely to occur is in the handling of time-domain signals and sequences.
 Computer vision, the field in which most breakthroughs in deep learning have occurred, mostly ignores the temporal aspect of images.
-Some effort has explored this in motion capture and natural language processing, as we will discuss in the following chapter, but the tradition of music signal processing draws heavily from digital signal theory, a field of study focused almost entirely on an analytical understanding of time.
+Some effort has explored this in motion capture and natural language processing, as will be discussed later, but the tradition of music signal processing draws heavily from digital signal theory, a field of study focused almost entirely on an analytical understanding of time.
 
 Therefore, this work offers several potential contributions, both theoretical and practical, to a diverse audience, spanning users of technology, music informatics, and the deep learning community on the whole.
 
