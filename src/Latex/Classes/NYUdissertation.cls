@@ -29,10 +29,12 @@
 
 %\usepackage{times} % set font to times
 
-\usepackage{epsf} 
+\usepackage{epsf}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphics} % for improved inclusion of graphics
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 
 %\usepackage{wrapfig} % to include figure with text wrapping around it
 %\usepackage[margin=10pt,font=small,labelfont=bf]{caption} % for improved layout of figure captions with extra margin, smaller font than text
@@ -126,7 +128,7 @@
     \DeclareGraphicsExtensions{.png, .jpg, .jpeg, .pdf, .gif} %GIF doesn't work??
     \usepackage[pdftex]{graphicx}
     \pdfcompresslevel=9
-    
+
 \else
     \usepackage[ dvips,
                  %ocgcolorlinks,
@@ -247,7 +249,7 @@
 %\renewcommand{\thesection}{\hspace{-0.45cm}}
 %\renewcommand{\thesubsection}{}
 %\renewcommand{\thesubsubsection}{\hspace{-0.45cm}}
-     
+
 % Chapter display following NYU's ugly guidelines
 \renewcommand{\thechapter}{\Roman{chapter}}
 \titleformat{\chapter}[display]
@@ -275,7 +277,7 @@
 
 %:-------------------------- math -----------------------
 
-% Uri: All of this is included in the non-deprecated subcaption package. 
+% Uri: All of this is included in the non-deprecated subcaption package.
 % Stop using subfig or subfigure, this is 2014 for the love of the Flying Spaghetti Monster.
 %\usepackage{subfig}
 %\DeclareCaptionListOfFormat{parenssep}{#1\,(#2)}
@@ -344,7 +346,7 @@
       \fancyhead{}
       \renewcommand{\headrulewidth}{0pt}
     }
-    
+
       \fancypagestyle{toc}{
       \fancyhf{}
       \fancyfoot[C]{\thepage}

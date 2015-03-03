@@ -8,31 +8,188 @@
 
 \chapter{Deep Learning}
 \label{chp:background}
+% This article is structured very well: http://www.toptal.com/machine-learning/an-introduction-to-deep-learning-from-perceptrons-to-deep-networks
+% Goals:
+%  - Provide contextual background for deep networks (how did we get here)
+%  - Equate traditional digital signal processing and deep learning
+%  - Define the necessary pieces of deep learning
 
-% Goals
-%  -
+% Outline
+%  - Background
+%   -- Origins
+%   -- Breakthroughs
+%   -- State of the Art / recent developments
+%  - Formal Definitions
+%   -- What is ``deep learning''; non-linear function, parameterized, differentiable, optimized to a given objective criterion.
+%  - Architectural Components
+%   -- Affine Layers
+%   -- Convolutions (2d, 3d)
+%   -- Nonlinearities
+%   -- Pooling
+%  - Energy-based Learning
+%   -- Scalar objective criteria (Loss Functionals)
+%   -- Stochastic Minibatch Gradient Descent
+%  - Tricks
+%   -- Regularization & Sparsity
+%   -- Parameter Initialization
+%   -- Dropout
+%   -- Data Augmentation
+%  - Relationship to Audio DSP
 
-As with any work that suggests an alternate trajectory within a given field of study, it is necessary to not only understand the current state of affairs but also how it came to be.
-Electrical engineering and computer science have now spent the better part of a century developing information processing systems under the banner of myriad titles and directions, and even a cursory review of both helps to further demonstrate the potential impact of this research.
-This is followed by a formal definition of the modular components used in deep learning.
-Once contextualized, recent advances in deep learning are addressed to showcase the advantages of these methods and how they can be extended to open problems in time-domain signal processing.
+% Conceptual underpinnings
+% Perceptrons
+% -- definition
+% -- limitations
+% Multi-layer perceptrons
+% Basic neural network
+%
+
+Deep learning descends from a long and contested history of artificial intelligence, information theory, and computer science.
+The goals of the this chapter are two-fold:
+Section \ref{background} first offers a concise summary of the history of deep learning in three parts, detailing the origins, critical advances, and current state of the art of neural networks.
+
+Afterwards, a formal treatment of deep learning is addressed:
+Section \ref{sec:arch} introduces the architectural components of deep networks;
+Section \ref{sec:learning} formally addresses the actual ``learning'' process;
+Section \ref{sec:tricks} covers a handful of pertinent tricks of the trade, enabling the practical realization of such models;
+and finally, Section \ref{sec:dsp} draws the relationships between this lineage and conventional approaches to digital signal processing.
 
 
-\section{Foundations of Information Processing}
-\label{sec:foundations}
+\section{A Brief Historical Review}
 
-Due to advances in machine computation, there are primarily two different ways to conceptualize the design of information processing models relevant to the work proposed here.
+
+\subsection{Origins of Neural Networks}
+\label{subsec:origins}
+
+% Foundations of computer science and computational mathematics
+Computational foundations date back thousands of years, but the story of modern computer science begins in the 20th century.
+1703 Leibnitz
+1854 Boolean Alegebra
+
+% Info theory & electrical engineering
+Claude Shannon's \emph{master's} thesis in 1937
+Building on Boolean Logic
+Electro-mechanical computation
+
+% Machine computing & cybernetics
+Alan Turing, Universal Turing machine
+Norbert Wiener, Cybernetics
+von Neumann, computational design and implementations
+
+% Develop machines capable of modeling logic, and thus decision making processes.
+
+
+\subsubsection{Perceptrons}
+\label{subsubsec:perceptrons}
+One particular model of interest
+Pitts and McCulloch, 1943, binary inputs and outputs for symbolic logic.
+Donand Hebb, of ``Hebbian Learning'' fame, generalized this to continuous valued inputs in 1949
+Rosenblatt, built electro mechanical things
+
+Perceptron is a binary classifier
+
+\begin{align*}
+f(x | w, b) = h(x \dot w + b)
+h(y) = \left\{
+     \begin{array}{lr}
+       1 & : x \ge 0\\
+       -1 & : x < 0\\
+     \end{array}
+   \right
+\end{align*}
+
+Learning algorithm, error propagation
+
+\begin{figure}
+\begin{centering}
+\includegraphics[width=\textwidth]{linsep}
+\caption{Linearly separable data classified with by a perceptron.}
+\label{fig:linsep}
+\end{centering}
+\end{figure}
+
+
+
+\subsubsection{Limitations}
+\label{subsubsec:limitations}
+
+% Representational Power
+Minsky, Papert punched holes in it, XOR / NXOR.
+Perceptron can only solve linearly separable problems.
+Cascade of operations, was known at the time.
+
+\begin{figure}
+\begin{centering}
+\includegraphics[width=\textwidth]{mlp_ftw}
+\caption{Demonstration of the decision boundaries for a \emph{multi-layer} perceptron.}
+\label{fig:mlp_ftw}
+\end{centering}
+\end{figure}
+
+% Other problems
+Vanishing gradient, data hungry, slow.
+
+% Over-hyped
+Rosenblatt ran his mouth.
+
+% Ahead of the times
+Theory preceded technological capacity.
+
+% Result
+AI Winter, things got bad.
+
+
+\subsection{Critical Advances}
+\label{sec:advances}
+
+
+\subsubsection{Stochastic Gradient Descent}
+\label{subsec:perceptrons}
+
+
+\subsubsection{Convolutional Neural Networks}
+\label{subsec:convnets}
+
+
+\subsection{Computing Technology}
+\label{subsec:hardware}
+More data
+Better technology
+Transistors, general computational architectures
+Things got smaller, memory got bigger, processing got faster
+
+
+\subsubsection{Data-driven Parameter Initialization}
+\label{subsec:perceptrons}
+
+Convolutional Neural Networks
+Stochastic Gradient Descent
+Unsupervised pre-training, via contrastive divergence
+
+
+
+
+\section{Modern Rennaissance}
+\label{sec:rennaissance}
+
+Industrial strength; Google, Facebook, Baidu, Microsoft
+NYTimes articles; learning cats
+Kaggle, Netflix, ImageNet
+
+
+
+
+Due to advances in machine computation, there are primarily two different ways to conceptualize the design of information processing models.
 One approach is based on signal theory as viewed through the lens of electrical engineering, whereas the other focuses on graphical models of artificial neural processing grounded in computer science.
 Though broad topics of study in themselves, they are worth mentioning together for two crucial reasons: first, a majority of inertia developed within the field of MIR is due largely to its roots in the former; and second, it is a useful juxtaposition to form when marrying these disconnected topics.
+
 %Electrical engineering formalized as a discipline in the middle of the $19^{th}$ century on the heels of inventions such as the telegraph and electric power distribution.
+
 Much early work in electrical engineering stemmed from the realization that electricity could be used to represent measurable phenomena and therefore capture, store, and transmit this information.
-These representations are referred to as analog signals because they use one representation---time-varying voltage, for example---to mirror another one---such as a sound pressure wave---in a continuous fashion.
+These representations are referred to as analog signals because they use one representation ---time-varying voltage, for example--- to mirror another one ---such as a sound pressure wave--- in a continuous fashion.
 It was soon discovered that not only could this information be represented via electricity, but that it was also possible to analyze and manipulate it for a variety of applications.
 Heavily grounded in classic numerical analysis methods of the $17^{th}$ and $18^{th}$ centuries, these methods are referred to as signal processing.
 Through experimentation in physics, scientists found that certain electromagnetic materials could be used to affect electricity in predictable ways, and when connected in an electrical circuit could be used to filter, or augment, signals.
-%Any system can be uniquely characterized by how it responds to an instantaneous pulse of energy, known as an impulse response in time or transfer function in frequency.
-%The properties of electric components were then formalized into similar mathematical expressions, giving rise to signal theory.
-%This made it possible to express and design complex filters by analyzing the overall transfer function, so long as the derivation was tractable.
 Importantly, the need to solve signal processing systems by inspection requires that the entire system be linear and time invariant (LTI), because the violation of either property makes mathematical analysis far too difficult, if not altogether impossible.
 
 With the advent of solid-state transistors and subsequently computers in the mid-$20^{th}$, digital representations of signals could be produced by sampling analog waveforms to be manipulated numerically, referred to as digital signal processing (DSP).
@@ -89,32 +246,9 @@ Then, a third Perceptron can be used to form the disjunction of the two simpler 
 Extending beyond this toy example, neural networks can be conceptualized in the most general sense as an information processing system characterized by two qualities: an architectural design, or model, and a flexible parameterization that can be learned from data.
 In practice, neural networks are not constrained to operate on binary logic values, but rather can be applied directly to digital signals in the domain that they are perceived by humans, e.g. the pixel values of an image.
 Each layer in an architecture can be said to extract features that are useful for solving some task.
-Ideally, these features are \emph{learned} automatically using what are known as gradient methods, the basic idea being that a function attempts to reduce how ``wrong'' it is by taking small steps toward better answers; by analogy, this is a bit like climbing down a mountain blind-folded.
-For this to be possible, the activation of each node, as expressed in Equation (\ref{eq:perceptron}), must be softened such that the function is differentiable.
-In the broadest sense, the two types of neural network architectures of interest here are fully-connected and recurrent networks, illustrated in Figure \ref{fig:networks}.
-Both are historically applied to static, multidimensional inputs and often used to classify an observation.
-An example use case would be providing several observed statistics about an organism to a network and attempting to determine its species.
-If one of the input dimensions for this input is time, it is referred to as a Time-Delay Neural Network (TDNN).
-Alternatively, a Recursive Neural Network (RNN) includes feedback connections between current output nodes in the hidden layer and the output nodes of the previous observation.
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\textwidth]{nnets}
-\caption{\small{Time-Delay (i) and Recurrent (ii) multi-layer neural network architectures.}}
-\label{fig:networks}
-\end{figure}
-
-Comparing the structures of Figures \ref{fig:filters} and \ref{fig:networks}, it is clear that digital filters and neural networks share similar architectures.
-TDNNs are actually what is known in signal processing as an FIR filterbank, and RNNs exhibit behavior similar to IIR filters.
-There are significant differences between these two alternate interpretations of digital filters and neural networks, however.
-Arguably the most important discrepancy is that digital filters are classically forced to be linear, time-invariant systems, whereas neural networks embrace non-linear behavior.
-While the LTI constraint makes mathematic analysis tractable, the cascade of any number of linear systems is itself a linear system, thereby limiting the kinds of functions that can be implemented by filters alone.
-Leveraging data to learn the parameters of a network allows neural networks to sidestep this constraint and construct hierarchical data representations.
-However, the handling of time is a relatively unsolved problem in neural network research, but time and phase are well-understood concepts in digital signal processing.
-Fusing these two disconnected perspectives allows each domain to inform the other, potentially leading to the advent of information processing models better suited to making sense of time.
 
 
-\section{Mathematical Formulation}
+\section{Definitions}
 \label{sec:example}
 
 Neural networks have achieved widespread success in a variety of computer science topics, operating on two related design principles:
@@ -124,7 +258,7 @@ The key advantage of such machines here is that many design decisions affecting 
 Similarly, the two elements that must be addressed when using such methods is the design of the architecture and the approach used to find these parameters.
 
 
-\subsection{Architectures}
+\subsection{Common Subfunctions}
 \ref{subsec:architectures}
 
 Conventionally, a neural network transforms an input $X_{1}$ into an output $Z_{L}$ via a composite nonlinear function $F(\cdot \vert \Theta)$, given a parameter set $\Theta$.
@@ -163,6 +297,10 @@ P(X_1 | \Theta) = \sigma(Z_L) = \frac{\exp(Z_{L})}{ \sum_{m=1}^{M_{L}}\exp{(Z_{L
 Therefore, the most likely class for an observed input, $X_1$, is given by $argmax(P(X_{1} | \Theta))$.
 
 \subsection{Energy-based Learning}
+
+Ideally, these features are \emph{learned} automatically using what are known as gradient methods, the basic idea being that a function attempts to reduce how ``wrong'' it is by taking small steps toward better answers; by analogy, this is a bit like climbing down a mountain blind-folded.
+For this to be possible, the activation of each node, as expressed in Equation (\ref{eq:perceptron}), must be softened such that the function is differentiable.
+
 
 Having written the full network as a probability mass function, the network can be trained by iteratively minimizing the negative log-likelihood of the correct class for a set of $K$ observations:
 
