@@ -21,28 +21,21 @@
 %   -- State of the Art / recent developments
 %  - Formal Definitions
 %   -- What is ``deep learning''; non-linear function, parameterized, differentiable, optimized to a given objective criterion.
-%  - Architectural Components
-%   -- Affine Layers
-%   -- Convolutions (2d, 3d)
-%   -- Nonlinearities
-%   -- Pooling
-%  - Energy-based Learning
-%   -- Scalar objective criteria (Loss Functionals)
-%   -- Stochastic Minibatch Gradient Descent
-%  - Tricks
-%   -- Regularization & Sparsity
-%   -- Parameter Initialization
-%   -- Dropout
-%   -- Data Augmentation
+%   -- Architectures
+%    --- Affine Layers
+%    --- Convolutions (2d, 3d)
+%    --- Nonlinearities
+%    --- Pooling
+%   -- Energy-based Learning
+%    --- Scalar objective criteria (Loss Functionals)
+%    --- Stochastic Minibatch Gradient Descent
+%   -- Tricks
+%    --- Regularization & Sparsity
+%    --- Parameter Initialization
+%    --- Dropout
+%    --- Data Augmentation
 %  - Relationship to Audio DSP
 
-% Conceptual underpinnings
-% Perceptrons
-% -- definition
-% -- limitations
-% Multi-layer perceptrons
-% Basic neural network
-%
 
 Deep learning descends from a long and contested history of artificial intelligence, information theory, and computer science.
 The goals of the this chapter are two-fold:
@@ -58,13 +51,13 @@ and finally, Section \ref{sec:dsp} draws the relationships between this lineage 
 \section{A Brief History of Deep Learning}
 
 Despite the recent wave of interest and excitement surrounding deep learning, the core concepts were originally devised in the 1950s, based on mathematical principles established centuries earlier.
-For this reason is particularly valuable to consider the lineage of these methods in an effort to understand why it is only now that such approaches have begun to gain popular adoption.
+For this reason is particularly valuable to consider the lineage of these methods in an effort to understand why it is only now that such approaches have begun to gain popularity and scientific acclaim.
 
-\subsection{Origins of Neural Networks}
+
+\subsection{Origins of Neural Networks (before 1980)}
 \label{subsec:origins}
 
-Our story begins in the 17th century, during the Age of Enlightenment in Western Europe.
-This period marked a golden era of human knowledge, which saw great advances in many diverse fields, such as mathematics, philosophy, and the physical sciences.
+For Western Europe and its descendants, the Age of Enlightenment marked a golden era of human knowledge, consisting of great advances in many diverse fields, such as mathematics, philosophy, and the physical sciences.
 Long had humanity contemplated the notions of consciousness and reasoning, but here brilliant thinkers began to return to and explore these concepts.
 From the efforts of scholars like Gottfried Leibnitz, Thomas Hobbes, and George Boole, among many others, formal logic developed as a mathematical discipline.
 In doing so, decision making could be expressed symbolically, whereby rational thoughts could be described by a system of equations to be transformed or even solved.
@@ -165,16 +158,16 @@ Neural networks were prone to over-fitting, extremely slow to compute weight upd
 % Ahead of the times
 % Theory outpaced technological capacity.
 % Over-hyped
-In isolation, these issues might merely have a posed a standard research obstacle, but coupled with the overzealous claims of the 1950's and 60's,  such difficulties would prove detrimental to neural network research.
+In isolation, these issues might merely have a posed a standard research obstacle, but coupled with the overzealous claims of the 1950's and 60's,  such difficulties would prove detrimental to neural network research for some time.
 % Result
 % This resulted in what is affectionately known as one of the ``AI winter'', things got bad.
 
 
-\subsection{Integral Research Discoveries}
+\subsection{Scientific Milestones (1980--2010)}
 \label{sec:advances}
 
 Despite widespread skepticism and negativity toward neural computing, a select few would persevere through this ``AI Winter'', and continue research on neural networks.
-And, in the course of twenty or so years, these diligent efforts would yield a array of crucial breakthroughs that would fundamentally change the landscape of neural network research.
+And, in the course of thirty odd years, these diligent efforts would yield a array of crucial breakthroughs that would fundamentally change the landscape of neural network research.
 While individually insufficient, each facet would prove to be a necessary contribution to the eventual thaw.
 
 \subsubsection{Stochastic Gradient Descent}
@@ -194,7 +187,7 @@ First and foremost, the loss of a given configuration was typically computed ove
 Additionally, gradient descent is a greedy search algorithm, and was reportedly prone to finding poor local minima, as illustrated in Figure \ref{fig:local_min}.
 
 %Stochastic Gradient Descent
-In 198?, however, LeCun demonstrated that a \emph{stochastic} variant of gradient descent could potentially be used to circumvent these issues.
+In 1987, however, LeCun demonstrated that a \emph{stochastic} variant of gradient descent could potentially be used to circumvent these issues \cite{LeCun1987}.
 Whereas conventional gradient descent had been formulated as an optimization over an entirely collection of datapoints, this new version randomly sampled training samples from a collection and computed an update step based on single datapoint.
 Though the gradient is much noiser, this strategy is still effective,significantly faster, and may even be less susceptible to poor local minima as a result.
 Importantly, this notion can be generalized as \emph{mini-batch} gradient descent, where the number of datapoints used to compute parameter updates is a hyperparameters, varying from 1 to the total number of datapoints available for training.
@@ -203,54 +196,94 @@ Covarying inversely with the learning rate, illustrated in Figure \ref{fig:sgd},
 \subsubsection{Convolutional Neural Networks}
 \label{subsec:convnets}
 
-Weight tying
-Local receptive fields
+% Fully connected networks, bleh; sensitive to translation and scale
+% TODO: Needs a better context sentence
 
-\subsubsection{Computing Technology}
-\label{subsubsec:hardware}
+The universal approximation theorem states that a multilayer perceptron can be used to model \emph{any} continous function within some tolerance \cite{Cybenko1989, Hornik1991}.
+Though equal parts remarkable and encouraging, it says nothing about how one might find the parameters to achieve some desired behavior.
+Thus, despite such overwhelming promise, early neural networks often resulted in poor approximations of the functions being modeled, because the flexibility of the model vastly surpassed the amount of data available to train it.
+This flexibility was apparent in computer vision tasks, as multilayer perceptrons struggled to cope with simple homographic deformations, such as translation, scaling, or rotation.
 
-Better technology
-Transistors, general computational architectures
-Things got smaller, memory got bigger, processing got faster
+% Visual cortex, neocognitron
+Natural vision systems, on the other hand, are quite robust to these kinds of variation, and, as before, researchers looked to biology for inspiration in modeling these processes.
+One particularly crucial study was that of Hubel and Wiesel in 1959, who experimented on the neural behavior of the feline visual cortex \cite{}.
+By presenting visual stimuli while probing the brain with electrodes, they discovered two different kinds of neurons ---simple cells and complex cells--- organized hierarchically.
+Experimental results indicated that the former is responsible for local feature extraction, while the latter combines the inputs of simple cells to absorb small amounts of variation in the observed stimuli.
+
+% ConvNets, LeNet5, handwritten digits
+These ideas were first incorporated in the Neocognitron of \cite{Fukushima1988}, and realized successfully as a convolutional neural network, or ``ConvNet'', for shape recognition and handwritten digit classification \cite{LeCun1990, LeCun1998}.
+Importantly, ConvNets incorporated three key design features.
+\emph{Local receptive fields}, where compute features from a small neighborhood of pixels, exploiting the observation that nearby pixel values tend to be highly correlated.
+Smaller receptive fields require fewer parameters, thus reducing the overall size of the model and the amount of data needed to train it.
+Applying local receptive fields as a convolution results in effectively sharing the weights over all positions in an image.
+Thus \emph{weight sharing} reduces the number of parameters even further, while allowing the network to identify features regardless of position in an image.
+Finally, \emph{max-pooling} reduces small neighborhoods to the largest value within it, introducing not only shift but a small amount of scale and rotation invariance.
+Taken together, these advantageous attributes directly resolved many of the issues plaguing multilayer perceptrons, and proved to be the most successful instance of neural computing for nearly two decades.
 
 
-\subsubsection{Growth in Available Data}
+% Theory preceded data
+\subsubsection{Proliferation of Digital Data}
 \label{subsec:perceptrons}
 
-More data
+% Proliferation of digital content
+Most data wasn't digitized
+First digital image (Lena) in ?
+Digital audio
+The internet, conceived in the 1960s, didn't rise to public prominence in the US until the 1990s
 
+% Labeled datasets grew, intentionally or otherwise
+Researchers had time to build large labeled datasets.
+Along with the internet, it became possible to use weakly labeled data or distribute the annotation effort.
+MNIST is the hallmark of curated datasets.
+TIMIT for speech
+CAPTCHA for optical character recognition.
+ImageNet, GWAP.
+Weakly labeled data from the internet, researchers got clever.
+
+% unlabeled data has uses too
 Unsupervised pre-training, via contrastive divergence
 
-\subsubsection{Summary}
-\label{subsubsec:perceptrons}
 
-Mini-batch SGD made optimization computationally efficient and less susceptible to poor local minima
-Convolutional networks reduced model complexity and over-fitting through scale and translation invariance.
-Computing technology drastically affected the size of models and speed at which a model could be trained iteratively, down from months and weeks to days or even hours.
-Larger labeled datasets reduced overfitting, and abundant unlabeled data could be used to better initialize networks in an unsupervised manner.
+% Theory preceded technology
+\subsubsection{Advances in Computing Technology}
+\label{subsubsec:hardware}
+
+% Neural networks were devised in the 60s; in the 80s, computers sucked
+While enough cannot be said about the scientific contributions of neural network researchers over the last 40 years, it is critical to appreciate how computing technology has evolved over that time span.
+In the days of Rosenblatt and Minsky, computers consisted of transistors that were visible to the naked eye, filled entire rooms, and cost a small fortune.
+More recently, personal computers of the 1980s had kilobytes of memory, central processing units (CPUs) operated in the range of tens of megahertz, and were still far too expensive for all but the elite or dedicate.
+Computation was still quite slow as a result, and thus the process of traning neural networks took an impressive amount of time.
+To combat these difficulties, researchers often attempted to cut corners by using smaller models, smaller datasets, and training with fewer iterations.
+Somewhat unsurprisingly, the common experience with neural networks was quite unfavorable.
+
+% Now better; bigger hard disks, more memory, faster processors, GPUs, async SGD, distributed computing, better tools (Theano, Torch)
+Eventually, though, technology could catch up to the theory.
+Hardware became increasingly smaller, memory grew to the size of gigabytes, processors accelerated for a time without bound faster, and the cost of computers dropped to the point of near ubiquity.
+On the heels of these developments, other hardware and tools were adapted to facilitate neural network research, such as parallel computing with graphics processing units (GPUs) and accessible software tools, e.g. Theano\footnote{} or Torch\footnote{}.
+Combined, singificantly better technology directly enabled research at unprecedented scale, accelerating progress and relaxing computational constraints imposed by technical limitations.
 
 
-\section{Modern Rennaissance}
-\label{sec:rennaissance}
+\subsection{Modern Rennaissance (after 2010)}
+\label{subsec:rennaissance}
 
 Industrial strength; Google, Facebook, Baidu, Microsoft
-NYTimes articles; learning cats
-Kaggle, Netflix, ImageNet
+Press; YouTube and Cats, Yann LeCun, Geoff Hinton, IEEE, NYTimes
+Competitions: Kaggle, Netflix, ImageNet
 
 
-
-\section{Definitions}
+\section{Deep Learning Concepts}
 \label{sec:example}
 
-Neural networks have achieved widespread success in a variety of computer science topics, operating on two related design principles:
-one, some desired invariance is achieved through multiple non-linear processing layers;
-and two, data-driven learning is able to find those parameters that yield the appropriate representations, blurring the line between feature extraction and classifier.
-The key advantage of such machines here is that many design decisions affecting the input representations can be delayed until the learning stage.
-Similarly, the two elements that must be addressed when using such methods is the design of the architecture and the approach used to find these parameters.
+% The "what" of deep learning
+Having covered the ``why'' of deep learning, this section aims to generalize the concepts of classic neural computation into a more general presentation of relevant parts.
 
 
-\subsection{Common Subfunctions}
+\subsection{Flexible Architectures}
 \ref{subsec:architectures}
+
+Fair game so long as you can differentiate it
+
+\subsubsection{Linear Algebra}
 
 Conventionally, a neural network transforms an input $X_{1}$ into an output $Z_{L}$ via a composite nonlinear function $F(\cdot \vert \Theta)$, given a parameter set $\Theta$.
 This is traditionally achieved as a cascade of $L$ simpler nonlinear functions $f_l(\cdot \vert \theta_l)$, referred to as layers, the order of which is indexed by $l$:
@@ -275,10 +308,23 @@ f_l(X_l \vert \theta_l) = h( W \bullet X_{l} + b), \theta_l = [W, b]
 Note that an affine layer transforms an $N$-dimensional input to an $M$-dimensional output, referred to as the \emph{width} of the layer.
 The final operation is a point-wise nonlinearity, $h(\cdot)$, defined here as $tanh(\cdot)$, which is bounded on $(-1, 1)$.
 
+
+\subsubsection{Nonlinearities}
+
+Logistic / sigmoid
+Hyperbolic tangent
+Rectified linear, softplus
+
+
+\subsubsection{Pooling}
+
+\subsubsection{Constraints}
+
 When used as a classification system, the first $L-1$ layers of a neural network can be viewed as feature extractors, and the last layer, $f_L$, is a simple linear classifier.
 The output representation can be made to behave like a posterior by constraining the $L_1$-norm of the output to equal $1$.
 Traditionally, the probability mass function $P(\cdot)$ for an input $X_1$ is achieved by applying the softmax operation to the output of the network, $Z_L$, defined as follows:
 
+% TODO: Isn't there a Beta term here?
 \begin{equation}
 \label{eq:softmax}
 P(X_1 | \Theta) = \sigma(Z_L) = \frac{\exp(Z_{L})}{ \sum_{m=1}^{M_{L}}\exp{(Z_{L}[m])}}
@@ -286,6 +332,11 @@ P(X_1 | \Theta) = \sigma(Z_L) = \frac{\exp(Z_{L})}{ \sum_{m=1}^{M_{L}}\exp{(Z_{L
 
 \noindent Again, note that $Z_{L}$ is the output of the final layer, $f_L$, and thus $M_L$ is the dimensionality of the classifier and equal to the number of classes in the problem.
 Therefore, the most likely class for an observed input, $X_1$, is given by $argmax(P(X_{1} | \Theta))$.
+
+Another common approach is to fix a representation to the surface of a hypersphere.
+lacking a
+
+
 
 \subsection{Energy-based Learning}
 
@@ -409,3 +460,13 @@ As a result, non-linear signal processing models in both the analog and digital 
 
 
 \section{Summary}
+\label{sec:summary}
+
+% Origins
+Building upon formal logic and biological analogy, neural networks were devised in the 1960s as an approach to information processing.
+However, after inital promise, they were largely met with skepticism, indifference, or worse through the remainder of the century.
+% What changed?
+The few who perservered made various discoveries that, coupled with steady advances in computing technology, would eventually return neural computation to the fore:
+mini-batch stochastic gradient descent made optimization computationally efficient and less susceptible to poor local minima, and encouraged further exploration of numerical optimization methods;
+convolutional networks reduced model complexity and over-fitting through scale and translation invariance;
+and lastly, larger labeled datasets reduced overfitting, and abundant unlabeled data could be used to better initialize networks in an unsupervised manner.
