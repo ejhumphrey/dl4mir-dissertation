@@ -55,68 +55,99 @@ Section \ref{sec:tricks} covers a handful of pertinent tricks of the trade, enab
 and finally, Section \ref{sec:dsp} draws the relationships between this lineage and conventional approaches to digital signal processing.
 
 
-\section{A Brief Historical Review}
+\section{A Brief History of Deep Learning}
 
+Despite the recent wave of interest and excitement surrounding deep learning, the core concepts were originally devised in the 1950s, based on mathematical principles established centuries earlier.
+For this reason is particularly valuable to consider the lineage of these methods in an effort to understand why it is only now that such approaches have begun to gain popular adoption.
 
 \subsection{Origins of Neural Networks}
 \label{subsec:origins}
 
-% Foundations of computer science and computational mathematics
-Computational foundations date back thousands of years, but the story of modern computer science begins in the 20th century.
-1703 Leibnitz
-1854 Boolean Alegebra
+Our story begins in the 17th century, during the Age of Enlightenment in Western Europe.
+This period marked a golden era of human knowledge, which saw great advances in many diverse fields, such as mathematics, philosophy, and the physical sciences.
+Long had humanity contemplated the notions of consciousness and reasoning, but here brilliant thinkers began to return to and explore these concepts.
+From the efforts of scholars like Gottfried Leibnitz, Thomas Hobbes, and George Boole, among many others, formal logic developed as a mathematical discipline.
+In doing so, decision making could be expressed symbolically, whereby rational thoughts could be described by a system of equations to be transformed or even solved.
 
-% Info theory & electrical engineering
-Claude Shannon's \emph{master's} thesis in 1937
-Building on Boolean Logic
-Electro-mechanical computation
-
-% Machine computing & cybernetics
-Alan Turing, Universal Turing machine
-Norbert Wiener, Cybernetics
-von Neumann, computational design and implementations
-
-% Develop machines capable of modeling logic, and thus decision making processes.
-
-
-\subsubsection{Perceptrons}
-\label{subsubsec:perceptrons}
-One particular model of interest
-Pitts and McCulloch, 1943, binary inputs and outputs for symbolic logic.
-Donand Hebb, of ``Hebbian Learning'' fame, generalized this to continuous valued inputs in 1949
-Rosenblatt, built electro mechanical things
-
-Perceptron is a binary classifier
+It was this critical development ---the idea of logical computation--- that encouraged subsequent generations to speculate on the possibility of artificial intelligence.
+And, coinciding with the advent of electricity in the 20th century, researchers of the modern era sought to create machines that could \emph{think}.
+While the space of relevant contributions is too great to enumerate here, there were a handful of breakthroughs that would prove integral to the field of computer science.
+In 1936, Alan Turing devised the concept of a ``universal machine'', which would lead to the proof that a system of binary states ---``true'' and ``false''--- could be used to perform \emph{any} mathmatical operation \cite{}.
+Only a year later, Claude Shannon's \emph{master's} thesis demonstrated that Boolean logic could be implemented in electrical circuits via switches and relays, forming the basis of the modern computer \cite{}.
+Shortly thereafter, in 1943, Pitts and McCulloch constructed the first ``artifical neuron'', a simple computational model inspired by discoveries in neuroscience \cite{}.
+By coarse analogy to a biological neuron, an artifical neuron ``fires'' when a weighted combination of its inputs eclipses a given threshold:
 
 \begin{align*}
-f(x | w, b) = h(x \dot w + b)
+f(x | w) = h( \mathbf{w}^T \dot \mathbf{x})
 h(y) = \left\{
      \begin{array}{lr}
-       1 & : x \ge 0\\
-       -1 & : x < 0\\
+       1 & : y \ge 0\\
+       0 & : y < 0\\
      \end{array}
    \right
 \end{align*}
 
-Learning algorithm, error propagation
+\noindent~Importantly, as shown in Figure \ref{fig:neuron_logic}, it was demonstrated that such a model could be used to reproduce Boolean operations, such as AND or OR.
+Given the clear application to computational logic, artifical neurons only encouraged the dream of ``thinking'' machines.
+
+% Perceptron!
+On its own, though, the artifical neuron requires that one derive or specify the weights necessary to achieve some desired behavior.
+Thus, in 1957, Frank Rosenblatt's invention of the ``perceptron'' algorithm signficantly altered how artificial neurons were used \cite{}.
+Building upon the work of Pitts and McCulloch, the perceptron algorithm, given in \ref{alg:perceptron_fit}, offered an automated method of finding suitable weights for a binary classification problem:
+
+\begin{algorithm}
+% \caption{Fit a Perceptron to a collection of data.}
+\label{alg:perceptron_fit}
+\begin{algorithmic}[1]
+\Procedure{fit}{$\mathbf{x}, \mathbf{y}, \nu, n_{max}$}
+    \State $\mathbf{w} \gets \mathcal{N}(\mu, \sigma)$
+    \State $n \gets 1$
+    \While $sum~|e| > 0$ or $n > n_{max}$
+        \State $\mathbf{z} = f(\mathbf{x} | \mathbf{w})$
+        \State $\mathbf{e} = \mathbf{z} - \mathbf{y}$
+        \State $\mathbf{w} \gets \mathbf{w} + \nu (\mathbf{e}^T \dot \mathbf{x})^T$
+        \State $n \gets n + 1$
+    \EndFor
+    \State Return $\mathbf{w}$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+The perceptron algorithm proceeds as follows: first, the weights, $\mathbf{w}$, are set to some initial condition; then, in an iterative manner, outputs, $\mathbf{z}$, are predicted from the inputs, $\mathbf{x}$, and the weights are updated with a scaled version of the incorrectly classified inputs.
+Note that the error function, $\mathbf{e}$ is only non-zero when the predicted values are wrong, and thus the algorithm ceases execution when all datapoints are classified correctly, or it reaches some number of iterations.
+A visual example of this is given in Figure \ref{fig:linsep}.
+Here, a perceptron is used to separate two classes of data, drawn from different Gaussian distributions.
+As the algorithm proceeds, the total error decreases until a decision boundary is found that correctly classifies all datapoints.
 
 \begin{figure}
 \begin{centering}
 \includegraphics[width=\textwidth]{linsep}
-\caption{Linearly separable data classified with by a perceptron.}
+\caption{Linearly separable data classified by a trained perceptron.}
 \label{fig:linsep}
 \end{centering}
 \end{figure}
 
+% Promise and limitations
+Once implemented in hardware, using a slew of potentiometers, motors, and photocells, Rosenblatt's' ``Mark I Perceptron'' drew considerable attention by the press and the research community alike.
+The \emph{New York Times} was quick to publish ambitious claims as to the promise this breakthrough held for artificial intelligence and the speed at which subsequent advances would be realized \cite{}.
+As it would soon be discovered, however, the perceptron was not without limitations.
+In their book, \emph{Perceptrons}, published in 1969, Minsky and Papert demonstrated that the representational power of these models is rather poor.
+As such, perceptrons could only be used to classify linearly separable conditions, and not more complex operations, such as the exclusive-or (XOR).
+This condition is illustrated in Figure \ref{fig:mlp_ftw}, where no single line can be draw to correctly classify the data.
 
+% Multilayer Perceptrons
+This was a critical limitation for researchers in the field of computational logic; if a perceptron could not perform a simple exclusive-or, how could a machine be expected to reason?
+The answer, as it would turn out, was found in the question itself.
+It is important to recognize the the XOR function can be expressed as the logical disjuction of two simpler statements:
 
-\subsubsection{Limitations}
-\label{subsubsec:limitations}
+\begin{equation}
+\label{eq:xor}
+p \oplus q = (p \wedge \neg q) \vee (\neg p \wedge q)
+\end{equation}
 
-% Representational Power
-Minsky, Papert punched holes in it, XOR / NXOR.
-Perceptron can only solve linearly separable problems.
-Cascade of operations, was known at the time.
+\noindent~While it is true that a single Perceptron cannot achieve this operation directly, a combination of \emph{three} can: two are used to perform the parenthetical logic, while a third realizes the disjunction between them.
+Applying to the previous example, in Figure \ref{fig:mlp_ftw}, this scenario can now be easily separated by a \emph{multilayer} perceptron (MLP).
+Therefore, arbitrarily complex functions could be obtained by cascading simpler non-linear operations, in what would be commonly reffered to as a \emph{neural network}.
 
 \begin{figure}
 \begin{centering}
@@ -127,16 +158,16 @@ Cascade of operations, was known at the time.
 \end{figure}
 
 % Other problems
-Vanishing gradient, data hungry, slow.
-
-% Over-hyped
-Rosenblatt ran his mouth.
-
+Despite this observation, multilayer perceptrons and neural networks languished through the closing decades of the 20th century, suffering a considerable downtick of interest and funding support.
+While the representational power of multilayer perceptrons was known to Minsky and Papert in 1969, many often claimed ---incorrectly--- that they lacked sufficient representational power to solve complex problems.
+More practically speaking, those who attempted neural network research were faced with an array of other challenges.
+Neural networks were prone to over-fitting, extremely slow to compute weight updates over a large number of datapoints, and difficult to train with more than a few layers.
 % Ahead of the times
-Theory preceded technological capacity.
-
+% Theory outpaced technological capacity.
+% Over-hyped
+In isolation, these issues might merely have a posed a research obstacle, but the overzealous claims of the 1950's and 60's made such difficulties near-fatal.
 % Result
-AI Winter, things got bad.
+% This resulted in what is affectionately known as one of the ``AI winter'', things got bad.
 
 
 \subsection{Critical Advances}
@@ -176,76 +207,6 @@ Industrial strength; Google, Facebook, Baidu, Microsoft
 NYTimes articles; learning cats
 Kaggle, Netflix, ImageNet
 
-
-
-
-Due to advances in machine computation, there are primarily two different ways to conceptualize the design of information processing models.
-One approach is based on signal theory as viewed through the lens of electrical engineering, whereas the other focuses on graphical models of artificial neural processing grounded in computer science.
-Though broad topics of study in themselves, they are worth mentioning together for two crucial reasons: first, a majority of inertia developed within the field of MIR is due largely to its roots in the former; and second, it is a useful juxtaposition to form when marrying these disconnected topics.
-
-%Electrical engineering formalized as a discipline in the middle of the $19^{th}$ century on the heels of inventions such as the telegraph and electric power distribution.
-
-Much early work in electrical engineering stemmed from the realization that electricity could be used to represent measurable phenomena and therefore capture, store, and transmit this information.
-These representations are referred to as analog signals because they use one representation ---time-varying voltage, for example--- to mirror another one ---such as a sound pressure wave--- in a continuous fashion.
-It was soon discovered that not only could this information be represented via electricity, but that it was also possible to analyze and manipulate it for a variety of applications.
-Heavily grounded in classic numerical analysis methods of the $17^{th}$ and $18^{th}$ centuries, these methods are referred to as signal processing.
-Through experimentation in physics, scientists found that certain electromagnetic materials could be used to affect electricity in predictable ways, and when connected in an electrical circuit could be used to filter, or augment, signals.
-Importantly, the need to solve signal processing systems by inspection requires that the entire system be linear and time invariant (LTI), because the violation of either property makes mathematical analysis far too difficult, if not altogether impossible.
-
-With the advent of solid-state transistors and subsequently computers in the mid-$20^{th}$, digital representations of signals could be produced by sampling analog waveforms to be manipulated numerically, referred to as digital signal processing (DSP).
-Digital signals---those that also represent some kind of real world phenomena, at least---differ from analog ones in two important aspects: the signal takes values from a finite set of discrete numbers, and these quantities are measured at precise moments in time.
-Therefore, digital signals are specified by a sequence of real-valued numbers $x[n]$, rather than a generated, continuous function $x(t)$.
-When this transition to numerical computation began, the effort was made to reformulate previous knowledge regarding analog signal theory and processing into the digital domain.
-Similar to those in analog theory, digital filters can be expressed explicitly by a transfer function, which can be translated directly to a set of coefficients representing the linear difference equation, generically given by the following:
-
-\begin{equation}
-\label{eq:diffeq}
-\begin{array}{rcr}
-y[n] & = & b_0x[n] + b_1x[n-1] + b_2x[n-2] + b_3x[n-3] \ldots \\
- & & - a_1y[n-1] - a_2y[n-2] - a_3y[n-3] \ldots
-\end{array}
-\end{equation}
-
-There are typically said to be two categories of digital filters: Finite Impulse Response (FIR), or non-recursive, filters and Infinite Impulse Response (IIR), or recursive, filters.
-As illustrated in Figure \ref{fig:filters}, an FIR filter is actually a special case of the more general IIR filter, where the feedback connections---the $a$-coefficients in Equation (\ref{eq:diffeq})---have all been set to zero.
-Though digital filters are not constrained by the availability or precision of manufactured electrical components, they are still traditionally constrained to be LTI systems for the same reasons as their analog counterparts.
-As a result, non-linear signal processing models in both the analog and digital domains are historically unpopular due to inherent challenges in the mathematical formulation.
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\textwidth]{filters_2}
-\caption{\small{Finite Impulse Response (i) and Infinite Impulse Response (ii) digital filters. Multiplication is shown along the edges of each connection.}}
-\label{fig:filters}
-\end{figure}
-
-Slightly more recently, the field of computer science was established in the first half of 20th century, adapting the rules of Boolean logic to electrical switches and laying the groundwork for what would become the modern computer.
-Developing a theory of computation, the discipline places a strong emphasis on the theory and design of machines that process and manipulate information.
-In some cases, this can be considered AI, where the goal is to produce machines capable of performing at---or beyond---the capacity of a human expert.
-Due in no small part to these ambitions, interest in neural computation arose from the desire to craft biologically plausible information processing machines.
-One particular model of note is the Perceptron, a simple nonlinear model defined by the following:
-
-\begin{equation}
-\label{eq:perceptron}
-f(x) = \begin{cases}1 & \text{if }w \cdot x + b > 0\\0 & \text{otherwise}\end{cases}
-\end{equation}
-
-Each output, for vectors $x$ and $w$ of equal length, is said to be a unit, and a matrix of $w$-coefficients will yield some number of parallel units.
-However, as addressed by Minsky and Papert \cite{Minsky1969} in 1969, a single Perceptron could not implement the XOR function.
-Seen as a fundamental deficiency, this and other similar criticisms led to a sharp decline in funding for neural network research.
-It would later be discovered that the answer to this problem is to form a cascade of \emph{multiple} Perceptrons, and this very instance illustrates the case well.
-Expressed symbolically, for two inputs $p$ and $q$, the XOR is defined as the composite of simpler operations:
-
-\begin{equation}
-\label{eq:xor}
-p \oplus q = (p \wedge \neg q) \vee (\neg p \wedge q)
-\end{equation}
-
-\noindent While true that a single Perceptron cannot realize the complete logic expression of an XOR, it is integral to note that it \emph{can} produce either of the parenthetical statements.
-Then, a third Perceptron can be used to form the disjunction of the two simpler statements, realizing the intended XOR function.
-
-Extending beyond this toy example, neural networks can be conceptualized in the most general sense as an information processing system characterized by two qualities: an architectural design, or model, and a flexible parameterization that can be learned from data.
-In practice, neural networks are not constrained to operate on binary logic values, but rather can be applied directly to digital signals in the domain that they are perceived by humans, e.g. the pixel values of an image.
-Each layer in an architecture can be said to extract features that are useful for solving some task.
 
 
 \section{Definitions}
@@ -376,5 +337,45 @@ Predictive Sparse Decomposition (PSD) and methods inspired by sparse coding have
 % It is therefore important to realize that these methods have never been tailored to address the nuances of music signals, and more importantly time.
 % Overall, only CNNs make an effort to consider observations on the order of seconds, but do so in an admittedly awkward way, requiring the observation length be defined \emph{a priori}.
 % The machine is ultimately limited to the amount of information it sees in its analysis, and there is obviously no fixed duration in which all musical behavior resides.
+
+Due to advances in machine computation, there are primarily two different ways to conceptualize the design of information processing models.
+One approach is based on signal theory as viewed through the lens of electrical engineering, whereas the other focuses on graphical models of artificial neural processing grounded in computer science.
+Though broad topics of study in themselves, they are worth mentioning together for two crucial reasons: first, a majority of inertia developed within the field of MIR is due largely to its roots in the former; and second, it is a useful juxtaposition to form when marrying these disconnected topics.
+
+%Electrical engineering formalized as a discipline in the middle of the $19^{th}$ century on the heels of inventions such as the telegraph and electric power distribution.
+
+Much early work in electrical engineering stemmed from the realization that electricity could be used to represent measurable phenomena and therefore capture, store, and transmit this information.
+These representations are referred to as analog signals because they use one representation ---time-varying voltage, for example--- to mirror another one ---such as a sound pressure wave--- in a continuous fashion.
+It was soon discovered that not only could this information be represented via electricity, but that it was also possible to analyze and manipulate it for a variety of applications.
+Heavily grounded in classic numerical analysis methods of the $17^{th}$ and $18^{th}$ centuries, these methods are referred to as signal processing.
+Through experimentation in physics, scientists found that certain electromagnetic materials could be used to affect electricity in predictable ways, and when connected in an electrical circuit could be used to filter, or augment, signals.
+Importantly, the need to solve signal processing systems by inspection requires that the entire system be linear and time invariant (LTI), because the violation of either property makes mathematical analysis far too difficult, if not altogether impossible.
+
+With the advent of solid-state transistors and subsequently computers in the mid-$20^{th}$, digital representations of signals could be produced by sampling analog waveforms to be manipulated numerically, referred to as digital signal processing (DSP).
+Digital signals---those that also represent some kind of real world phenomena, at least---differ from analog ones in two important aspects: the signal takes values from a finite set of discrete numbers, and these quantities are measured at precise moments in time.
+Therefore, digital signals are specified by a sequence of real-valued numbers $x[n]$, rather than a generated, continuous function $x(t)$.
+When this transition to numerical computation began, the effort was made to reformulate previous knowledge regarding analog signal theory and processing into the digital domain.
+Similar to those in analog theory, digital filters can be expressed explicitly by a transfer function, which can be translated directly to a set of coefficients representing the linear difference equation, generically given by the following:
+
+\begin{equation}
+\label{eq:diffeq}
+\begin{array}{rcr}
+y[n] & = & b_0x[n] + b_1x[n-1] + b_2x[n-2] + b_3x[n-3] \ldots \\
+ & & - a_1y[n-1] - a_2y[n-2] - a_3y[n-3] \ldots
+\end{array}
+\end{equation}
+
+There are typically said to be two categories of digital filters: Finite Impulse Response (FIR), or non-recursive, filters and Infinite Impulse Response (IIR), or recursive, filters.
+As illustrated in Figure \ref{fig:filters}, an FIR filter is actually a special case of the more general IIR filter, where the feedback connections---the $a$-coefficients in Equation (\ref{eq:diffeq})---have all been set to zero.
+Though digital filters are not constrained by the availability or precision of manufactured electrical components, they are still traditionally constrained to be LTI systems for the same reasons as their analog counterparts.
+As a result, non-linear signal processing models in both the analog and digital domains are historically unpopular due to inherent challenges in the mathematical formulation.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\textwidth]{filters_2}
+\caption{\small{Finite Impulse Response (i) and Infinite Impulse Response (ii) digital filters. Multiplication is shown along the edges of each connection.}}
+\label{fig:filters}
+\end{figure}
+
 
 \section{Summary}
