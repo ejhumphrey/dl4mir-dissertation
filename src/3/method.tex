@@ -158,46 +158,76 @@ Therefore, arbitrarily complex functions could be obtained by cascading simpler 
 \end{figure}
 
 % Other problems
-Despite this observation, multilayer perceptrons and neural networks languished through the closing decades of the 20th century, suffering a considerable downtick of interest and funding support.
-While the representational power of multilayer perceptrons was known to Minsky and Papert in 1969, many often claimed ---incorrectly--- that they lacked sufficient representational power to solve complex problems.
+Despite this observation, the study of neural networks languished through the closing decades of the 20th century, suffering a considerable downtick of interest and funding support.
+While the representational power of multilayer perceptrons was recognized in the 70's, many often claimed ---incorrectly--- that they lacked sufficient representational power to solve complex problems.
 More practically speaking, those who attempted neural network research were faced with an array of other challenges.
 Neural networks were prone to over-fitting, extremely slow to compute weight updates over a large number of datapoints, and difficult to train with more than a few layers.
 % Ahead of the times
 % Theory outpaced technological capacity.
 % Over-hyped
-In isolation, these issues might merely have a posed a research obstacle, but the overzealous claims of the 1950's and 60's made such difficulties near-fatal.
+In isolation, these issues might merely have a posed a standard research obstacle, but coupled with the overzealous claims of the 1950's and 60's,  such difficulties would prove detrimental to neural network research.
 % Result
 % This resulted in what is affectionately known as one of the ``AI winter'', things got bad.
 
 
-\subsection{Critical Advances}
+\subsection{Integral Research Discoveries}
 \label{sec:advances}
 
+Despite widespread skepticism and negativity toward neural computing, a select few would persevere through this ``AI Winter'', and continue research on neural networks.
+And, in the course of twenty or so years, these diligent efforts would yield a array of crucial breakthroughs that would fundamentally change the landscape of neural network research.
+While individually insufficient, each facet would prove to be a necessary contribution to the eventual thaw.
 
 \subsubsection{Stochastic Gradient Descent}
-\label{subsec:perceptrons}
+\label{subsec:sgd}
 
+% Back-propagation of errors
+Via the perceptron algorithm, a machine effectively ``learned'' to classify data by optimizing a given objective function.
+Typically this was framed as an error minimization, as in Eq. \ref{}, such that the degree of fitness could be incrementally improved by taking small steps toward better parameters, known as the ``perceptron loss''.
+This optimization strategy must be modified in the multilayer case, as it is not possible to directly update the parameters through the heaviside, or unit step, function.
+Early researchers noted that if the discontinuous activation function is replaced with a logistic, or sigmoid, the composite multilayer network is \emph{differentiable}.
+The derivative of each coefficient, regardless of layer, can be computed with respect to the loss, thus \emph{back-propagating} error through the network \cite{Hinton1986}.
+
+% Issues of gradient descent
+Error back-propagation demonstrated that, so long as a network was everywhere differentiable, it was theoretically possible to optimize the objective function over a dataset by slowly adjusting parameters towards better solutions.
+This optimization method, referred to as \emph{gradient descent}, was not without its deficiencies, however.
+First and foremost, the loss of a given configuration was typically computed over the entire dataset, which may prove computationally expensive for sufficiently large collections.
+Additionally, gradient descent is a greedy search algorithm, and was reportedly prone to finding poor local minima, as illustrated in Figure \ref{fig:local_min}.
+
+%Stochastic Gradient Descent
+In 198?, however, LeCun demonstrated that a \emph{stochastic} variant of gradient descent could potentially be used to circumvent these issues.
+Whereas conventional gradient descent had been formulated as an optimization over an entirely collection of datapoints, this new version randomly sampled training samples from a collection and computed an update step based on single datapoint.
+Though the gradient is much noiser, this strategy is still effective,significantly faster, and may even be less susceptible to poor local minima as a result.
+Importantly, this notion can be generalized as \emph{mini-batch} gradient descent, where the number of datapoints used to compute parameter updates is a hyperparameters, varying from 1 to the total number of datapoints available for training.
+Covarying inversely with the learning rate, illustrated in Figure \ref{fig:sgd}, larger batch sizes serve to smooth parameter updates as a function of iteration.
 
 \subsubsection{Convolutional Neural Networks}
 \label{subsec:convnets}
 
+Weight tying
+Local receptive fields
 
-\subsection{Computing Technology}
-\label{subsec:hardware}
-More data
+\subsubsection{Computing Technology}
+\label{subsubsec:hardware}
+
 Better technology
 Transistors, general computational architectures
 Things got smaller, memory got bigger, processing got faster
 
 
-\subsubsection{Data-driven Parameter Initialization}
+\subsubsection{Growth in Available Data}
 \label{subsec:perceptrons}
 
-Convolutional Neural Networks
-Stochastic Gradient Descent
+More data
+
 Unsupervised pre-training, via contrastive divergence
 
+\subsubsection{Summary}
+\label{subsubsec:perceptrons}
 
+Mini-batch SGD made optimization computationally efficient and less susceptible to poor local minima
+Convolutional networks reduced model complexity and over-fitting through scale and translation invariance.
+Computing technology drastically affected the size of models and speed at which a model could be trained iteratively, down from months and weeks to days or even hours.
+Larger labeled datasets reduced overfitting, and abundant unlabeled data could be used to better initialize networks in an unsupervised manner.
 
 
 \section{Modern Rennaissance}
