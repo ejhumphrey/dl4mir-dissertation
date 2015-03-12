@@ -48,103 +48,132 @@ Section \ref{sec:tricks} covers a handful of pertinent tricks of the trade, enab
 and finally, Section \ref{sec:dsp} draws the relationships between this lineage and conventional approaches to digital signal processing.
 
 
-\section{A Brief History of Deep Learning}
+\section{A Brief History of Neural Networks}
 
-Despite the recent wave of interest and excitement surrounding deep learning, the core concepts were originally devised in the 1950s, based on mathematical principles established centuries earlier.
-For this reason is particularly valuable to consider the lineage of these methods in an effort to understand why it is only now that such approaches have begun to gain popularity and scientific acclaim.
+Despite the recent wave of interest and excitement surrounding it, the core principles of deep learning were originally devised halfway through the 20th century, and grounded in mathematics established even earlier.
+A direct descendant of the now-infamous neural network, the very mention of deep learning often ellicts several justified questions: What's the difference? What's changed? Why \emph{now}?
+Thus, before delving into a formal treatment of the topic, it is worthwhile to contextualize the research trajectory that led to this point.
+% For this reason is particularly valuable to consider the lineage of these methods in an effort to understand why it is only now that such approaches have begun to gain popularity and scientific acclaim.
 
 
-\subsection{Origins of Neural Networks (before 1980)}
+\subsection{Origins (before 1980)}
 \label{subsec:origins}
 
-For Western Europe and its descendants, the Age of Enlightenment marked a golden era of human knowledge, consisting of great advances in many diverse fields, such as mathematics, philosophy, and the physical sciences.
-Long had humanity contemplated the notions of consciousness and reasoning, but here brilliant thinkers began to return to and explore these concepts.
-From the efforts of scholars like Gottfried Leibnitz, Thomas Hobbes, and George Boole, among many others, formal logic developed as a mathematical discipline.
-In doing so, decision making could be expressed symbolically, whereby rational thoughts could be described by a system of equations to be transformed or even solved.
+For Western Europe and those in its sphere of influence, the Age of Enlightenment marked a golden era of human knowledge, consisting of great advances in many diverse fields, such as mathematics, philosophy, and the physical sciences.
+Long had humanity contemplated the notions of consciousness and reasoning, but here brilliant thinkers began to return to and explore these concepts with resolve.
+From the efforts of scholars like Gottfried Leibnitz, Thomas Hobbes, and George Boole, formal logic blossomed into its own mathematical discipline.
+In doing so, it became possible to symbolically express the act of reasoning, whereby rational thought could be described by a system of equations to be transformed or even solved.
 
-It was this critical development ---the idea of logical computation--- that encouraged subsequent generations to speculate on the possibility of artificial intelligence.
-And, coinciding with the advent of electricity in the 20th century, researchers of the modern era sought to create machines that could \emph{think}.
+It was this critical development ---the idea of logical computation--- that encouraged subsequent generations to speculate on the apparent feasibility of artificial intelligence.
+And, coinciding with the advent of electricity in the 20th century, mathematicians, philosophers, and scientists of the modern era sought to create machines that could \emph{think}.
 While the space of relevant contributions is too great to enumerate here, there were a handful of breakthroughs that would prove integral to the field of computer science.
-In 1936, Alan Turing devised the concept of a ``universal machine'', which would lead to the proof that a system of binary states ---``true'' and ``false''--- could be used to perform \emph{any} mathmatical operation \cite{}.
-Only a year later, Claude Shannon's \emph{master's} thesis demonstrated that Boolean logic could be implemented in electrical circuits via switches and relays, forming the basis of the modern computer \cite{}.
-Shortly thereafter, in 1943, Pitts and McCulloch constructed the first ``artifical neuron'', a simple computational model inspired by discoveries in neuroscience \cite{}.
-By coarse analogy to a biological neuron, an artifical neuron ``fires'' when a weighted combination of its inputs eclipses a given threshold:
+In 1936, Alan Turing devised the concept of a ``universal machine'', which would lead to the proof that a system of binary states, e.g. true and false, could be used to perform \emph{any} mathmatical operation \cite{Turing1936}.
+Only a year later, Claude Shannon demonstrated in his \emph{master's} thesis that Boolean logic could be implemented in electrical circuits via switches and relays, forming the basis of the modern computer \cite{Shannon1937}.
+Shortly thereafter, in 1943, Pitts and McCulloch constructed the first artifical neuron, a simple computational model inspired by discoveries in neuroscience \cite{Pitts1943}.
+By coarse analogy to a biology, an artifical neuron ``fires'' when a weighted combination of its inputs eclipses a given threshold, e.g. 0:
+
+% \begin{align*}
+% f(x | w) = h( \mathbf{w}^T \dot \mathbf{x}) \\
+% h(y) = \left\{
+%      \begin{array}{lr}
+%        1 : y \ge 0\\
+%        0 : y < 0\\
+%      \end{array}
+%    \right.
+% \end{align*}
 
 \begin{align*}
-f(x | w) = h( \mathbf{w}^T \dot \mathbf{x})
-h(y) = \left\{
-     \begin{array}{lr}
-       1 & : y \ge 0\\
-       0 & : y < 0\\
-     \end{array}
-   \right
+  f(x~|~w) = h(w^T~\cdot~x)\\
+  h(y) = \left\{
+    \begin{array}{ll}
+      1 : y \ge 0\\
+      0 : y < 0\\
+    \end{array}
+  \right.
 \end{align*}
 
-\noindent~Importantly, as shown in Figure \ref{fig:neuron_logic}, it was demonstrated that such a model could be used to reproduce Boolean operations, such as AND or OR.
-Given the clear application to computational logic, artifical neurons only encouraged the dream of ``thinking'' machines.
+\noindent Importantly, as shown in Figure \ref{fig:neuron_logic}, it was demonstrated that such a model could be used to reproduce Boolean operations, such as AND or OR.
+Given the clear application to the field of computational logic, artifical neurons only further encouraged the pursuit of artificially ``intelligent'' machines.
 
 % Perceptron!
-On its own, though, the artifical neuron requires that one derive or specify the weights necessary to achieve some desired behavior.
-Thus, in 1957, Frank Rosenblatt's invention of the ``perceptron'' algorithm signficantly altered how artificial neurons were used \cite{}.
-Building upon the work of Pitts and McCulloch, the perceptron algorithm, given in \ref{alg:perceptron_fit}, offered an automated method of finding suitable weights for a binary classification problem:
+On its own, an artifical neuron is only a general processing structure, and the parameters it takes will specify the precise behavior of the model.
+Arriving at these parameters, however, was nontrivial and required manual derivation.
+Thus, in 1957, Frank Rosenblatt's invention of the \emph{Perceptron} algorithm signficantly altered how artificial neurons were conceived \cite{Rosenblatt1957}.
+Building upon the work of Pitts and McCulloch, the algorithm, given in \ref{alg:perceptron_fit}, offered an automated method of ``learning'' the parameters necessary to achieve binary classification over a collection of data:
 
-\begin{algorithm}
-% \caption{Fit a Perceptron to a collection of data.}
-\label{alg:perceptron_fit}
+% \begin{algorithm}
+% % \caption{Fit a Perceptron to a collection of data.}
+% \label{alg:perceptron_fit}
+% \begin{algorithmic}[1]
+% \Procedure{fit}{$\mathbf{x}, \mathbf{y}, \nu, n_{max}$}
+%     \State $\mathbf{w} \gets \mathcal{N}(\mu, \sigma)$
+%     \State $n \gets 1$
+%     \While $\sum~|e| > 0$ or $n > n_{max}$
+%         \State $\mathbf{z} = f(\mathbf{x} | \mathbf{w})$
+%         \State $\mathbf{e} = \mathbf{z} - \mathbf{y}$
+%         \State $\mathbf{w} \gets \mathbf{w} + \nu (\mathbf{e}^T \dot \mathbf{x})^T$
+%         \State $n \gets n + 1$
+%     \EndFor
+%     \State Return $\mathbf{w}$
+% \EndProcedure
+% \end{algorithmic}
+% \end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Compute sum of integers in array}
+\label{array-sum}
 \begin{algorithmic}[1]
-\Procedure{fit}{$\mathbf{x}, \mathbf{y}, \nu, n_{max}$}
-    \State $\mathbf{w} \gets \mathcal{N}(\mu, \sigma)$
-    \State $n \gets 1$
-    \While $sum~|e| > 0$ or $n > n_{max}$
-        \State $\mathbf{z} = f(\mathbf{x} | \mathbf{w})$
-        \State $\mathbf{e} = \mathbf{z} - \mathbf{y}$
-        \State $\mathbf{w} \gets \mathbf{w} + \nu (\mathbf{e}^T \dot \mathbf{x})^T$
-        \State $n \gets n + 1$
+\Procedure{ArraySum}{$A$}
+    \State $sum = 0$
+    \For {each integer $i$ in $A$}
+        \State $sum = sum + i$
     \EndFor
-    \State Return $\mathbf{w}$
+    \State Return $sum$
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
-The perceptron algorithm proceeds as follows: first, the weights, $\mathbf{w}$, are set to some initial condition; then, in an iterative manner, outputs, $\mathbf{z}$, are predicted from the inputs, $\mathbf{x}$, and the weights are updated with a scaled version of the incorrectly classified inputs.
-Note that the error function, $\mathbf{e}$ is only non-zero when the predicted values are wrong, and thus the algorithm ceases execution when all datapoints are classified correctly, or it reaches some number of iterations.
+\noindent First, the weights, $\mathbf{w}$, are set to some initial condition.
+Then, in an iterative manner, outputs, $\mathbf{z}$, are predicted from the inputs, $\mathbf{x}$, and the weights are updated with a scaled version of the incorrectly classified inputs.
+Note that the error vector, $\mathbf{e}$ is only non-zero where the predicted values are wrong, and thus the algorithm ceases execution when all datapoints are classified correctly, or it reaches some number of iterations.
 A visual example of this is given in Figure \ref{fig:linsep}.
 Here, a perceptron is used to separate two classes of data, drawn from different Gaussian distributions.
 As the algorithm proceeds, the total error decreases until a decision boundary is found that correctly classifies all datapoints.
 
 \begin{figure}
 \begin{centering}
-\includegraphics[width=\textwidth]{linsep}
+\includegraphics[width=0.6\textwidth]{linsep}
 \caption{Linearly separable data classified by a trained perceptron.}
 \label{fig:linsep}
 \end{centering}
 \end{figure}
 
 % Promise and limitations
-Once implemented in hardware, using a slew of potentiometers, motors, and photocells, Rosenblatt's' ``Mark I Perceptron'' drew considerable attention by the press and the research community alike.
-The \emph{New York Times} was quick to publish ambitious claims as to the promise this breakthrough held for artificial intelligence and the speed at which subsequent advances would be realized \cite{}.
-As it would soon be discovered, however, the perceptron was not without limitations.
-In their book, \emph{Perceptrons}, published in 1969, Minsky and Papert demonstrated that the representational power of these models is rather poor.
+Once implemented in hardware, using a slew of potentiometers, motors, and photocells, Rosenblatt's' ``Mark I Perceptron'' drew considerable attention from the press and the research community alike.
+The \emph{New York Times} was quick to publish ambitious claims as to the promise this breakthrough held for artificial intelligence and the speed at which subsequent advances would be realized, much to the chagrin of the AI community \cite{somebody}.
+% The Perceptron was not without limitations
+In their book, \emph{Perceptrons}, published in 1969, Minsky and Papert demonstrated that the model is rather limited in the functions it can reproduce.
 As such, perceptrons could only be used to classify linearly separable conditions, and not more complex operations, such as the exclusive-or (XOR).
 This condition is illustrated in Figure \ref{fig:mlp_ftw}, where no single line can be draw to correctly classify the data.
 
 % Multilayer Perceptrons
 This was a critical limitation for researchers in the field of computational logic; if a perceptron could not perform a simple exclusive-or, how could a machine be expected to reason?
-The answer, as it would turn out, was found in the question itself.
-It is important to recognize the the XOR function can be expressed as the logical disjuction of two simpler statements:
+The answer, as it would turn out, could be found by transforming how the XOR is expressed symbolically.
+Rearranging terms, an equivalent function can be rewritten as the disjuction (OR) of two complementary conjuctions (AND):
 
 \begin{equation}
 \label{eq:xor}
 p \oplus q = (p \wedge \neg q) \vee (\neg p \wedge q)
 \end{equation}
 
-\noindent~While it is true that a single Perceptron cannot achieve this operation directly, a combination of \emph{three} can: two are used to perform the parenthetical logic, while a third realizes the disjunction between them.
-Applying to the previous example, in Figure \ref{fig:mlp_ftw}, this scenario can now be easily separated by a \emph{multilayer} perceptron (MLP).
+\noindent While it is true that a single Perceptron cannot achieve this operation directly, a combination of \emph{three} can: two are used to perform each AND operation and corresponding negation, while a third performs the OR operation.
+Considering the scenario in Figure \ref{fig:mlp_ftw}, this condition can now be easily separated by a \emph{multilayer} perceptron (MLP).
 Therefore, arbitrarily complex functions could be obtained by cascading simpler non-linear operations, in what would be commonly reffered to as a \emph{neural network}.
+In fact, it would later be shown by the \emph{universal approximation theorem} that a neural network is actually able to model \emph{any} continous function within some tolerance \cite{Cybenko1989, Hornik1991}.
 
 \begin{figure}
 \begin{centering}
-\includegraphics[width=\textwidth]{mlp_ftw}
+\includegraphics[width=0.6\textwidth]{mlp_ftw}
 \caption{Demonstration of the decision boundaries for a \emph{multi-layer} perceptron.}
 \label{fig:mlp_ftw}
 \end{centering}
@@ -152,21 +181,19 @@ Therefore, arbitrarily complex functions could be obtained by cascading simpler 
 
 % Other problems
 Despite this observation, the study of neural networks languished through the closing decades of the 20th century, suffering a considerable downtick of interest and funding support.
-While the representational power of multilayer perceptrons was recognized in the 70's, many often claimed ---incorrectly--- that they lacked sufficient representational power to solve complex problems.
-More practically speaking, those who attempted neural network research were faced with an array of other challenges.
+While the representational power of multilayer perceptrons was recognized early on, many often claimed ---incorrectly--- that they could not be used to solve complex problems.
+More practically, those who continued to pursue neural network research were faced with an array of other challenges.
 Neural networks were prone to over-fitting, extremely slow to compute weight updates over a large number of datapoints, and difficult to train with more than a few layers.
 % Ahead of the times
-% Theory outpaced technological capacity.
-% Over-hyped
-In isolation, these issues might merely have a posed a standard research obstacle, but coupled with the overzealous claims of the 1950's and 60's,  such difficulties would prove detrimental to neural network research for some time.
-% Result
+% Theory outpaced technological capacity. Over-hyped
+In isolation, these issues might merely have a posed a standard research obstacle, but coupled with the failed promises of overzealous researchers, such difficulties would malign neural network research for some time.
 % This resulted in what is affectionately known as one of the ``AI winter'', things got bad.
 
 
 \subsection{Scientific Milestones (1980--2010)}
 \label{sec:advances}
 
-Despite widespread skepticism and negativity toward neural computing, a select few would persevere through this ``AI Winter'', and continue research on neural networks.
+Despite widespread pessimism toward neural computing, a select few would persevere through this ``AI Winter'', and continue research on neural networks.
 And, in the course of thirty odd years, these diligent efforts would yield a array of crucial breakthroughs that would fundamentally change the landscape of neural network research.
 While individually insufficient, each facet would prove to be a necessary contribution to the eventual thaw.
 
@@ -199,8 +226,7 @@ Covarying inversely with the learning rate, illustrated in Figure \ref{fig:sgd},
 % Fully connected networks, bleh; sensitive to translation and scale
 % TODO: Needs a better context sentence
 
-The universal approximation theorem states that a multilayer perceptron can be used to model \emph{any} continous function within some tolerance \cite{Cybenko1989, Hornik1991}.
-Though equal parts remarkable and encouraging, it says nothing about how one might find the parameters to achieve some desired behavior.
+Though equal parts remarkable and encouraging, the universal approximation theorem says nothing about how one might parameterize a neural network to achieve some desired behavior.
 Thus, despite such overwhelming promise, early neural networks often resulted in poor approximations of the functions being modeled, because the flexibility of the model vastly surpassed the amount of data available to train it.
 This flexibility was apparent in computer vision tasks, as multilayer perceptrons struggled to cope with simple homographic deformations, such as translation, scaling, or rotation.
 
@@ -262,6 +288,10 @@ Hardware became increasingly smaller, memory grew to the size of gigabytes, proc
 On the heels of these developments, other hardware and tools were adapted to facilitate neural network research, such as parallel computing with graphics processing units (GPUs) and accessible software tools, e.g. Theano\footnote{} or Torch\footnote{}.
 Combined, singificantly better technology directly enabled research at unprecedented scale, accelerating progress and relaxing computational constraints imposed by technical limitations.
 
+% Additionally, significant increases in computational power, and especially advances in parallel computing via GPUs, make deep learning not only feasible, but in some cases an efficient approach to research.
+% Evidenced by the recent work of \cite{kittehs}, some are beginning to attempt large scale deep learning on unprecedented quantities of data.
+% Similarly, software libraries and toolkits \cite{Theano, Torch, Caafe} are now available that leverage these computational gains to make deep learning more accessible to the entire research community.
+
 
 \subsection{Modern Rennaissance (after 2010)}
 \label{subsec:rennaissance}
@@ -271,11 +301,15 @@ Press; YouTube and Cats, Yann LeCun, Geoff Hinton, IEEE, NYTimes
 Competitions: Kaggle, Netflix, ImageNet
 
 
-\section{Deep Learning Concepts}
+\section{Core Concepts}
 \label{sec:example}
 
 % The "what" of deep learning
-Having covered the ``why'' of deep learning, this section aims to generalize the concepts of classic neural computation into a more general presentation of relevant parts.
+At the highest level, deep learning is merely an approach to nonlinear system design that combines high level function design with numerical optimzation in an effort to model some desired
+
+
+Having covered the ``why'' of deep learning, this section aims to generalize the concepts of classic neural computation into a more general presentation of its fundamental components.
+
 
 
 \subsection{Flexible Architectures}
