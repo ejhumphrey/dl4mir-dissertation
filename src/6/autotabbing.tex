@@ -2,98 +2,135 @@
 % this file is called up by thesis.tex
 % content in this file will be fed into the main document
 
-%: ----------------------- introduction file header -----------------------
-% the code below specifies where the figures are stored
+
 \graphicspath{{6/figures/}}
 
 \chapter{From Music Audio to Guitar Tablature}
 \label{chp:background}
 
-Automatic chord recognition is conventionally tackled as a general music audition task, where the desired output is a time-aligned sequence of discrete chord symbols, e.g. CMaj7, Esus2, etc.
-In practice, however, this presents two related challenges:  one, the act of decoding a given chord sequence requires that the musician knows both the notes in the chord and how to play them on some instrument; and two, chord labeling systems do not degrade gracefully for users without significant musical training.
-Alternatively, we address both challenges by modeling the physical constraints of a guitar to produce \emph{human-readable representations} of music audio, i.e guitar tablature via a deep convolutional network.
-Through training and evaluation as a standard chord recognition system, the model is able to yield representations that require minimal prior knowledge to interpret, while maintaining respectable performance compared to the state of the art.
+In the previous chapter, it was demonstrated that state of the art ACE systems are actually performing at a relatively high level, often producing reasonable chord estimations, if not the \emph{precise} labels of a reference annotation.
+Deploying these systems in the wild for real users, however, presents two practical difficulties:
+one, performing a given chord sequence requires that the musician already knows both the notes in each chord and how to play them on some instrument;
+and two, classification-minded chord estimation systems do not degrade gracefully, e.g. produce ``next best'' answers.
+Recognizing that many in the online music transcription community are guitarists, both challenges are addressed here by modeling the physical constraints of guitar's fretboard with a deep convolutional network to produce \emph{human-readable representations} of music audio, i.e. tablature.
 
+Importantly, estimating the likelihood of hand positions on a fretboard entails a variety of advantages.
+Guitar chord shapes impose an explicit hierarchy among notes in a chord family, such that related chords are forced to be near-neighbors in the output space.
+This acts as a constraint on the learning problem, and encourages the model to learn musically meaningful outputs beyond the space of chords seen during training.
+The human-readable nature of the system's output is also valuable from a practical perspective, being immediately useful with minimal prerequisite knowledge.
+This further supports the goal of graceful degradation, such that a softer prediction surface results in more informative errors.
+Finally, directly estimating playable represenations allows non-experts to easily validate system outputs and even correct errors.
 
-\section{Background}
-\label{sec:part1}
+% This paper presents a novel approach to bootstrapping the task of automatic chord recognition to develop an end-to-end system capable of representing polyphonic music audio as guitar tablature by modeling the mechanics of the guitar with a deep convolutional network.
+% To enforce playability, a finite vocabulary of chord shape templates are defined and the network is trained by minimizing the distance between its output and the best template for an observation.
+% Experimental results show that the model achieves the goal of faithfully mapping audio to a fretboard representation, while still performing respectably as a chord recognition system.
+% The output of the network is human-readable, allowing the system to be used by anyone regardless of musical ability.
+% Additionally, trained networks are not constrained to any particular vocabulary, and are able to represent previously unseen chord shapes.
 
-Given sustained effort and interest by the research community, automatic chord recognition is now one of the seminal tasks in music informatics.
-As the state of the art has advanced, most approaches adopt the same basic architecture: first, acoustic features, known as pitch class profiles or chroma, are computed from short-time observations of an audio signal \cite{Fujishima1999}; then, Gaussian mixture models (GMMs) are fit to each chord class in the target vocabulary, typically 12 Major, 12 Minor, and one waste-basket ``no-chord'' class \cite{Bello2005}; finally, frame-wise predictions are decoded using a Hidden Markov Model with transition probabilities computed from the same data used for training the GMMs \cite{Sheh2003}.
-Alternatively, deep learning methods have recently garnered attention for chord recognition, such as convolutional neural networks (CNNs)\cite{Humphrey2012} and recurrent neural networks (RNNs) \cite{Boulanger2013}.
+\section{Context}
+\label{sec:context}
+
 
 \begin{figure}[t!]
 
   \centering
-  \centerline{\includegraphics[width=3.25in]{chord_tablature}}
-\caption{A chord label sequence (top), traditional staff notation (middle), and guitar tablature (bottom) of the same musical information, in decreasing levels of abstraction.}
-\label{fig:different_notation}
+  \centerline{\includegraphics[width=\textwidth]{chord_tablature}}
+\caption{A chord sequence (top), traditional staff notation (middle), and guitar tablature (bottom) of the same musical information, in decreasing levels of abstraction.}
+\label{fig:chord_notation}
 %
 \end{figure}
 
+% Rise of the guitarists
+To date, the majority of research in automatic chord estimation is based on the two-fold premise that (a) this is fundamentally a classification problem, and (b) the ideal output is a time-aligned sequence of singular chord names.
+That said, it is worthwhile to reconsider that the development of such systems is motivated by the goal of helping the amibitious musician learn to play any song\footnote{Any song that makes use of traditional Western tonal harmony, that is.}.
+%TODO: This sentence blows. Fix it.
+One of the largest groups of musicans attempting to do just that is the guitarist community.
+Over the last century, the guitar, in all of its forms, has drastically risen in popularity and prevalance, both in professional and amateur settings.
+Given the low start-up cost, portability, favorable learning curve, and undisputed ``cool factor'' in Western popular culture, courtesy of musicans like Jimi Hendrix or \emph{The Beatles}, it is unsurprising that guitars dwarf music instrument sales in the United States.
+Based on the 2014 annual report of the National Association of Music Merchants (NAMM), a whopping 2.47M guitars were sold in 2013 in the United States, accounting for a retail value of \$1.07 \emph{billion} USD \cite{NAMM2014}; for comparison, \emph{all} wind instruments sales ---the next largest instrument category--- combined for just over half that figure, at \$521M USD.
 
-Generally speaking, the majority of prior research in automatic chord recognition is based on the two-fold premise that (a) this is fundamentally a classification problem and (b) the ideal output is a time-aligned sequence of singular chord names, motivated by the spirit of empowering anyone to play any song.
-Modern online guitar communities, however, have continued to place a high demand on guitar tablature, given the prevalence of user-curated websites like Ultimate Guitar\footnote{http://www.ultimate-guitar.com/}, which sees an average 1.7M unique visitors in the US per month\footnote{Based on Compete.com analytics data, accessed on 2 November, 2013.}.
-As illustrated in Figure \ref{fig:different_notation}, guitar tablature is a form of music notation that requires minimal knowledge to interpret because the representation directly maps notes in a chord to frets on a guitar.
-Therefore, it is an inherent design challenge of human-facing expert systems that the output must be easily interpreted by the user; and, more importantly, graceful degradation is a function of that user's capacity to understand and recover from errors.
-Though some previous work embraces this position in the realm of transcribing guitar recordings \cite{Barbancho2012} or arranging music for guitar \cite{Hori2013}, there is, to our knowledge, no existing work in estimating guitar tablature directly from polyphonic recordings.
+% Tablature notation
+While most instruments make use of traditional staff notation, fretted instruments, like lute or guitar, have a long history of using \emph{tablature} to notate music.
+Illustrated in Figure \ref{fig:chord_notation}, tablature requires minimal musical knowledge to interpret, and thus offers the advantage that is easier to read, and generally preferred by beginners.
+Whereas staff notation explicitly encodes pitch information, leaving the performer to translate notes to a given instrument, tablature explicitly encodes performance instructions for a given instrument and only implies pitch.
+Though it can be difficult to accurately depict rhytmic information with tablature, this is seldom an obstacle for guitarists.
+% It is typically easier to learn rhythm by ear than pitch.
+Guitar parts often consist of chords strummed with little emphasis on rhythm patterns, and it is easy to align chord changes with lyrics or metrical position.
+% Therefore, it is an inherent design challenge of human-facing expert systems that the output must be easily interpreted by the user; and, more importantly, graceful degradation is a function of that user's capacity to understand and recover from errors.
 
-%emits chord names is that the end user must have the prerequisite knowledge to make musical sense of this information;
+\begin{figure}[t!]
+  \centering
+  \centerline{\includegraphics[width=\textwidth]{ug_compete}}
+\caption{Visitor statistics for the tab website \emph{Ultimate Guitar}, as of January 2015.}
+\label{fig:ug_compete}
+%
+\end{figure}
 
-% This paper presents a novel approach to bootstrapping the task of automatic chord recognition to develop an end-to-end system capable of representing polyphonic music audio as guitar tablature by modeling the mechanics of the guitar with a deep convolutional network.
-% To enforce playability, a finite vocabulary of chord shape templates are defined and the network is trained by minimizing the distance between its output and the best template for an observation.
-% Our experiments show that the model achieves the goal of faithfully mapping audio to a fretboard representation, while still performing respectably as a chord recognition system.
-% The output of the network is human-readable, allowing the system to be used by anyone regardless of musical ability.
-% Additionally, trained networks are not constrained to any particular vocabulary, and are able to represent previously unseen chord shapes.
+% Digitization and the internet
+As both personal computers and access to the Internet became more common, guitarists began to embrace technology for the purposes of learning to play popular music.
+Bandwidth and memory limitations, however, prevented the curation of high resolution images of sheet music, and symbolic representations, like MIDI, required specialized programs to render the music visually.
+With small filesizes and compatibility with common text editors, ASCII ``tabs'' made it comparatively trivial to create, share, and store guitar music.
+Thus, combining easy readability and a sufficient level of musical detail with technological constraints of the time period, guitar tablature spiked in popularity towards the end of the $20^{th}$ century.
+Today, evidenced by heavily trafficked, user-curated websites like Ultimate Guitar\footnote{http://www.ultimate-guitar.com/}, modern online guitar communities continue to place a high demand on tablature.
+Shown in Figure \ref{fig:compete}, this one website sees, on average, well over 2M unique visitors\footnote{Based on Compete.com analytics data, accessed on 15 March, 2015.} on a monthly basis in the United States alone.
 
-\section{System Design Considerations}
+% Put it together
+Taken together, these observations tell an interesting story.
+Guitarists comprise a significant portion of the global music community, and are actively creating and using tablature as a means of learning music.
+It seems rather obvious to conclude that an automatic chord estimation system would be extremely valuable to this demographic, but such a system should be sensitive to the common preference for tablature.
+Therefore, this is an effort to steer automatic chord estimation toward a specific application, in order to address a real pain point for a real user base.
+
+
+\section{Proposed System}
 
 Much of this work proceeds directly from previous efforts in automatic chord estimation.
 The input leverages the same CQT representation, and is omitted from the discussion here.
 
+Though some previous work embraces this position in the realm of transcribing guitar recordings \cite{Barbancho2012} or arranging music for guitar \cite{Hori2013}, there is, to our knowledge, no existing work in estimating guitar tablature directly from polyphonic recordings.
 
-\subsection{Designing a Fretboard Model}
+
+\subsection{Designing a Guitar Chord Esimator}
 \label{subsec:design}
 
-Deep trainable networks have proven to be a versatile, powerful, and practical approach to solving complex machine learning problems in a variety of fields.
+So far, this study has shown deep trainable networks have proven to be a versatile, powerful, and practical approach to solving complex machine learning problems.
+Thus it is a particular advantage of deep learning that various end-to-end systems can be quickly developed, provided one can express its fitness as a differentiable objective function.
+This high level design strategy is exploited here by modifying the convolutional neural networks of the previous chapter to produce an output representation that behaves like the fretboard of a guitar.
+
+For clarity, the modern guitar consists of six parallel strings, conventionally tuned to E2, A2, D2, G3, B3, and E4.
+The polyphony of a guitar can be anywhere from zero to \emph{six}, the condition in which all strings are plucked, strummed, or otherwise activated.
+A guitar is also fretted, such that the different pitches produced by a string are quantized in ascending order, as a result of shortening the length of the vibrating string.
+A continuous pitch range may be achieved by various means, such as bending the strings, but such embellishments are rare to the point of unnecessary when addressing chords.
+Thus, for the purposes here, it can be said that each string only takes a finite number of states: off (\texttt{X}), open, (\texttt{O}), or a number corresponding to the fret at which the string is held down.
+As a simplification, all chords will be voiced in the first seven frets, and therefore each string can have nine mutually exclusive states.
+
 
 \begin{figure}[t!]
   \centering
-  \centerline{\includegraphics[width=3.5in]{sys_diagram}}
-%  \vspace{1.5cm}
+  \centerline{\includegraphics[width=\textwidth]{sys_diagram}}
 \caption{Full diagram of the proposed network during training.}
 \label{fig:sys_diagram}
 %
 \end{figure}
 
-
-Finally, the last layer, $f_3$, that produces the fretboard-like output, $Z_{out}$, is defined similarly to $f_2$, with the exception that $W$ is now a tensor, and the result of each matrix-vector product is normalized by the softmax operation, defined as:
-
-\begin{equation}
-\label{eq:softmax}
-\small
-\sigma(x)=\frac{\exp(x)}{ \sum_{m=1}^M\exp{(x[m])}}
-\end{equation}
-
-\noindent This layer is then given by the following:
+Framed as such, the strings of a guitar can modeled as six correlated, but ultimately independent, probability mass functions.
+The common approach toward achieving this behavior is by passing the output of an affine projection through a softmax function, as described in Chapter \ref{chp:method}, yielding a non-negative representation that sums to one.
+Here, six independent softmax layers are used to model each string independently, and concatenated to form a 2-dimensional heatmap of the fretboard:
 
 \begin{equation}
 \label{eq:softmax_layer}
 \small
-f_3(X_{3} \vert \theta_3) = \sigma (h( W[k] \bullet X_{3} + b)), k \in [0:K), \theta_3 = [W, b]
+Z_i = f_i(X_{l-1} \vert \theta_i) = \sigma (W_i \bullet X_{l-1} + b_i), i \in [0:6), \theta = [W_i, b_is]
 \end{equation}
 
-\noindent Again, as in the previous layer, the input is a flat vector of length $N$, but the weights are now a tensor of shape $(K,M,N)$ and the bias is a matrix with shape $(K,M)$.
-This layer is equivalent to performing $K$ parallel affine transformations, each normalized by the softmax function.
-The intuition for this design is straightforward; a guitar consists of a finite number of strings, and, because the instrument is fretted, each can only be pressed at one of a few discrete positions on the neck.
-In this way, the $K$-parallel softmax surfaces behave like probability mass functions for each string of the guitar, and the output $Z_{out}$ is shaped $(K, M)$.
+\noindent The activation of the $i^{th}$ string, $Z_i$, is computed by projecting the output of the penultimate layer in the network, ``X_{l-1}'', against the weights, $W_i$, and added to a bias term, $b_i$.
+This linear transformation is normalized by the softmax function, $\sigma$, and repeated for each of the six strings.
 
 
 
-\subsection{Chord Shape Vocabulary}
+\subsection{Guitar Chord Templates}
 \label{subsec:vocabulary}
 
-In this work,we consider five chord qualities (maj, min, maj7, min7 and 7) in all 12 pitch classes, plus one no-chord class, for a total of 61 classes.
+In this work, we consider five chord qualities (maj, min, maj7, min7 and 7) in all 12 pitch classes, plus one no-chord class, for a total of 61 classes.
 Chord shapes are designed such that all qualities with the same root are formed in same neck position, as seen in the first column of Figure \ref{fig:fretboard_predictions}.
 Consequently, all chords with the same root will be near-neighbors in this representation, and we should expect that the most common confusions will occur between qualities.
 Additionally, though guitar chords can be voiced in variety of ways, here we consider a single shape for each as an initial simplification.
@@ -119,11 +156,15 @@ Since these weights are constant, minimizing this function does not require a co
 \subsection{Training Strategy}
 \label{subsec:strategy}
 
-For training the model, we use mini-batch stochastic gradient descent with a constant learning rate of 0.02.
-When sampling the data, each observation is circularly shifted in pitch randomly on the interval [-12,12].
-This allows the variance of each chord quality to be evenly distributed across classes, effectively turning the task into a 6-class problem as each datapoint contributes equally to pitch class.
-Empirically, we observed that a mini-batch with a uniform quality distribution led to poor discrimination of Major chords.
-This is likely due to the wide intra-class variance of major chords, which we offset by constituting batches with 3 Major observations for 1 of each other quality, and use a total batch size of 64 (24 Major, 8 Minor, 8 no-chord, etc).
+
+For training the model, we use mini-batch stochastic gradient descent with a constant learning rate of 0.02 and a dropout value of 0.125.
+Cannot use a root-invariant model as in the previous chapter.
+Explore three different approaches.
+Train with the data as-is.
+Scale the loss by class weights.
+These are derived by computing the root invariant prior over the training set, computing the inverse, and standardizing to have unit mean and standard deviation.
+Lastly, loss scaling is combined with data augmentation, such that during training each datapoint is circularly shifted in pitch randomly on the interval $[-12, 12]$.
+This allows the variance of each chord quality to be evenly distributed across classes, and helping prevent any missing class coverage in the training set.
 
 
 \section{Methodology}
