@@ -56,7 +56,7 @@ Thus, before delving into a formal treatment of the topic, it is worthwhile to c
 % For this reason is particularly valuable to consider the lineage of these methods in an effort to understand why it is only now that such approaches have begun to gain popularity and scientific acclaim.
 
 
-\subsection{Origins (before 1980)}
+\subsection{Origins (pre-1980)}
 \label{subsec:origins}
 
 For Western Europe and those in its sphere of influence, the Age of Enlightenment marked a golden era of human knowledge, consisting of great advances in many diverse fields, such as mathematics, philosophy, and the physical sciences.
@@ -90,6 +90,7 @@ By coarse analogy to a biology, an artifical neuron ``fires'' when a weighted co
       0 : y < 0\\
     \end{array}
   \right.
+\label{eq:perceptron}
 \end{align*}
 
 \noindent Importantly, as shown in Figure \ref{fig:neuron_logic}, it was demonstrated that such a model could be used to reproduce Boolean operations, such as AND or OR.
@@ -193,16 +194,16 @@ In isolation, these issues might merely have a posed a standard research obstacl
 \subsection{Scientific Milestones (1980--2010)}
 \label{sec:advances}
 
-Despite widespread pessimism toward neural computing, a select few would persevere through this ``AI Winter'', and continue research on neural networks.
-And, in the course of thirty odd years, these diligent efforts would yield a array of crucial breakthroughs that would fundamentally change the landscape of neural network research.
-While individually insufficient, each facet would prove to be a necessary contribution to the eventual thaw.
+Despite widespread pessimism toward neural computing, a select few would persevere through this ``AI Winter''.
+Over the course of thirty odd years, these diligent efforts would yield a array of crucial breakthroughs and fundamentally change the landscape of neural network research.
+While no single contribution can truly be credited with reviving the field, each would play an integral role in helping the research community warm up to neural networks.
 
 \subsubsection{Stochastic Gradient Descent}
 \label{subsec:sgd}
 
 % Back-propagation of errors
-Via the perceptron algorithm, a machine effectively ``learned'' to classify data by optimizing a given objective function.
-Typically this was framed as an error minimization, as in Eq. \ref{}, such that the degree of fitness could be incrementally improved by taking small steps toward better parameters, known as the ``perceptron loss''.
+Via the perceptron algorithm, a machine effectively ``learns'' to classify data by finding parameters that optimize a given objective function.
+Originally this was framed as a minimization, as in Eq. \ref{eq:perceptron}, such that the error, known as the ``perceptron loss'', could be incrementally decreased by taking small steps toward better parameters.
 This optimization strategy must be modified in the multilayer case, as it is not possible to directly update the parameters through the heaviside, or unit step, function.
 Early researchers noted that if the discontinuous activation function is replaced with a logistic, or sigmoid, the composite multilayer network is \emph{differentiable}.
 The derivative of each coefficient, regardless of layer, can be computed with respect to the loss, thus \emph{back-propagating} error through the network \cite{Hinton1986}.
@@ -252,10 +253,10 @@ Taken together, these advantageous attributes directly resolved many of the issu
 \label{subsec:perceptrons}
 
 % Proliferation of digital content
-Most data wasn't digitized
-First digital image (Lena) in ?
-Digital audio
-The internet, conceived in the 1960s, didn't rise to public prominence in the US until the 1990s
+During the first rise and fall of neural networks, digital data was far more the exception than the rule.
+Digitized audio and images didn't become common until the end of the 20th century.
+Even so, the data rate of these signals made processing them computationally prohibitive: at
+The internet, conceived in the 1960s, didn't rise to public prominence in the US until the 1990s.
 
 % Labeled datasets grew, intentionally or otherwise
 Researchers had time to build large labeled datasets.
@@ -267,7 +268,14 @@ ImageNet, GWAP.
 Weakly labeled data from the internet, researchers got clever.
 
 % unlabeled data has uses too
-Unsupervised pre-training, via contrastive divergence
+Finally in 2006, one such method, called contrastive divergence was proven successful, using a slightly different processing model known as a Restricted Boltzmann machine (RBM).
+The important characteristic of an RBM is that it can be used to generate, as well as process, information in both directions.
+This is fundamental to contrastive divergence, which trains each layer of a deep network separately by learning to recreate its input data.
+By analogy, this approach aims to discover structure in the data that occurs with high probability and effectively ``ignore'' everything else.
+When strung together as a full network, these systems are referred to as deep belief networks (DBNs), as a result of their probabilistic formulation.
+Subsequently, a similar model called an autoencoder \cite{Vincent2010}, or ---an alternative interpretation from another research team--- Predictive Sparse Decomposition \cite{Ranzato2007}, incorporates roughly the same principles with deterministic interpretation of these concepts.
+In either view of the parameter optimization problem, learning algorithms now exist that can leverage large quantities of unlabeled data to tune large networks with minimal supervision.
+These advances have collectively ushered in a new era of machine learning, referred to as \emph{deep learning}, named so for the multiple levels of information processing and the manner in which the parameters of the system are discovered from data.
 
 
 % Theory preceded technology
@@ -293,7 +301,7 @@ Combined, singificantly better technology directly enabled research at unprecede
 % Similarly, software libraries and toolkits \cite{Theano, Torch, Caafe} are now available that leverage these computational gains to make deep learning more accessible to the entire research community.
 
 
-\subsection{Modern Rennaissance (after 2010)}
+\subsection{Modern Rennaissance (post-2010)}
 \label{subsec:rennaissance}
 
 Industrial strength; Google, Facebook, Baidu, Microsoft
@@ -305,20 +313,21 @@ Competitions: Kaggle, Netflix, ImageNet
 \label{sec:example}
 
 % The "what" of deep learning
-At the highest level, deep learning is merely an approach to nonlinear system design that combines high level function design with numerical optimzation in an effort to model some desired
+At the highest level, deep learning is an approach to nonlinear system design that combines high level function design with numerical optimzation in an effort to model some observable behavior.
 
 
 Having covered the ``why'' of deep learning, this section aims to generalize the concepts of classic neural computation into a more general presentation of its fundamental components.
 
 
 
-\subsection{Flexible Architectures}
-\ref{subsec:architectures}
+\subsection{Modular Architectures}
+\label{subsec:architectures}
 
-Fair game so long as you can differentiate it
+S'all fair game so long as you can differentiate it.
 
 \subsubsection{Linear Algebra}
 
+% Fully connected / affine
 Conventionally, a neural network transforms an input $X_{1}$ into an output $Z_{L}$ via a composite nonlinear function $F(\cdot \vert \Theta)$, given a parameter set $\Theta$.
 This is traditionally achieved as a cascade of $L$ simpler nonlinear functions $f_l(\cdot \vert \theta_l)$, referred to as layers, the order of which is indexed by $l$:
 
@@ -329,7 +338,6 @@ F(X_{1} \vert \Theta) = f_{L}(  ... f_2(f_1(X_{1} \vert \theta_1) \vert \theta_2
 
 \noindent In this formulation, $F = [f_1, f_2, ... f_{L} ]$ is the set of layer functions, $\Theta = [\theta_1, \theta_2, ... \theta_{L} ]$ is the corresponding set of layer parameters, the output of one layer is passed as the input to the next, as $X_{l+1} = Z_{l}$, and the overall \emph{depth} of the network is given by $L$.
 
-Importantly,
 
 While a layer $f_l$ can be any differentiable function, we limit our focus in this work to fully-connected, or \emph{affine}, transformations, defined by the following:
 
@@ -342,18 +350,27 @@ f_l(X_l \vert \theta_l) = h( W \bullet X_{l} + b), \theta_l = [W, b]
 Note that an affine layer transforms an $N$-dimensional input to an $M$-dimensional output, referred to as the \emph{width} of the layer.
 The final operation is a point-wise nonlinearity, $h(\cdot)$, defined here as $tanh(\cdot)$, which is bounded on $(-1, 1)$.
 
+% Local Receptive Fields
+Fully connected matrices that are only connected to local neighborhoods.
+This can be generalized as a very large dot product where most parameters are fixed to zero.
+
+% Convolutions
+Same formulation as local receptive fields, except the parameters are tied across location.
+
+% Other connectivities
+Could be data driven, a la Coates et al \cite{Coates2012?}.
 
 \subsubsection{Nonlinearities}
 
-Logistic / sigmoid
-Hyperbolic tangent
-Rectified linear, softplus
+Logistic / sigmoid, hyperbolic tangent.
+Close cousins, but generally hyperbolic tangent has gained favor for being centered about the origin.
 
+Rectified linear, piecewise linear model. % relationship to random forests?
+Results in naturally sparse representations.
+Doesn't saturate in the positve region, but no information flows in the negative mode.
+Leaky ReLU, gradient everywhere.
 
-\subsubsection{Pooling}
-
-\subsubsection{Constraints}
-
+%Softmax
 When used as a classification system, the first $L-1$ layers of a neural network can be viewed as feature extractors, and the last layer, $f_L$, is a simple linear classifier.
 The output representation can be made to behave like a posterior by constraining the $L_1$-norm of the output to equal $1$.
 Traditionally, the probability mass function $P(\cdot)$ for an input $X_1$ is achieved by applying the softmax operation to the output of the network, $Z_L$, defined as follows:
@@ -361,15 +378,20 @@ Traditionally, the probability mass function $P(\cdot)$ for an input $X_1$ is ac
 % TODO: Isn't there a Beta term here?
 \begin{equation}
 \label{eq:softmax}
-P(X_1 | \Theta) = \sigma(Z_L) = \frac{\exp(Z_{L})}{ \sum_{m=1}^{M_{L}}\exp{(Z_{L}[m])}}
+\sigma(Z) = \frac{\exp(\beta Z)}{ \sum_{k=1}^{K}\exp{(\beta Z_k)}}
 \end{equation}
 
-\noindent Again, note that $Z_{L}$ is the output of the final layer, $f_L$, and thus $M_L$ is the dimensionality of the classifier and equal to the number of classes in the problem.
-Therefore, the most likely class for an observed input, $X_1$, is given by $argmax(P(X_{1} | \Theta))$.
+\noindent Again, note that $Z$ is the output of the final layer, $f_L$, and thus $K$ is the dimensionality of the classifier and equal to the number of classes in the problem.
+Therefore, the most likely class for a prediction $Z$, is given by $k = argmax(\sigma(Z))$.
 
-Another common approach is to fix a representation to the surface of a hypersphere.
-lacking a
+Notably, any differentiable nonlinearity could conceivably be used here.
 
+
+\subsubsection{Pooling}
+
+Max pooling is the most common form, usually applied to a local neighborhood.
+Also L2 variant
+Relationship to max-out networks.
 
 
 \subsection{Energy-based Learning}
@@ -397,46 +419,55 @@ Specifically, the update rule for $\Theta$ is defined as its difference with the
 \end{equation}
 
 
-\section{Recent Developments}
-\label{sec:example}
+\subsection{Tricks of the Trade}
+\label{subsec:tricks}
 
-Though models and architectures for neural information processing had been proposed throughout the last half of the $20^{th}$ century, there were several issues that impeded progress for decades.
-Early neural networks were highly prone to overfit, producing systems that failed to give good performance on unseen data.
-These issues were exacerbated by overzealous estimates of how and when ``strong'' AI could be achieved and the technological limitations of early computers.
-For example, the idea of backpropagation as a learning algorithm had been presented in 1969, but the complexity of networks and number of iterations needed for convergence were computationally prohibitive for the time period \cite{}.
+%   -- Tricks
+\subsubsection{Regularization \& Sparsity}
+Reduce over-fitting via weight decay.
+L2 penalties make values small without going to zero
 
-This remained the reality until the 1990's, when many of these barriers started to fall and neural network research could begin to recover from widespread negative opinion.
-Along with advances in technology, it was discovered that stochastic gradient descent (SGD) worked as well, if not better, than exhaustive batch methods, meaning that ---keeping consistent with the previous mountain climbing analogy--- the system could take ``steps'' in the right direction faster.
-As a result, the algorithm is far more efficient and therefore feasible in practice.
-Additionally, a novel architecture, based on knowledge of the visual cortex and building upon the work of \cite{Fukushima1988}, known as a convolutional neural network demonstrated that these models could be successfully applied to real world problems, the first instances being signature recognition \cite{LeCun1994} and handwritten digit classification \cite{LeCun1998}.
+Sparse representation are good.
+L0 and L1 loss are closely related, will drive values all the way to zero.
 
-Though this approach worked well for a few specific tasks, its applicability was limited in other domains because it required a substantial amount of labeled, ground-truth data for supervised training.
-Fully supervised learning, however, is often impractical and difficult to scale to every application.
-As a result, much effort was invested in finding unsupervised methods of training large networks.
-Finally in 2006, one such method, called contrastive divergence was proven successful, using a slightly different processing model known as a Restricted Boltzmann machine (RBM).
-The important characteristic of an RBM is that it can be used to generate, as well as process, information in both directions.
-This is fundamental to contrastive divergence, which trains each layer of a deep network separately by learning to recreate its input data.
-By analogy, this approach aims to discover structure in the data that occurs with high probability and effectively ``ignore'' everything else.
-When strung together as a full network, these systems are referred to as deep belief networks (DBNs), as a result of their probabilistic formulation.
-Subsequently, a similar model called an autoencoder \cite{Vincent2010}, or ---an alternative interpretation from another research team--- Predictive Sparse Decomposition \cite{Ranzato2007}, incorporates roughly the same principles with deterministic interpretation of these concepts.
-In either view of the parameter optimization problem, learning algorithms now exist that can leverage large quantities of unlabeled data to tune large networks with minimal supervision.
-These advances have collectively ushered in a new era of machine learning, referred to as \emph{deep learning}, named so for the multiple levels of information processing and the manner in which the parameters of the system are discovered from data.
-Deep learning is therefore based on two principles: first, that complex problems can be decomposed into a series of simpler subproblems; and second, what exactly these simpler subproblems are or should be can be discovered from a corpus of data.
+\subsubsection{Data-Driven Initialization}
 
-Looking closely at recent work in deep learning, most of the effort has been invested in areas of static input representations, i.e. computer vision and still images.
-As evidenced by music, audio, and video, time plays an extremely important role in the way that information is conveyed.
-Though CNNs have been applied to signals with a temporal dimension \cite{LeCun1994}, recursive architectures have shown promise for addressing the problem of time and sequences in data.
-Initial efforts to train RNNs however, even with supervised methods, proved extremely challenging, with the observed phenomena manifesting as numerical stability issues of the gradient.
-Due to the recursive nature of the model, backpropagating the error signal through time is prone to make the amplitude of the gradient either vanish or explode.
-Despite these difficulties, several approaches and optimization methods have been developed in recent years that encourage further exploration of these models.
+Core idea behind the last significant breakthrough of the modern era.
+Get parameters of the network closer to a good solution.
+Resolves poorly conditioned networks.
+Alleviates the vanishing gradient problem.
 
-One of the earliest successful attempts to circumvent the issue of gradient stability was realized through a method called LSTM \cite{Schmidhuber1997}, where the gradient signal is ``latched'' by a hidden unit such that its information could be saved long enough to be useful.
-Similar notions surround the notion of reservoir computing, such as echo-state networks, which employ feedback connections to cache arbitrary temporal information such that a second non-recursive layer ---being far easier to train--- might be able to make sense of it \cite{Jaeger2002}.
-Alternatively, conditional DBNs have been employed to model, classify, and generate convincing sequences of human motion \cite{JMLR2011}, and can be thought of as a probabilistic CNN.
-Recent research has found that more complex optimization methods are sufficient to train RNNs directly without changing the underlying model \cite{Martens2010}, giving encouraging qualitative results on motion \cite{Sutskever2008} and text generation \cite{Sutskever2011}.
-There has also been initial work investigating discriminative recursive models that also leverage unsupervised training \cite{Rolfe2013}.
-This research is particularly exciting, as it demonstrates that such models are actually within reach.
-Reflecting on the corpus of deep learning work in the past decade however, it should be noted that the majority of these breakthroughs ignore audio, and even more so music, signals, focusing instead on vision or natural language processing tasks.
+Recently it was observed that with enough data, rectified linear units, or both, this is less crucial than once thought.
+
+
+\subsubsection{Dropout}
+Preventing co-adaptation of parameters.
+Related to model averaging.
+Reduces theoretical bounds on generalization error.
+
+
+\subsubsection{Data Augmentation}
+
+
+\subsubsection{Bootstrapping Additional Information}
+Sparse coding
+Jordan Net
+
+
+% Looking closely at recent work in deep learning, most of the effort has been invested in areas of static input representations, i.e. computer vision and still images.
+% As evidenced by music, audio, and video, time plays an extremely important role in the way that information is conveyed.
+% Though CNNs have been applied to signals with a temporal dimension \cite{LeCun1994}, recursive architectures have shown promise for addressing the problem of time and sequences in data.
+% Initial efforts to train RNNs however, even with supervised methods, proved extremely challenging, with the observed phenomena manifesting as numerical stability issues of the gradient.
+% Due to the recursive nature of the model, backpropagating the error signal through time is prone to make the amplitude of the gradient either vanish or explode.
+% Despite these difficulties, several approaches and optimization methods have been developed in recent years that encourage further exploration of these models.
+
+% One of the earliest successful attempts to circumvent the issue of gradient stability was realized through a method called LSTM \cite{Schmidhuber1997}, where the gradient signal is ``latched'' by a hidden unit such that its information could be saved long enough to be useful.
+% Similar notions surround the notion of reservoir computing, such as echo-state networks, which employ feedback connections to cache arbitrary temporal information such that a second non-recursive layer ---being far easier to train--- might be able to make sense of it \cite{Jaeger2002}.
+% Alternatively, conditional DBNs have been employed to model, classify, and generate convincing sequences of human motion \cite{JMLR2011}, and can be thought of as a probabilistic CNN.
+% Recent research has found that more complex optimization methods are sufficient to train RNNs directly without changing the underlying model \cite{Martens2010}, giving encouraging qualitative results on motion \cite{Sutskever2008} and text generation \cite{Sutskever2011}.
+% There has also been initial work investigating discriminative recursive models that also leverage unsupervised training \cite{Rolfe2013}.
+% This research is particularly exciting, as it demonstrates that such models are actually within reach.
+% Reflecting on the corpus of deep learning work in the past decade however, it should be noted that the majority of these breakthroughs ignore audio, and even more so music, signals, focusing instead on vision or natural language processing tasks.
 
 
 \section{Previous Efforts in Automatic Music Description}
@@ -504,3 +535,5 @@ The few who perservered made various discoveries that, coupled with steady advan
 mini-batch stochastic gradient descent made optimization computationally efficient and less susceptible to poor local minima, and encouraged further exploration of numerical optimization methods;
 convolutional networks reduced model complexity and over-fitting through scale and translation invariance;
 and lastly, larger labeled datasets reduced overfitting, and abundant unlabeled data could be used to better initialize networks in an unsupervised manner.
+
+Deep learning is therefore based on two principles: first, that complex problems can be decomposed into a series of simpler subproblems; and second, what exactly these simpler subproblems are or should be can be discovered from a corpus of data.
