@@ -34,7 +34,7 @@ Finally, directly estimating playable represenations allows non-experts to easil
 \begin{figure}[t!]
 
   \centering
-  \centerline{\includegraphics[width=\textwidth]{chord_tablature}}
+  \centerline{\includegraphics[width=0.8\textwidth]{chord_tablature}}
 \caption{A chord sequence (top), traditional staff notation (middle), and guitar tablature (bottom) of the same musical information, in decreasing levels of abstraction.}
 \label{fig:chord_notation}
 %
@@ -147,11 +147,11 @@ Rather than attempt to cope with these issues now, the canonical template approa
 The choice of one template over another likely has nontrivial implications for the behavior of the model, but this is left as a variable to be explored in the future.
 
 
-\subsection{Additional Prediction Functions}
+\subsection{Decision Functions}
 \label{subsec:loss}
 
-Before proceeding, there are two additional architectural considerations to be addressed.
-First, the templates defined above must be incorporated into an objective function, such that the machine can learn to faithfully reproduce them.
+While estimating frets is sufficient for human interpretation, it is necessary to design two related decision functions.
+First, the templates defined above must be incorporated into an objective function, such that the machine can learn to optimize this measure over the training data.
 Finding inspiration in \cite{LeCun1998}, a Radial Basis Function (RBF) layer is added to the network, given as follows:
 
 \begin{equation}
@@ -163,80 +163,56 @@ Finding inspiration in \cite{LeCun1998}, a Radial Basis Function (RBF) layer is 
 Note that these templates will impose the proper organization on the output of the model, and thus remain fixed during the learning process.
 Since these weights are constant, minimizing this function does not require a contrastive penalty or margin term to prevent it from collapsing, i.e. making all the squared distances zero.
 
-Additionally, in order to apply Viterbi post-filtering and fairly compare with previous results, it is necessary to invert the energy surface into a likelihood function.
-This is achieved by negating the energy function and normalizing as a Gibbs distribution:
+Additionally, in order to apply Viterbi post-filtering and fairly compare with previous results, the energy surface must be inverted into a likelihood function.
+This is achieved by negating the energy function, $E$, and normalizing as a Gibbs distribution:
 
 \begin{equation}
 \small
-\mathcal{L}(Y_k \vert X, \Theta) = \frac{exp(-E(Y_k \vert X, \Theta))}{\sum_i^K~exp(-E(Y_k \vert X, \Theta))}
+\mathcal{L}(Y_k \vert X, \Theta) = \frac{exp(-\beta~E(Y_k \vert X, \Theta))}{\sum_i^K~exp(-\beta~E(Y_k \vert X, \Theta))}
 \end{equation}
 
+For the experiments detailed below, $\beta=1$.
+It is conceivable that the choice of hyperparameter may impact system behavior when coupled with the Viterbi algorithm, but this value was empirically observed to give good results and not explored further.
 
-\section{Methodology}
+
+\section{Experimental Method}
+
+The focus of this chapter now shifts toward the experimental method adopted to investigate the behavior of this basic approach.
+Herein, the training strategy, corresponding variables, and subsequent quantitative results are addressed in turn.
 
 \subsection{Training Strategy}
 \label{subsec:strategy}
 
-It is critical to note that a fretboard prediction model cannot achieve root-invariant weight sharing as in the previous chapter, due to the nonuniformity of chord shapes with different roots.
-To explore the impact of this shortcoming, three different training strategies are employed here.
+Though it is able to incorporate musical knowledge into the architectural design, the model proposed here is unable achieve root-invariant weight sharing similarly to the one presented in the previous chapter.
+This is due to root-dependent chord shapes, resulting from the nonuniform arrangement of chords on the neck of the guitar.
+It is important to consider the effect this has on system performance, as well as other means of achieving ``root invariance'', and thus three different training strategies are employed here.
+
 As a baseline condition, the model is trained with the natural distribution of the data (``as-is'').
-Note that this is expected to be a deficient condition, as there is chord class mismatch between training and test conditions, i.e. there are chord classes in the test partition that do not occur in the training set.
-In the interest of addressing the imbalanced learning problem, the second training condition scales the loss of each training observation by a class-dependent weight (``scaled'').
+Note that it is reasonable to expect these models to be deficient, as there may be chord class mismatch between training and test conditions, i.e. chord classes in the test partition do not occur in the training set.
+To address the imbalanced learning problem, the second training condition scales the loss of each training observation by a class-dependent weight (``scaled'').
 These weights are determined by computing the root-invariant prior over the training partition, taking its inverse, and standardizing the coefficients to unit mean and standard deviation.
 The third and final training condition couples loss scaling with data augmentation, such that during training each datapoint is circularly shifted in frequency on the interval $[-12, 12]$ (``augmented'').
 This allows the variance of each chord quality to be evenly distributed across classes, and helping prevent any missing class coverage in the training set.
 
+Identical partitions of the dataset used in the previous chapter are employed here; the dataset is split 68:12:20, into training, validation, and test, respectively, and the partitions are rotated so that all data is used as a holdout set once.
 All models are trained with mini-batch stochastic gradient descent at a batch size of 50, learning rate of 0.02, and dropout ratio of 0.125.
-Training proceeded for several hundred iterations, ultimately bounded by a ceiling of 24 hours.
-Identical partitions of the dataset used in the previous chapter are employed here, and all results are averaged over five folds.
+Training proceeded for several hundred iterations, ultimately bounded by a ceiling of 24 hours, and parameters were checkpointed every 10k iterations.
+Model selection was performed as a brute force search over both the parameter checkpoints and self-transition penalty for Viterbi, from -20 to -40 in steps of 5.
+The best model was chosen by the maximum of the harmonic mean of the chord evaluation metrics outlined previously.
 
 
-\subsection{Evaluation}
+\subsection{Quantitative Evaluation}
 \label{subsec:evaluation}
 
-In lieu of measuring subjective experience of using the system, the quality of the resulting models are evaluated at the same chord estimation task as in Chapter 5.4.
-
-
-% \begin{table}[t]
-% \begin{center}
-% \scriptsize
-% \caption{Micro-recall scores for }
-% \label{tab:rc_agreement}
-% \begin{tabular}{c|rrrrrrr}
-
-% \hline
-% \multicolumn{3}{l}{Cho, 2014} & & & & & \\
-% \hline
-%  & triads &   root &   mirex &   tetrads &   sevenths &   thirds &   majmin \\
-% \hline
-% Train & 0.8053 & 0.8529 &  0.8205 & 0.6763 & 0.6823 & 0.8261 & 0.8109 \\
-% Test & 0.7970 & 0.8475 & 0.8147 & 0.6592 & 0.6704 & 0.8197 & 0.8057 \\
-% \hline
-% \hline
-% \multicolumn{3}{l}{Unconstrained (Chapter 5)} & & & & & \\
-% \hline
-%  & triads &   root &   mirex &   tetrads &   sevenths &   thirds &   majmin \\
-% \hline
-% Train & 0.8899 & 0.9145 & 0.8962 & 0.8217 & 0.8214 & 0.9049 & 0.8908 \\
-% Test  & 0.7995 & 0.8493 & 0.8145 & 0.6673 & 0.6788 & 0.8227 & 0.8077 \\
-% \hline
-% \hline
-% \multicolumn{3}{l}{Fretboard Model} & & & & & \\
-% \hline
-%  & triads &   root &   mirex &   tetrads &   sevenths &   thirds &   majmin \\
-% \hline
-% Train & 0.8974 & 0.9240 & 0.9037 & 0.8136 & 0.8353 & 0.9098 & 0.9114 \\
-% Test & \textbf{0.8234} & \textbf{0.8705} & \textbf{0.8352} & \textbf{0.6855} & \textbf{0.7084} & \textbf{0.8376} & \textbf{0.8394} \\
-% \hline
-% \end{tabular}
-% \end{center}
-% \end{table}
+In lieu of user study, earmarked here as future work, the quality of the resulting models is measured against the chord estimation task posed in Chapter 5.4.
+Applying the methodology outlined above, the three training conditions were run to completion and used to predict into the space of 157 chord classes.
+Given the intersection with the previous chapter, these three systems are compared to the system presented in \cite{Cho2014}, referred to as ``Cho, 2014'', and the model related to those explored here, ``XL-0.125'', referred to now as the ``root-invariant'' condition.
 
 \begin{table}[t]
 \begin{center}
 \scriptsize
-\caption{Micro-recall scores for two previous models, and the three training conditions considered here.}
-\label{tab:rc_agreement}
+\caption{Micro-recall scores over the test set for two previous models, and the three conditions considered here.}
+\label{tab:test_micro}
 \begin{tabular}{c|rrrrrrr}
 
 \hline
@@ -244,7 +220,7 @@ In lieu of measuring subjective experience of using the system, the quality of t
 \hline
 Cho, 2014 & 0.7970 & 0.8475 & 0.8147 & 0.6592 & 0.6704 & 0.8197 & 0.8057 \\
 \hline
-Unconstrained (Chapter 5)  & 0.7995 & 0.8493 & 0.8145 & 0.6673 & 0.6788 & 0.8227 & 0.8077 \\
+Root-invariant (Chapter 5)  & 0.7995 & 0.8493 & 0.8145 & 0.6673 & 0.6788 & 0.8227 & 0.8077 \\
 \hline
 As-Is     & 0.8234 & 0.8705 & 0.8352 & 0.6855 & 0.7084 & 0.8376 & 0.8394 \\
 Scaled    & 0.8156 & 0.8644 & 0.8283 & 0.6791 & 0.6994 & 0.8308 & 0.8295 \\
@@ -254,15 +230,20 @@ Augmented & \textbf{0.8294} & \textbf{0.8715} & \textbf{0.8420} & \textbf{0.6989
 \end{center}
 \end{table}
 
+Overall perfomance, or ``micro-recall'', across metrics is given in Table \ref{tab:test_micro}.
+It is immediately apparent from the table that the three fretboard models appear to do considerably better than either of the two previous ones.
+Additionally, the combination of weight scaling and pitch shifting leads to the best overall performance.
+As the second, weight scaled condition fares slightly worse than training the models with the data as-is, it is reasonable to assume that applying pitch shifting only during training likely would have resulted in higher overall scores.
+However, the quality-wise, ``macro-recall'', measures, given in Table \ref{tab:test_qualitywise}, better illustrate the true impact of these strategies.
 
 \begin{table}[t]
 \begin{center}
 \scriptsize
 \caption{Quality-wise recall across conditions.}
-\label{tab:qualitywise}
+\label{tab:test_qualitywise}
 \begin{tabular}{c|c|ccc|c}
 
- quality   &  Unconstrained &  As-is & Scaled & Augmented & Support (min) \\
+ quality   &  Root-invariant &  As-is & Scaled & Augmented & Support (min) \\
 \hline
  maj       &  0.7390 &  0.8572 &  0.8413 &  0.8417 &  397.4887 \\
  min       &  0.6105 &  0.6516 &  0.6312 &  0.6645 &  105.7641 \\
@@ -286,13 +267,61 @@ Augmented & \textbf{0.8294} & \textbf{0.8715} & \textbf{0.8420} & \textbf{0.6989
 \end{center}
 \end{table}
 
+Going from the ``as-is'' to ``scaled'' conditions, the slight reduction in micro-recall is traded for an increase in averaged quality-wise recall.
+This result is intuitively satisfying, as the introduction of class-dependent weights into the training process should help raise the preference for the long tail chords.
+Though this can help attenuate the model's strong preference for majority chord classes, it does nothing to help address the overall deficiency of minority classes.
+Therefore, when loss scaling is combined with data augmentation, the increase in performance is profound; nearly all statistics, at both the micro and quality-wise macro level, improve, some significantly.
 
+Additionally, it can be seen that the higher overall scores in the guitar model are a result of over-predicting majority, and in particular ``major'', chords
+Compared to the root-invariant model of the previous chapter, the guitar models are over 10\% better at predicting major chords alone.
+Somewhat surprisingly, the root-invariant model is nearly 20\% better at dominant seven chords than any new model trained here.
+This can be understood as an artifact of the intersection in fretboard space between major and dominant seven chords, coupled with the significant bias toward major chords.
+Finally, as to be expected, the imbalanced distribution of chord qualities prevents the lower quality-wise scores from being reflected in the overall, micro-recall statistics.
+This behavior alludes to the previous discussion regarding the apparent trade-off between global performance and quality-wise accuracy.
 
 
 \begin{figure}[t!]
   \centering
-  \centerline{\includegraphics[width=\textwidth]{quant_error}}
-\caption{Understanding classification as quantization error. Cumulative distribution functions are show for correct (green) and incorrect (blue) classification, in the discrete (classification) and continuous (regression) conditions.}
+  \centerline{\includegraphics[width=0.8\textwidth]{quantized}}
+\caption{Understanding misclassification as quantization error, given a target (top), estimation (middle), and nearest template (bottom).}
+\label{fig:quantized}
+%
+\end{figure}
+
+
+Another important behavior to consider here is the idea that the direct estimation of a fretboard representation affords some benefit over simply projecting the predicted labels of a standard chord classifier \emph{back} onto guitar chord templates.
+Typical chord estimation systems, and especially those that rely heavily on Viterbi, like \cite{Cho2014}, produce a sequence of discrete chord labels, and are thus effectively ``classifiers''.
+Comparatively, fretboard estimation can be seen as regression, given the continuous output surface, but can be used for classification by identifying the closest known chord template, referred to as \emph{vector quantization}.
+Thus, illustrated in Figure \ref{fig:quantized}, misclassification can be understood as a type of quantization \emph{error};
+here a prediction close to, but on the wrong side of, the decision boundary is assigned to a different chord shape.
+However, since the representation is human readable, it is trivial to correct the error from a \texttt{C\#:min7} to \texttt{C\#:min}.
+
+
+\begin{figure}[t!]
+  \centering
+  \centerline{\includegraphics[width=0.8\textwidth]{quant_error}}
+\caption{Cumulative distribution functions of distance are shown for correct (green) and incorrect (blue) classification, in the discrete (classification) and continuous (regression) conditions.}
 \label{fig:quant_error}
 %
 \end{figure}
+
+In the space of fretboard estimation, this can be quantified by comparing the distances between predictions both before and after classification, partitioned on whether or not the datapoint is correctly assigned.
+First, the distances between the continuous-valued fretboard and the corresponding target template are computed and histogrammed.
+Next, the estimated fretboard representations are assigned to the \emph{nearest} template, and distance is computed to the target; these distances, are also histogrammed, but only take a finite number of values.
+Both probability density functions are integrated into continuous distribution functions to illustrate what ratio of the data lives within an expanding sphere, shown in Figure \ref{fig:quant_error}.
+Here, it is visually apparent classification widens the gap between correct and incorrect answers.
+Alternatively, in the regression scenario, nearly 20\% of these errors are closer to their correct class, accounting for well over 80\% of the data.
+Importantly, the improved proximity of these errors mean that they should be easier to correct by potential users.
+
+
+\section{Discussion}
+
+Thoughts on guitar stuff.
+Voronoi interpretation is interesting; could probably fudge the weights to balance the volume of a classes partition with its frequency in the dataset.
+A musician might know that a the flat seventh could be moved to the octave, but this representation can encode that information directly.
+Thus the system can be informative even when it's technically ``wrong'', living up to the goals of graceful degradation.
+
+\section{Summary}
+
+Awesometown, population you.
+Shown how knowledge of the guitar can be used to constrain a deep learning system and produce human readable output.
