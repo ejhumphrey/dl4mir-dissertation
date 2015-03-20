@@ -91,22 +91,24 @@ Finally, it is worth mentioning that, despite the desire to map notes to a guita
 Thus, while some previous work embraces this position in the realm of transcribing guitar recordings \cite{Barbancho2012} or arranging music for guitar \cite{Hori2013}, the only previous work in estimating guitar chords as tablature directly from polyphonic recordings is performed by the author, in \cite{Humphrey2014}.
 
 
-\subsection{Designing a Fretboard Estimator}
+\subsection{Designing a Fretboard Model}
 \label{subsec:design}
 
-So far, this study has shown deep trainable networks have proven to be a versatile, powerful, and practical approach to solving complex machine learning problems.
-Thus it is a particular advantage of deep learning that various end-to-end systems can be quickly developed, provided one can express its fitness as a differentiable objective function.
-This high level design strategy is exploited here by modifying the convolutional neural networks of the previous chapter to produce an output representation that behaves like the fretboard of a guitar.
+So far, this study has shown deep trainable networks to be a powerful approach to solving complex machine learning problems.
+Another particular advantage of deep learning is that it can be remarkably \emph{flexible}, whereby functionally new systems can be developed quickly by making different architectural decisions\footnote{
+Provided its ``quality'' can be expressed as a differentiable objective function, that is.}.
+This high-level design strategy is exploited here by modifying the convolutional neural network used in the previous chapter to produce an output representation that behaves like the fretboard of a guitar.
 
-For clarity, the modern guitar consists of six parallel strings, conventionally tuned to E2, A2, D2, G3, B3, and E4.
-The polyphony of a guitar can be anywhere from zero to \emph{six}, the condition in which all strings are plucked, strummed, or otherwise activated.
-A guitar is also fretted, such that the different pitches produced by a string are quantized in ascending order, as a result of shortening the length of the vibrating string.
-A continuous pitch range may be achieved by various means, such as bending the strings, but such embellishments are rare to the point of unnecessary when addressing chords.
-Thus, for the purposes here, it can be said that each string only takes a finite number of states: off (\texttt{X}), open, (\texttt{O}), or a number corresponding to the fret at which the string is held down.
-As a simplification, all chords will be voiced in the first seven frets, and therefore each string can have nine mutually exclusive states.
+To understand the proposed model, it is helpful to first review the physical system of interest.
+The modern guitar consists of six parallel strings, conventionally tuned to E2, A2, D2, G3, B3, and E4, and thus can simultaneously sound between zero and six notes.
+A guitar is also fretted, such that the different pitches produced by a string are quantized in ascending order as a function of fret, resulting from shortening the length of the vibrating string in discrete quantities.
+Continuous pitch may be achieved by various means, such as bending the strings, but such embellishments are beyond the scope of consideration here.
+Thus, it can be said that each string only takes a finite number of states: off (\texttt{X}), open, (\texttt{O}), or a number corresponding to the fret at which the string is held down.
+Most real guitars have upwards of 20 frets, but, as a simplification, all chords will be voiced in the first seven frets;
+therefore, in this model, each string will take one of nine mutually exclusive states.
 
 Framed as such, the strings of a guitar can modeled as six correlated, but ultimately independent, probability mass functions.
-The common approach toward achieving this behavior is by passing the output of an affine projection through a softmax function, as described in Chapter \ref{chp:method}, yielding a non-negative representation that sums to one.
+This is achieved by passing the output of an affine projection through a softmax function, as described in Chapter \ref{chp:method}, yielding a non-negative representation with unity magnitude.
 Starting with the first three layers of the ``XL'' model defined previously, six independent softmax layers are used to model each string independently, and concatenated to form a 2-dimensional heatmap of the fretboard:
 
 \begin{align*}
@@ -115,10 +117,9 @@ Starting with the first three layers of the ``XL'' model defined previously, six
 Z_i = f_i(X_{l-1} \vert \theta_i) = \sigma (W_i \bullet X_{l-1} + b_i), i \in [0:6), \theta = [W_i, b_is]
 \end{align*}
 
-\noindent The activation of the $i^{th}$ string, $Z_i$, is computed by projecting the output of the penultimate layer in the network, $X_{l-1}$, against the weights, $W_i$, and added to a bias term, $b_i$.
+\noindent The activation of the $i^{th}$ string, $Z_i$, is computed by projecting the output of the penultimate layer, $X_{L-1}$, of an $L$-layer network against the weights, $W_i$, and added to a bias term, $b_i$.
 This linear transformation is normalized by the softmax function, $\sigma$, and repeated for each of the six strings.
 The overall model is diagrammed in Figure \ref{fig:guitarnet}.
-
 
 \begin{figure}[t!]
   \centering
@@ -143,16 +144,16 @@ In addition to the normal variation that may occur in stacking the notes of a ch
 First, the same note can often be played in multiple positions on the fretboard.
 For example, E3 can be played on the 12th fret of the first string, the 7th of the second, or the 2nd of the third.
 Additionally, some standard chord voicings cannot be formed on the guitar, comfortably or otherwise.
-As a result, it is common to play the 3rd degree of a chord over the octave, as the 10th, with a few exceptions resulting from open fingerings.
-Perhaps most importantly, context is likely to determine how a chord is played, such that it is easier to move from one chord shape to the next.
-Rather than attempt to cope with these issues now, the canonical template approach is chosen to simplify overall system design.
+For this reason it is quite common to play the 3rd scale degree of a chord above the octave, as the 10th, though there are a few exceptions resulting from open fingerings.
+Context may also influence how a chord is played, such as the instance in which it is easier to move from one chord shape to the next.
+Rather than attempt to address all of these issues now, the canonical template approach is chosen as a practical means to simplify overall system design.
 The choice of one template over another likely has nontrivial implications for the behavior of the model, but this is left as a variable to be explored in the future.
 
 
 \subsection{Decision Functions}
 \label{subsec:loss}
 
-While estimating frets is sufficient for human interpretation, it is necessary to design two related decision functions.
+While estimating frets is sufficient for human interpretation, it is necessary to design two related decision functions in order to allow the machine to operate automatically.
 First, the templates defined above must be incorporated into an objective function, such that the machine can learn to optimize this measure over the training data.
 Finding inspiration in \cite{LeCun1998}, a Radial Basis Function (RBF) layer is added to the network, given as follows:
 
@@ -165,7 +166,7 @@ Finding inspiration in \cite{LeCun1998}, a Radial Basis Function (RBF) layer is 
 Note that these templates will impose the proper organization on the output of the model, and thus remain fixed during the learning process.
 Since these weights are constant, minimizing this function does not require a contrastive penalty or margin term to prevent it from collapsing, i.e. making all the squared distances zero.
 
-Additionally, in order to apply Viterbi post-filtering and fairly compare with previous results, the energy surface must be inverted into a likelihood function.
+Additionally, for the purposes of Viterbi post-filtering and fairly comparing with previous results, the energy surface must be inverted into a likelihood function.
 This is achieved by negating the energy function, $E$, and normalizing as a Gibbs distribution:
 
 \begin{equation}
@@ -185,8 +186,8 @@ Herein, the training strategy, corresponding variables, and subsequent quantitat
 \subsection{Training Strategy}
 \label{subsec:strategy}
 
-Though it is able to incorporate musical knowledge into the architectural design, the model proposed here is unable achieve root-invariant weight sharing similarly to the one presented in the previous chapter.
-This is due to root-dependent chord shapes, resulting from the nonuniform arrangement of chords on the neck of the guitar.
+Though it is able to incorporate musical knowledge into the architectural design, the model proposed here is unable achieve root-invariant weight sharing as in the previous chapter.
+This is due to root-dependent chord shapes resulting from the nonuniform arrangement of chords on the neck of the guitar.
 It is important to consider the effect this has on system performance, as well as other means of achieving ``root invariance'', and thus three different training strategies are employed here.
 
 As a baseline condition, the model is trained with the natural distribution of the data (``as-is'').
@@ -197,7 +198,7 @@ The third and final training condition couples loss scaling with data augmentati
 This allows the variance of each chord quality to be evenly distributed across classes, and helping prevent any missing class coverage in the training set.
 
 Identical partitions of the dataset used in the previous chapter are employed here; the dataset is split 68:12:20, into training, validation, and test, respectively, and the partitions are rotated so that all data is used as a holdout set once.
-All models are trained with mini-batch stochastic gradient descent at a batch size of 50, learning rate of 0.02, and dropout ratio of 0.125.
+All models are trained with mini-batch stochastic gradient descent at a batch size of 100, learning rate of 0.02, and dropout ratio of 0.125.
 Training proceeded for several hundred iterations, ultimately bounded by a ceiling of 24 hours, and parameters were checkpointed every 10k iterations.
 Model selection was performed as a brute force search over both the parameter checkpoints and self-transition penalty for Viterbi, from -20 to -40 in steps of 5.
 The best model was chosen by the maximum of the harmonic mean of the chord evaluation metrics outlined previously.
@@ -206,7 +207,7 @@ The best model was chosen by the maximum of the harmonic mean of the chord evalu
 \subsection{Quantitative Evaluation}
 \label{subsec:evaluation}
 
-In lieu of user study, earmarked here as future work, the quality of the resulting models is measured against the chord estimation task posed in Chapter 5.4.
+In the absence of a thorough user study, the proposed approach is evaluated against the chord estimation task posed in Chapter 5.4.
 Applying the methodology outlined above, the three training conditions were run to completion and used to predict into the space of 157 chord classes.
 Given the intersection with the previous chapter, these three systems are compared to the system presented in \cite{Cho2014}, referred to as ``Cho, 2014'', and the model related to those explored here, ``XL-0.125'', referred to now as the ``root-invariant'' condition.
 
@@ -233,10 +234,10 @@ Augmented & \textbf{0.8294} & \textbf{0.8715} & \textbf{0.8420} & \textbf{0.6989
 \end{table}
 
 Overall perfomance, or ``micro-recall'', across metrics is given in Table \ref{tab:test_micro}.
-It is immediately apparent from the table that the three fretboard models appear to do considerably better than either of the two previous ones.
+These results clearly indicate that, over all the data, the three fretboard models perform considerably better than either of the two previous ones.
 Additionally, the combination of weight scaling and pitch shifting leads to the best overall performance.
 As the second, weight scaled condition fares slightly worse than training the models with the data as-is, it is reasonable to assume that applying pitch shifting only during training likely would have resulted in higher overall scores.
-However, the quality-wise, ``macro-recall'', measures, given in Table \ref{tab:test_qualitywise}, better illustrate the true impact of these strategies.
+
 
 \begin{table}[t]
 \begin{center}
@@ -269,6 +270,7 @@ However, the quality-wise, ``macro-recall'', measures, given in Table \ref{tab:t
 \end{center}
 \end{table}
 
+However, the quality-wise, ``macro-recall'', measures, given in Table \ref{tab:test_qualitywise}, better illustrate the true impact of these strategies.
 Going from the ``as-is'' to ``scaled'' conditions, the slight reduction in micro-recall is traded for an increase in averaged quality-wise recall.
 This result is intuitively satisfying, as the introduction of class-dependent weights into the training process should help raise the preference for the long tail chords.
 Though this can help attenuate the model's strong preference for majority chord classes, it does nothing to help address the overall deficiency of minority classes.
@@ -310,8 +312,8 @@ However, since the representation is human readable, it is trivial to correct th
 In the space of fretboard estimation, this can be quantified by comparing the distances between predictions both before and after classification, partitioned on whether or not the datapoint is correctly assigned.
 First, the distances between the continuous-valued fretboard and the corresponding target template are computed and histogrammed.
 Next, the estimated fretboard representations are assigned to the \emph{nearest} template, and distance is computed to the target; these distances, are also histogrammed, but only take a finite number of values.
-Both probability density functions are integrated into continuous distribution functions to illustrate what ratio of the data lives within an expanding sphere, shown in Figure \ref{fig:quant_error}.
-Here, it is visually apparent classification widens the gap between correct and incorrect answers.
+Both probability density functions are integrated into continuous distribution functions to illustrate what ratio of the data lives within the radius of a bounding volume, shown in Figure \ref{fig:quant_error}.
+Here, it can be seen that classification clearly widens the gap between correct and incorrect answers.
 Alternatively, in the regression scenario, nearly 20\% of these errors are closer to their correct class, accounting for well over 80\% of the data.
 Importantly, the improved proximity of these errors mean that they should be easier to correct by potential users.
 
