@@ -8,24 +8,23 @@
 \chapter{From Music Audio to Guitar Tablature}
 \label{chp:background}
 
-In the previous chapter, it was demonstrated that state of the art ACE systems are actually performing at a relatively high level, often producing reasonable chord estimations, if not the \emph{precise} labels of a reference annotation.
+In the previous chapter, it was demonstrated that state of the art ACE systems perform at a relatively high level, often producing reasonable, if not exact, chord estimations.
 Deploying these systems in the wild for real users, however, presents two practical difficulties:
-one, performing a given chord sequence requires that the musician already knows both the notes in each chord and how to play them on some instrument;
-and two, classification-minded chord estimation systems do not degrade gracefully, e.g. produce ``next best'' answers.
-Recognizing that many in the online music transcription community are guitarists, both challenges are addressed here by modeling the physical constraints of guitar's fretboard with a deep convolutional network to produce \emph{human-readable representations} of music audio, i.e. tablature.
+one, performing a given chord sequence requires that the musician knows how to play each chord on their instrument of choice;
+and two, the performance of classification-minded chord estimation systems does not degrade gracefully, especially for those lacking a good music theory background.
+Recognizing that guitarists account for a large majority of the music community, both challenges are addressed here by designing a deep convolutional network to model the physical constraints of a guitar's fretboard, directly producing \emph{human-readable} representations of music audio, i.e. tablature.
 
-Importantly, estimating the likelihood of hand positions on a fretboard entails a variety of advantages.
+Approaching chord estimation through the lens of guitar tablature offers a variety of critical benefits.
 Guitar chord shapes impose an explicit hierarchy among notes in a chord family, such that related chords are forced to be near-neighbors in the output space.
-This acts as a constraint on the learning problem, and encourages the model to learn musically meaningful outputs beyond the space of chords seen during training.
-The human-readable nature of the system's output is also valuable from a practical perspective, being immediately useful with minimal prerequisite knowledge.
-This further supports the goal of graceful degradation, such that a softer prediction surface results in more informative errors.
-Finally, directly estimating playable represenations allows non-experts to easily validate system outputs and even correct errors.
+This constrains the learning problem in musically meaningful ways, and enables the model to produce outputs beyond the lexicon of chords used for training.
+The human-readable nature of the system's output is also valuable from a user perspective, being immediately useful with minimal prerequisite knowledge.
+Furthermore, a softer prediction surface results in more informative errors, thus allowing for more graceful degradation of performance.
+Finally, with an eye toward future work, the estimation of tablature makes it far easier for large online guitar communities to validate and, as needed, correct system outputs, regardless of skill level.
 
-% This paper presents a novel approach to bootstrapping the task of automatic chord recognition to develop an end-to-end system capable of representing polyphonic music audio as guitar tablature by modeling the mechanics of the guitar with a deep convolutional network.
-% To enforce playability, a finite vocabulary of chord shape templates are defined and the network is trained by minimizing the distance between its output and the best template for an observation.
-% Experimental results show that the model achieves the goal of faithfully mapping audio to a fretboard representation, while still performing respectably as a chord recognition system.
-% The output of the network is human-readable, allowing the system to be used by anyone regardless of musical ability.
-% Additionally, trained networks are not constrained to any particular vocabulary, and are able to represent previously unseen chord shapes.
+Therefore, this chapter extends a novel approach to bootstrapping the task of automatic chord estimation to develop an end-to-end system capable of representing polyphonic music audio as guitar tablature.
+To encourage playability, a finite vocabulary of chord shape templates are defined, and the network is trained by minimizing the distance between its output and the best template for a given observation.
+Experimental results show that the model achieves the goal of faithfully mapping audio to a fretboard representation, as well as further advancing the art in some quantitative evaluation metrics.
+
 
 \section{Context}
 \label{sec:context}
@@ -41,22 +40,20 @@ Finally, directly estimating playable represenations allows non-experts to easil
 \end{figure}
 
 % Rise of the guitarists
-To date, the majority of research in automatic chord estimation is based on the two-fold premise that (a) this is fundamentally a classification problem, and (b) the ideal output is a time-aligned sequence of singular chord names.
-That said, it is worthwhile to reconsider that the development of such systems is motivated by the goal of helping the amibitious musician learn to play any song\footnote{Any song that makes use of traditional Western tonal harmony, that is.}.
-%TODO: This sentence blows. Fix it.
-One of the largest groups of musicans attempting to do just that is the guitarist community.
+To date, the majority of research in automatic chord estimation is based on the two-fold premise that (a) it is fundamentally a classification problem, and (b) the ideal output is a time-aligned sequence of singular chord names.
+That said, it is worthwhile to reconsider how the development of such systems is motivated by the goal of helping the amibitious musician learn to play a particular song.
+Notably, today guitarists comprise one of the largest groups of musicans attempting to do just that.
 Over the last century, the guitar, in all of its forms, has drastically risen in popularity and prevalance, both in professional and amateur settings.
-Given the low start-up cost, portability, favorable learning curve, and undisputed ``cool factor'' in Western popular culture, courtesy of musicans like Jimi Hendrix or \emph{The Beatles}, it is unsurprising that guitars dwarf music instrument sales in the United States.
-Based on the 2014 annual report of the National Association of Music Merchants (NAMM), a whopping 2.47M guitars were sold in 2013 in the United States, accounting for a retail value of \$1.07 \emph{billion} USD \cite{NAMM2014}; for comparison, \emph{all} wind instruments sales ---the next largest instrument category--- combined for just over half that figure, at \$521M USD.
+Given the low start-up cost, portability, favorable learning curve, and ---courtesy of musicans like Jimi Hendrix or \emph{The Beatles}--- an undisputed ``cool factor'' in Western popular culture, it is unsurprising that guitars dwarf music instrument sales in the United States.
+Based on the 2014 annual report of the National Association of Music Merchants (NAMM), a whopping 2.47M guitars were sold in 2013 in the United States, accounting for a retail value of \$1.07 \emph{billion} USD \cite{NAMM2014}; as a point of comparison, all wind instruments \emph{combined} ---the next largest instrument category--- totaled just over half that figure, at \$521M USD.
 
 % Tablature notation
+The fact that guitarists comprise such a large portion of the musician community is important, as it affects how they might prefer to interact with a chord estimation system.
 While most instruments make use of traditional staff notation, fretted instruments, like lute or guitar, have a long history of using \emph{tablature} to notate music.
-Illustrated in Figure \ref{fig:chord_notation}, tablature requires minimal musical knowledge to interpret, and thus offers the advantage that is easier to read, and generally preferred by beginners.
-Whereas staff notation explicitly encodes pitch information, leaving the performer to translate notes to a given instrument, tablature explicitly encodes performance instructions for a given instrument and only implies pitch.
+Illustrated in Figure \ref{fig:chord_notation}, tablature requires minimal musical knowledge to interpret, and thus offers the advantage that is easier to read, particularly for beginners.
+Whereas staff notation explicitly encodes pitch information, leaving the performer to translate notes to a given instrument, tablature explicitly encodes performance instructions for a given instrument.
 Though it can be difficult to accurately depict rhytmic information with tablature, this is seldom an obstacle for guitarists.
-% It is typically easier to learn rhythm by ear than pitch.
-Guitar parts often consist of chords strummed with little emphasis on rhythm patterns, and it is easy to align chord changes with lyrics or metrical position.
-% Therefore, it is an inherent design challenge of human-facing expert systems that the output must be easily interpreted by the user; and, more importantly, graceful degradation is a function of that user's capacity to understand and recover from errors.
+Chords-centric guitar parts typically place less emphasis on rhythm, and changes are usually aligned with lyrics or metrical position.
 
 \begin{figure}[t!]
   \centering
@@ -67,29 +64,34 @@ Guitar parts often consist of chords strummed with little emphasis on rhythm pat
 \end{figure}
 
 % Digitization and the internet
-As both personal computers and access to the Internet became more common, guitarists began to embrace technology for the purposes of learning to play popular music.
-Bandwidth and memory limitations, however, prevented the curation of high resolution images of sheet music, and symbolic representations, like MIDI, required specialized programs to render the music visually.
+From the earliest days of personal computing, contemporary guitarists have embraced technology en masse for the creation and dissemination of ``tabs.''
+Initial bandwidth and memory limitations, however, prevented the curation of high resolution images of sheet music, and symbolic representations, like MIDI, required specialized programs to render the music visually.
 With small filesizes and compatibility with common text editors, ASCII ``tabs'' made it comparatively trivial to create, share, and store guitar music.
 Thus, combining easy readability and a sufficient level of musical detail with technological constraints of the time period, guitar tablature spiked in popularity towards the end of the $20^{th}$ century.
-Today, evidenced by heavily trafficked, user-curated websites like Ultimate Guitar\footnote{http://www.ultimate-guitar.com/}, modern online guitar communities continue to place a high demand on tablature.
-Shown in Figure \ref{fig:compete}, this one website sees, on average, well over 2M unique visitors\footnote{Based on Compete.com analytics data, accessed on 15 March, 2015.} on a monthly basis in the United States alone.
+As evidenced by heavily trafficked, user-curated websites like Ultimate Guitar\footnote{http://www.ultimate-guitar.com/}, modern online guitar communities continue to place a high demand on tablature.
+Shown in Figure \ref{fig:compete}, this website alone sees, on average, over 2M unique visitors\footnote{Based on Compete.com analytics data, accessed on 15 March, 2015.} per month in the United States.
 
 % Put it together
-Taken together, these observations tell an interesting story.
+Taken together, these observations motivate an obvious conclusion.
 Guitarists comprise a significant portion of the global music community, and are actively creating and using tablature as a means of learning music.
-It seems rather obvious to conclude that an automatic chord estimation system would be extremely valuable to this demographic, but such a system should be sensitive to the common preference for tablature.
-Therefore, this is an effort to steer automatic chord estimation toward a specific application, in order to address a real pain point for a real user base.
+An automatic chord estimation system would be extremely valuable to this demographic, but such a system should be sensitive to the common preference for tablature.
+Therefore, this chapter is an effort to steer automatic chord estimation toward a specific application, in order to address a potential use case for a very real demographic.
 
 
 \section{Proposed System}
 
-Much of this work proceeds directly from previous efforts in automatic chord estimation.
-The input leverages the same CQT representation, and is omitted from the discussion here.
+Building on previous efforts in automatic chord estiamtion, the best performing configuration presented in Chapter 5, XL-0.125, is extended here for guitar chord estimation.
+As such, many design decisions remain consistent with the previous description, such as the constant-Q representation, dataset, or evaluation methodology, and are omitted from the discussion.
+There are a few important differences, however, which are addressed below.
+First, the architecture is modified slightly to produce fretboard-like outputs.
+A strategy is then discussed for incorporating guitar chord shapes into the model.
+The modified objective and decision functions are presented last, detailing how the model is optimized and use to estimate discrete chord classes.
 
-Though some previous work embraces this position in the realm of transcribing guitar recordings \cite{Barbancho2012} or arranging music for guitar \cite{Hori2013}, there is, to our knowledge, no existing work in estimating guitar tablature directly from polyphonic recordings.
+Finally, it is worth mentioning that, despite the desire to map notes to a guitar fretboard, this approach is much closer in principle to chord estimation than automatic transcription methods.
+Thus, while some previous work embraces this position in the realm of transcribing guitar recordings \cite{Barbancho2012} or arranging music for guitar \cite{Hori2013}, the only previous work in estimating guitar chords as tablature directly from polyphonic recordings is performed by the author, in \cite{Humphrey2014}.
 
 
-\subsection{Designing a Guitar Chord Esimator}
+\subsection{Designing a Fretboard Estimator}
 \label{subsec:design}
 
 So far, this study has shown deep trainable networks have proven to be a versatile, powerful, and practical approach to solving complex machine learning problems.
