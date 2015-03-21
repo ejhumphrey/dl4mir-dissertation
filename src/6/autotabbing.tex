@@ -320,12 +320,26 @@ Importantly, the improved proximity of these errors mean that they should be eas
 
 \section{Discussion}
 
-Thoughts on guitar stuff.
-Voronoi interpretation is interesting; could probably fudge the weights to balance the volume of a classes partition with its frequency in the dataset.
-A musician might know that a the flat seventh could be moved to the octave, but this representation can encode that information directly.
-Thus the system can be informative even when it's technically ``wrong'', living up to the goals of graceful degradation.
+This chapter has proposed a method of extending a previous automatic chord estimation by introducing the physical constraints of a guitar.
+Not only does this yield a higher performing system, based on overall metrics, but the outputs are directly human readable making the system attractive from a user experience standpoint.
+While the system seems to struggle more than previous efforts across all chord qualities, this is arguably an instance in which performing better over \emph{all} the data is preferable.
+The sample sizes of rare chords in the dataset are at times too small to draw meaningful conclusions about performance at the class level.
+Further complicating matters, there is also some unknown degree of subjectivity in the reference annotations, used for both training and evaluation.
+Pragmatically speaking though, consistently tracking root motion, e.g. being in the right place on the neck, is probably sufficient for most guitarists to deem such a system useful.
+The vast majority of music can be simplified as ``power chords'', consisting of the root and the fifth, and often more detailed chords can be realized by modifying this basic shape.
+Therefore, while many methodological challenges inherent to chord estimation persist in this study, predicting chord shapes as tablature softens the degree to which they impact usability.
 
-\section{Summary}
+Setting aside the limitations of quantiative evaluation in chord estimation, the proposed system warrants a subjective, user experience study in the future.
+Many of the gains identified here can only be qualitatively assessing how such a system achieves its goals, such as the degree to which performance \emph{does} in fact degrade gracefully.
+Countless instances can be identified where system ``errors'' can be reasonably interpreted as the chord name provided, but only a study with real users will indicate how useful this is.
 
-Awesometown, population you.
-Shown how knowledge of the guitar can be used to constrain a deep learning system and produce human readable output.
+Perhaps most importantly though, the next logical research step is to develop an interactive user interface and deploy the system at scale.
+In addition to distributed instruction, deploying an ``autotabbing'' system provides a means to collect and clean reference annotations.
+Approaching this task from the perspective of human-readable representations holds considerable promise in the space of data curation, as editing a chord transcription is generally a far simpler task than creating one from scratch.
+This reality is only amplified for annotators who lack formal ear training.
+Importantly though, this reduces the prerequisite skill level, the amount of time needed to complete the task, or both, required in the data authoring task.
+Therefore, this system creates the potential to include a larger number of musicians across a wide array of skills in the data collection process.
+More annotators not only opens the door for more annotations, but multiple perspectives of the \emph{same} music content.
+This will be critical to the role subjectivity plays in chord estimation research, now and in the near future.
+
+
