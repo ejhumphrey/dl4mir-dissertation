@@ -50,10 +50,9 @@ and finally, Section \ref{sec:dsp} draws the relationships between this lineage 
 
 \section{A Brief History of Neural Networks}
 
-Despite the recent wave of interest and excitement surrounding it, the core principles of deep learning were originally devised halfway through the 20th century, and grounded in mathematics established even earlier.
-A direct descendant of the now-infamous neural network, the very mention of deep learning often ellicts several justified questions: What's the difference? What's changed? Why \emph{now}?
-Thus, before delving into a formal treatment of the topic, it is worthwhile to contextualize the research trajectory that led to this point.
-% For this reason is particularly valuable to consider the lineage of these methods in an effort to understand why it is only now that such approaches have begun to gain popularity and scientific acclaim.
+Despite the recent wave of interest and excitement surrounding it, the core principles of deep learning were originally devised halfway through the 20th century, grounded in mathematics established even earlier.
+As a direct descendant of neural networks ---computational models with an ambitious moniker burdened by a tumultuous past--- the very mention of deep learning often ellicts several warranted, if suspicious, questions: What's the difference? What's changed? Why do they suddenly work \emph{now}?
+Thus, before diving into a formal review of the deep learning and its various components, it is worthwhile to contextualize the research trajectory that has led to today.
 
 
 \subsection{Origins (pre-1980)}
@@ -70,20 +69,10 @@ While the space of relevant contributions is too great to enumerate here, there 
 In 1936, Alan Turing devised the concept of a ``universal machine'', which would lead to the proof that a system of binary states, e.g. true and false, could be used to perform \emph{any} mathmatical operation \cite{Turing1936}.
 Only a year later, Claude Shannon demonstrated in his \emph{master's} thesis that Boolean logic could be implemented in electrical circuits via switches and relays, forming the basis of the modern computer \cite{Shannon1937}.
 Shortly thereafter, in 1943, Pitts and McCulloch constructed the first artifical neuron, a simple computational model inspired by discoveries in neuroscience \cite{Pitts1943}.
-By coarse analogy to a biology, an artifical neuron ``fires'' when a weighted combination of its inputs eclipses a given threshold, e.g. 0:
-
-% \begin{align*}
-% f(x | w) = h( \mathbf{w}^T \dot \mathbf{x}) \\
-% h(y) = \left\{
-%      \begin{array}{lr}
-%        1 : y \ge 0\\
-%        0 : y < 0\\
-%      \end{array}
-%    \right.
-% \end{align*}
+By coarse analogy to a biology, an artifical neuron ``fires'' when a weighted combination of its inputs eclipse a given threshold:
 
 \begin{align*}
-  f(x~|~w) = h(w^T~\cdot~x)\\
+  f(\mathbf{x}~|~\mathbf{w}) = h(\mathbf{w}^T~\cdot~\mathbf{x})\\
   h(y) = \left\{
     \begin{array}{ll}
       1 : y \ge 0\\
@@ -102,44 +91,37 @@ Arriving at these parameters, however, was nontrivial and required manual deriva
 Thus, in 1957, Frank Rosenblatt's invention of the \emph{Perceptron} algorithm signficantly altered how artificial neurons were conceived \cite{Rosenblatt1957}.
 Building upon the work of Pitts and McCulloch, the algorithm, given in \ref{alg:perceptron_fit}, offered an automated method of ``learning'' the parameters necessary to achieve binary classification over a collection of data:
 
-% \begin{algorithm}
-% % \caption{Fit a Perceptron to a collection of data.}
-% \label{alg:perceptron_fit}
-% \begin{algorithmic}[1]
-% \Procedure{fit}{$\mathbf{x}, \mathbf{y}, \nu, n_{max}$}
-%     \State $\mathbf{w} \gets \mathcal{N}(\mu, \sigma)$
-%     \State $n \gets 1$
-%     \While $\sum~|e| > 0$ or $n > n_{max}$
-%         \State $\mathbf{z} = f(\mathbf{x} | \mathbf{w})$
-%         \State $\mathbf{e} = \mathbf{z} - \mathbf{y}$
-%         \State $\mathbf{w} \gets \mathbf{w} + \nu (\mathbf{e}^T \dot \mathbf{x})^T$
-%         \State $n \gets n + 1$
-%     \EndFor
-%     \State Return $\mathbf{w}$
-% \EndProcedure
-% \end{algorithmic}
-% \end{algorithm}
-
 \begin{algorithm}[H]
-\caption{Compute sum of integers in array}
+\caption{Find the optimal parameters for a Perceptron over a collection of data.}
 \label{array-sum}
 \begin{algorithmic}[1]
-\Procedure{ArraySum}{$A$}
-    \State $sum = 0$
-    \For {each integer $i$ in $A$}
-        \State $sum = sum + i$
-    \EndFor
-    \State Return $sum$
+\Procedure{FitPerceptron}{$\mathbf{x}, \mathbf{y}, \eta, n_{max}$}
+    \State $\mathbf{w} \gets \mathcal{0}_{D + 1, 2}$
+    \State $\mathbf{e} \gets \mathcal{1}_{N}$
+    \State $n \gets 1$
+    \While {$|\mathbf{e}| > 0$ \textbf{and} $n < n_{max}$}
+        \State $\mathbf{z} \gets f(\mathbf{x} | \mathbf{w})$
+        \State $\mathbf{e} \gets \mathbf{z} - \mathbf{y}$
+        \State $\mathbf{w} \gets \mathbf{w} + \eta (\mathbf{e}^T \cdot \mathbf{x})^T$
+        \State $n \gets n + 1$
+    \EndWhile
+    \State Return $\mathbf{w}$
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
-\noindent First, the weights, $\mathbf{w}$, are set to some initial condition.
-Then, in an iterative manner, outputs, $\mathbf{z}$, are predicted from the inputs, $\mathbf{x}$, and the weights are updated with a scaled version of the incorrectly classified inputs.
-Note that the error vector, $\mathbf{e}$ is only non-zero where the predicted values are wrong, and thus the algorithm ceases execution when all datapoints are classified correctly, or it reaches some number of iterations.
-A visual example of this is given in Figure \ref{fig:linsep}.
-Here, a perceptron is used to separate two classes of data, drawn from different Gaussian distributions.
-As the algorithm proceeds, the total error decreases until a decision boundary is found that correctly classifies all datapoints.
+\noindent The perceptron algorithm requires four inputs:
+a matrix of observations, $\mathbf{x}$, corresponding to $N$ samples with $D$ dimensions;
+a vector of binary class assignments, $\mathbf{y}$, in the set $\{0, 1\}$;
+an learning rate parameter, $\eta$;
+and an iteration limit, $n_{max}$.
+Initializing the algorithm, the weights, $\mathbf{w}$, are set to a matrix of zeros, shaped $(D + 1, 2)$, an error, $\mathbf{e}$, is set to a vector of ones, and the iteration counter, $n$, starts from 1.
+Then, in an iterative manner, binary outputs, $\mathbf{z}$, are computed from the perceptron function, $f()$, given in Eq. \ref{eq:perceptron}, the error is computed as the difference between class predictions and targets, and the weights are updated with a scaled version of the incorrectly classified inputs.
+Note that the error vector, $\mathbf{e}$ is only non-zero where the predicted values are wrong, and thus the algorithm naturally terminates when all datapoints are classified correctly.
+Alternatively, execution is halted once a fixed number iterations is reached.
+An example of a perceptron's stopping condition is given in Figure \ref{fig:linsep}.
+Here, a perceptron has separated two classes of data, drawn from different Gaussian distributions.
+As the algorithm proceeds, the total error decreases until a decision boundary is found that correctly classifies the observed data.
 
 \begin{figure}
 \begin{centering}
@@ -151,15 +133,15 @@ As the algorithm proceeds, the total error decreases until a decision boundary i
 
 % Promise and limitations
 Once implemented in hardware, using a slew of potentiometers, motors, and photocells, Rosenblatt's' ``Mark I Perceptron'' drew considerable attention from the press and the research community alike.
-The \emph{New York Times} was quick to publish ambitious claims as to the promise this breakthrough held for artificial intelligence and the speed at which subsequent advances would be realized, much to the chagrin of the AI community \cite{somebody}.
-% The Perceptron was not without limitations
-In their book, \emph{Perceptrons}, published in 1969, Minsky and Papert demonstrated that the model is rather limited in the functions it can reproduce.
-As such, perceptrons could only be used to classify linearly separable conditions, and not more complex operations, such as the exclusive-or (XOR).
-This condition is illustrated in Figure \ref{fig:mlp_ftw}, where no single line can be draw to correctly classify the data.
+The \emph{New York Times} was quick to publish ambitious claims as to the promise this breakthrough held for artificial intelligence and the speed at which subsequent advances would be realized, much to the eventual chagrin of the AI community \cite{somebody}.
+However, the Perceptron was not without limitations nor critics.
+In their book, \emph{Perceptrons}, published in 1969, Minsky and Papert demonstrated that the model is rather limited in the kinds of behavior it can actually achieve.
+For example, perceptrons are unable to reproduce the logic of an exclusive-or (XOR), and thus can only classify \emph{linearly separable} data, the condition where a single straight line can be drawn between two classes.
+% This scenario is illustrated in Figure \ref{fig:mlp_ftw}, where no single line can be draw to correctly classify the data.
 
 % Multilayer Perceptrons
-This was a critical limitation for researchers in the field of computational logic; if a perceptron could not perform a simple exclusive-or, how could a machine be expected to reason?
-The answer, as it would turn out, could be found by transforming how the XOR is expressed symbolically.
+This was a critical limitation for researchers in the field of neural computation; if a perceptron could not perform basic logic operations, how could it be expected to reason?
+The answer, as it would turn out, could be found by transforming how the XOR function is expressed symbolically.
 Rearranging terms, an equivalent function can be rewritten as the disjuction (OR) of two complementary conjuctions (AND):
 
 \begin{equation}
@@ -167,10 +149,10 @@ Rearranging terms, an equivalent function can be rewritten as the disjuction (OR
 p \oplus q = (p \wedge \neg q) \vee (\neg p \wedge q)
 \end{equation}
 
-\noindent While it is true that a single Perceptron cannot achieve this operation directly, a combination of \emph{three} can: two are used to perform each AND operation and corresponding negation, while a third performs the OR operation.
+\noindent While it is true that a single Perceptron cannot achieve the XOR operation directly, a combination of \emph{three} can: two are used to perform each AND operation and corresponding negation, while a third performs the OR operation.
 Considering the scenario in Figure \ref{fig:mlp_ftw}, this condition can now be easily separated by a \emph{multilayer} perceptron (MLP).
-Therefore, arbitrarily complex functions could be obtained by cascading simpler non-linear operations, in what would be commonly reffered to as a \emph{neural network}.
-In fact, it would later be shown by the \emph{universal approximation theorem} that a neural network is actually able to model \emph{any} continous function within some tolerance \cite{Cybenko1989, Hornik1991}.
+Therefore, arbitrarily complex functions could be obtained by cascading simpler non-linear operations, leading to a class of functions that would come to be known as \emph{neural networks}.
+These models are so versatile, in fact, it would later be shown by the \emph{universal approximation theorem} that a neural network is actually able to model \emph{any} continous function, within some error tolerance \cite{Cybenko1989, Hornik1991}.
 
 \begin{figure}
 \begin{centering}
@@ -181,38 +163,54 @@ In fact, it would later be shown by the \emph{universal approximation theorem} t
 \end{figure}
 
 % Other problems
-Despite this observation, the study of neural networks languished through the closing decades of the 20th century, suffering a considerable downtick of interest and funding support.
-While the representational power of multilayer perceptrons was recognized early on, many often claimed ---incorrectly--- that they could not be used to solve complex problems.
-More practically, those who continued to pursue neural network research were faced with an array of other challenges.
-Neural networks were prone to over-fitting, extremely slow to compute weight updates over a large number of datapoints, and difficult to train with more than a few layers.
+Despite this promising observation, neural network research languished through the closing decades of the 20th century, suffering a considerable drop in funding support and, as a result, interest.
+While the representational power of multilayer perceptrons was recognized early on, it became popular opinion that these models could not be used to solve complex problems.
+In addition to theoretical skepticism, those who continued to pursue neural network research were also faced with an array of practical challenges.
+Neural networks were prone to over-fitting, extremely slow to train, and difficult to use with more than a few layers.
 % Ahead of the times
 % Theory outpaced technological capacity. Over-hyped
-In isolation, these issues might merely have a posed a standard research obstacle, but coupled with the failed promises of overzealous researchers, such difficulties would malign neural network research for some time.
+Independently, these issues might merely have been viewed as common research obstacles.
+However, coupled with the failed promises of early progress, such difficulties would malign the pursuit of neural network research for some time.
 % This resulted in what is affectionately known as one of the ``AI winter'', things got bad.
 
 
 \subsection{Scientific Milestones (1980--2010)}
 \label{sec:advances}
 
-Despite widespread pessimism toward neural computing, a select few would persevere through this ``AI Winter''.
-Over the course of thirty odd years, these diligent efforts would yield a array of crucial breakthroughs and fundamentally change the landscape of neural network research.
-While no single contribution can truly be credited with reviving the field, each would play an integral role in helping the research community warm up to neural networks.
+In the face of widespread pessimism toward neural computing, some researchers would persevere through this ``AI Winter''.
+Over the course of thirty some years, these diligent efforts would result in crucial breakthroughs that, in combination with the steady churn of technological progress, would fundamentally change the landscape of neural network research.
+While no one facet can truly be credited with reviving the field, each would play an integral role in helping the research community again warm up to neural networks.
 
 \subsubsection{Stochastic Gradient Descent}
 \label{subsec:sgd}
 
 % Back-propagation of errors
 Via the perceptron algorithm, a machine effectively ``learns'' to classify data by finding parameters that optimize a given objective function.
-Originally this was framed as a minimization, as in Eq. \ref{eq:perceptron}, such that the error, known as the ``perceptron loss'', could be incrementally decreased by taking small steps toward better parameters.
-This optimization strategy must be modified in the multilayer case, as it is not possible to directly update the parameters through the heaviside, or unit step, function.
+This learning strategy must be modified in the multilayer case, as it is not possible to directly update the parameters through the heaviside, or unit step, function.
 Early researchers noted that if the discontinuous activation function is replaced with a logistic, or sigmoid, the composite multilayer network is \emph{differentiable}.
-The derivative of each coefficient, regardless of layer, can be computed with respect to the loss, thus \emph{back-propagating} error through the network \cite{Hinton1986}.
+Computing a model's fitness as a scalar \emph{loss}, this value can be differentiated with respect to every parameter in the function, thus \emph{back-propagating} error through the network \cite{Hinton1986}:
+
+\begin{equation}
+\label{eq:xor}
+\frac{\partial~\mathcal{L}}{\partial~\Theta}  = ?
+\end{equation}
+
 
 % Issues of gradient descent
+% This is a critical Once you can differentiate the network, gradient methods can be used to optimize the parameters.
 Error back-propagation demonstrated that, so long as a network was everywhere differentiable, it was theoretically possible to optimize the objective function over a dataset by slowly adjusting parameters towards better solutions.
+Framed as a minimization problem, a model's error can be incrementally decreased by taking small steps toward better parameters.
 This optimization method, referred to as \emph{gradient descent}, was not without its deficiencies, however.
 First and foremost, the loss of a given configuration was typically computed over the entire dataset, which may prove computationally expensive for sufficiently large collections.
 Additionally, gradient descent is a greedy search algorithm, and was reportedly prone to finding poor local minima, as illustrated in Figure \ref{fig:local_min}.
+
+\begin{figure}
+\begin{centering}
+\includegraphics[width=0.4\textwidth]{pink_muffin}
+\caption{Gradient descent, yo.}
+\label{fig:local_min}
+\end{centering}
+\end{figure}
 
 %Stochastic Gradient Descent
 In 1987, however, LeCun demonstrated that a \emph{stochastic} variant of gradient descent could potentially be used to circumvent these issues \cite{LeCun1987}.
@@ -220,6 +218,14 @@ Whereas conventional gradient descent had been formulated as an optimization ove
 Though the gradient is much noiser, this strategy is still effective,significantly faster, and may even be less susceptible to poor local minima as a result.
 Importantly, this notion can be generalized as \emph{mini-batch} gradient descent, where the number of datapoints used to compute parameter updates is a hyperparameters, varying from 1 to the total number of datapoints available for training.
 Covarying inversely with the learning rate, illustrated in Figure \ref{fig:sgd}, larger batch sizes serve to smooth parameter updates as a function of iteration.
+
+\begin{figure}
+\begin{centering}
+\includegraphics[width=0.4\textwidth]{pink_muffin}
+\caption{\emph{Stochastic} gradient descent, yo.}
+\label{fig:local_min}
+\end{centering}
+\end{figure}
 
 \subsubsection{Convolutional Neural Networks}
 \label{subsec:convnets}
@@ -238,8 +244,7 @@ By presenting visual stimuli while probing the brain with electrodes, they disco
 Experimental results indicated that the former is responsible for local feature extraction, while the latter combines the inputs of simple cells to absorb small amounts of variation in the observed stimuli.
 
 % ConvNets, LeNet5, handwritten digits
-These ideas were first incorporated in the Neocognitron of \cite{Fukushima1988}, and realized successfully as a convolutional neural network, or ``ConvNet'', for shape recognition and handwritten digit classification \cite{LeCun1990, LeCun1998}.
-Importantly, ConvNets incorporated three key design features.
+These ideas were first incorporated in the Neocognitron of \cite{Fukushima1988}, and realized successfully as a convolutional neural network for shape recognition and handwritten digit classification \cite{LeCun1990, LeCun1998},  offering three key design features.
 \emph{Local receptive fields}, where compute features from a small neighborhood of pixels, exploiting the observation that nearby pixel values tend to be highly correlated.
 Smaller receptive fields require fewer parameters, thus reducing the overall size of the model and the amount of data needed to train it.
 Applying local receptive fields as a convolution results in effectively sharing the weights over all positions in an image.
@@ -252,30 +257,37 @@ Taken together, these advantageous attributes directly resolved many of the issu
 \subsubsection{Proliferation of Digital Data}
 \label{subsec:perceptrons}
 
-% Proliferation of digital content
-During the first rise and fall of neural networks, digital data was far more the exception than the rule.
-Digitized audio and images didn't become common until the end of the 20th century.
-Even so, the data rate of these signals made processing them computationally prohibitive: ata
-The internet, conceived in the 1960s, didn't rise to public prominence in the US until the 1990s.
+% Early data
+Given the ubiquity of digital information in the modern era, it is easy to forget that neural networks were first developed in a considerably different day and age.
+The very existence of digital audio and images, for example, did not become commonplace until the end of the 20th century.
+Even then, these signals were costly to create, cumbersome to work with, and generally difficult to share.
+Furthermore, once obtained, the process of annotating this information for use in supervised learning requires a great deal of time and effort.
+Thus, in the vein of speech recognition or computer vision for example, machine perception research was forced to work with small datasets as a result.
+Given the versatility of neural networks to model complex data, it was typically trivial to \emph{over-fit}, e.g. master, a small number of training examples, while failing to generalize to new data.
+Neural networks developed the reputation of being ``data hungry'', requiring a large amount of training data in order to do anything useful in practice.
 
 % Labeled datasets grew, intentionally or otherwise
-Researchers had time to build large labeled datasets.
-Along with the internet, it became possible to use weakly labeled data or distribute the annotation effort.
-MNIST is the hallmark of curated datasets.
-TIMIT for speech
-CAPTCHA for optical character recognition.
-ImageNet, GWAP.
-Weakly labeled data from the internet, researchers got clever.
+While this was, and in some cases still is, a valid consideration for neural networks, the problem of data scarcity is far less of an issue now.
+For many well worn tasks, researchers have had ample time to curate massive labeled datasets.
+In the late 1980s, LeCun et al oversaw the development of a handwritten digit dataset, comprised of 60k 28x28 pixel images \cite{};
+for comparison, the ImageNet dataset consists of millions of tagged, high resolution images \cite{}.
+Similar efforts have been undertaken in the fields of speech recognition \cite{TIMIT}, source separation \cite{charm, MedleyDB}, or natural language processing \cite{WallStreet, Wikipedia}, to name only a few.
+Additionally, given the rise of the Internet, it became possible to leverage a variety of information sources to obtain labeled data, such as user-generated content \cite{last.fm}, weak feedback signals \cite{netflix}, or even as a means of distributing the annotation effort \cite{Captcha, CitizenScience}.
+Combined, the range of information available for large-scale supervised learning grew considerably, diminishing the issues posed by data-hungry algorithms.
 
 % unlabeled data has uses too
-Finally in 2006, one such method, called contrastive divergence was proven successful, using a slightly different processing model known as a Restricted Boltzmann machine (RBM).
-The important characteristic of an RBM is that it can be used to generate, as well as process, information in both directions.
-This is fundamental to contrastive divergence, which trains each layer of a deep network separately by learning to recreate its input data.
-By analogy, this approach aims to discover structure in the data that occurs with high probability and effectively ``ignore'' everything else.
-When strung together as a full network, these systems are referred to as deep belief networks (DBNs), as a result of their probabilistic formulation.
-Subsequently, a similar model called an autoencoder \cite{Vincent2010}, or ---an alternative interpretation from another research team--- Predictive Sparse Decomposition \cite{Ranzato2007}, incorporates roughly the same principles with deterministic interpretation of these concepts.
-In either view of the parameter optimization problem, learning algorithms now exist that can leverage large quantities of unlabeled data to tune large networks with minimal supervision.
-These advances have collectively ushered in a new era of machine learning, referred to as \emph{deep learning}, named so for the multiple levels of information processing and the manner in which the parameters of the system are discovered from data.
+However, as a by-product of the global transition to the digital realm, an even larger portion of \emph{unlabeled} data was at the disposal of machine learning researchers.
+Coupling the easy availability of digital information with the idea that ``the human brain isn't \emph{really} supervised'', much effort was invested in the space of \emph{unsupervised} learning algorithms. %, i.e. learning from unlabeled data.
+Finally, in 2006, one such method, referred as \emph{contrastive divergence}, was able to successfully exploit unlabeled data to improve the performance of a neural network.
+Using a cascade of of undirected models, known as a Restricted Boltzmann machine (RBM), a neural network was trained in a greedy, layer-wise manner to reproduce realistic data.
+After this process of learning how real data behaves, the model could be ``fine-tuned'' with a small amount of labeled data to realize impressive, state of the art performance.
+Referred to as ``pre-training'', learning on unsupervised data allowed the model to discover parameters closer to a good final solution.
+Though later discoveries would demonstrate pre-training to be unnecessary under certain conditions \cite{}, this breakthrough was perhaps the first to forcefully recapture the attention of the machine learning community.
+
+% Subsequently, similar unsupervised approaches
+%  called an autoencoder \cite{Vincent2010}, or ---an alternative interpretation from another research team--- Predictive Sparse Decomposition \cite{Ranzato2007}, incorporates roughly the same principles with deterministic interpretation of these concepts.
+% In either view of the parameter optimization problem, learning algorithms now exist that can leverage large quantities of unlabeled data to tune large networks with minimal supervision.
+% These advances have collectively ushered in a new era of machine learning, referred to as \emph{deep learning}, named so for the multiple levels of information processing and the manner in which the parameters of the system are discovered from data.
 
 
 % Theory preceded technology
@@ -304,25 +316,37 @@ Combined, singificantly better technology directly enabled research at unprecede
 \subsection{Modern Rennaissance (post-2010)}
 \label{subsec:rennaissance}
 
-Industrial strength; Google, Facebook, Baidu, Microsoft
-Press; YouTube and Cats, Yann LeCun, Geoff Hinton, IEEE, NYTimes
-Competitions: Kaggle, Netflix, ImageNet
+% Industrial strength; Google, Facebook, Baidu, Microsoft
+Following the many key advances named above, deep learning quickly accelerated into the academic, industrial, and public lexicon.
+It did not take long to convince some research communities of the newfound promise of neural networks.
+In hardly any time at all, deep neural networks surpassed the state of the art in automatic speech recognition, systems tuned over the course of several decades \cite{Hinton2009}.
+Similarly compelling results were obtained in computer vision, such as recognizing house numbers from Google Street View images \cite{} or the image labeling challenge known as ImageNet \cite{}, and natural languange processing \cite{Sutskever2010}.
+Acknowledging the usefulness of such high-performing systems, companies like Google, Facebook, Microsoft, IBM, and Baidu began investing in industrial strength deep learning teams and infrastructure \cite{Dean2012, LeCun2014}.
+
+Complementing the migration of ideas and individuals from academia to industry, the idea of ``deep learning'' and thinking machines has again struck a chord with both the press and general public.
+Google's research efforts in 2012, for example, yielded a deep network that automatically learned the concepts of ``cats'' and ``human faces'', trained on millions of still video frames from YouTube \cite{Le2012}.
+Understandably, the story was picked up by \emph{The New York Times} and \emph{WIRED}, among countless others, drawing widespread attention.
+Coupled with charistmatic interviews from many of the field's preeminent leaders, neural networks have been thrust back into the limelight. %again captured the minds and imaginations of many.
 
 
 \section{Core Concepts}
 \label{sec:example}
 
 % The "what" of deep learning
-At the highest level, deep learning is an approach to nonlinear system design that combines high level function design with numerical optimzation in an effort to model some observable behavior.
+% One takeaway that should result from this historical review,
+Reflecting on the historical lineage of neural networks, it becomes apparent that deep learning is not one single thing, but rather a collection of ideas and approaches toward neural computing.
+Thus, to help define the scope and limits of this work, this section introduces the fundamental components that contribute to a modern definition of the topic.
+Here, ``deep learning'' is defined as an approach to designing complex information processing systems, exhibiting two key traits;
+one, discussed in Subsection \ref{subsec:architectures}, the system architecture can be expressed as a composite nonlinear function, composed of many simpler operations;
+and two, presented in Subsection \ref{subsec:learning}, the parameters of this function can be ``learned'' via numerical optimzation or other automatic means.
+Finally, though not strictly necessary, neural network research has produced an array of ``tricks of the trade'', detailed in Subection \ref{subsec:tricks}.
 
 
-Having covered the ``why'' of deep learning, this section aims to generalize the concepts of classic neural computation into a more general presentation of its fundamental components.
-
-
-
-\subsection{Modular Architectures}
+\subsection{Modular Operations}
 \label{subsec:architectures}
 
+Building blocks of neural networks.
+A bit like legos; from a few basic pieces, you can build elaborate structures \cite{inceptionnet}.
 S'all fair game so long as you can differentiate it.
 
 \subsubsection{Linear Algebra}
@@ -394,12 +418,32 @@ Also L2 variant
 Relationship to max-out networks.
 
 
-\subsection{Energy-based Learning}
+\subsection{Supervised Learning}
+\label{subsec:learning}
 
+% Automatic methods
+Random, brute force, genetic algorithms
+
+% Gradient methods, a fighting chance
 Ideally, these features are \emph{learned} automatically using what are known as gradient methods, the basic idea being that a function attempts to reduce how ``wrong'' it is by taking small steps toward better answers; by analogy, this is a bit like climbing down a mountain blind-folded.
-For this to be possible, the activation of each node, as expressed in Equation (\ref{eq:perceptron}), must be softened such that the function is differentiable.
+Here, gradients are computed with $K>1$, but much smaller than the total number of observations, by sampling datapoints from the training set and averaging the loss over the batch.
+Specifically, the update rule for $\Theta$ is defined as its difference with the gradient of the scalar loss $\mathcal{L}$ with respect to the parameters $\Theta$, weighted by the learning rate $\eta$, given by the following:
+
+\begin{equation}
+\label{eq:updaterule}
+\Theta \leftarrow \Theta - \eta * \frac{ \delta \mathcal{L}}{\delta \Theta}
+\end{equation}
+
+Energy based learning
+Loss functional
 
 
+% Perceptron Loss, error function
+
+% Contrastive terms
+
+
+% Negative Log-likelihood
 Having written the full network as a probability mass function, the network can be trained by iteratively minimizing the negative log-likelihood of the correct class for a set of $K$ observations:
 
 \begin{equation}
@@ -410,13 +454,7 @@ Having written the full network as a probability mass function, the network can 
 \noindent Expressed in this manner, $X^k$ and $Y^k$ are the input data and corresponding class label, respectively of the $k^{th}$ observation.
 
 We can then minimize this loss function via mini-batch stochastic gradient descent.
-Here, gradients are computed with $K>1$, but much smaller than the total number of observations, by sampling datapoints from the training set and averaging the loss over the batch.
-Specifically, the update rule for $\Theta$ is defined as its difference with the gradient of the scalar loss $\mathcal{L}$ with respect to the parameters $\Theta$, weighted by the learning rate $\eta$, given by the following:
 
-\begin{equation}
-\label{eq:updaterule}
-\Theta \leftarrow \Theta - \eta * \frac{ \delta \mathcal{L}}{\delta \Theta}
-\end{equation}
 
 
 \subsection{Tricks of the Trade}
@@ -452,22 +490,6 @@ Reduces theoretical bounds on generalization error.
 \subsubsection{Bootstrapping Additional Information}
 Sparse coding
 Jordan Net
-
-
-% Looking closely at recent work in deep learning, most of the effort has been invested in areas of static input representations, i.e. computer vision and still images.
-% As evidenced by music, audio, and video, time plays an extremely important role in the way that information is conveyed.
-% Though CNNs have been applied to signals with a temporal dimension \cite{LeCun1994}, recursive architectures have shown promise for addressing the problem of time and sequences in data.
-% Initial efforts to train RNNs however, even with supervised methods, proved extremely challenging, with the observed phenomena manifesting as numerical stability issues of the gradient.
-% Due to the recursive nature of the model, backpropagating the error signal through time is prone to make the amplitude of the gradient either vanish or explode.
-% Despite these difficulties, several approaches and optimization methods have been developed in recent years that encourage further exploration of these models.
-
-% One of the earliest successful attempts to circumvent the issue of gradient stability was realized through a method called LSTM \cite{Schmidhuber1997}, where the gradient signal is ``latched'' by a hidden unit such that its information could be saved long enough to be useful.
-% Similar notions surround the notion of reservoir computing, such as echo-state networks, which employ feedback connections to cache arbitrary temporal information such that a second non-recursive layer ---being far easier to train--- might be able to make sense of it \cite{Jaeger2002}.
-% Alternatively, conditional DBNs have been employed to model, classify, and generate convincing sequences of human motion \cite{JMLR2011}, and can be thought of as a probabilistic CNN.
-% Recent research has found that more complex optimization methods are sufficient to train RNNs directly without changing the underlying model \cite{Martens2010}, giving encouraging qualitative results on motion \cite{Sutskever2008} and text generation \cite{Sutskever2011}.
-% There has also been initial work investigating discriminative recursive models that also leverage unsupervised training \cite{Rolfe2013}.
-% This research is particularly exciting, as it demonstrates that such models are actually within reach.
-% Reflecting on the corpus of deep learning work in the past decade however, it should be noted that the majority of these breakthroughs ignore audio, and even more so music, signals, focusing instead on vision or natural language processing tasks.
 
 
 \section{Previous Efforts in Automatic Music Description}
@@ -522,6 +544,23 @@ As a result, non-linear signal processing models in both the analog and digital 
 \caption{\small{Finite Impulse Response (i) and Infinite Impulse Response (ii) digital filters. Multiplication is shown along the edges of each connection.}}
 \label{fig:filters}
 \end{figure}
+
+
+% Looking closely at recent work in deep learning, most of the effort has been invested in areas of static input representations, i.e. computer vision and still images.
+% As evidenced by music, audio, and video, time plays an extremely important role in the way that information is conveyed.
+% Though CNNs have been applied to signals with a temporal dimension \cite{LeCun1994}, recursive architectures have shown promise for addressing the problem of time and sequences in data.
+% Initial efforts to train RNNs however, even with supervised methods, proved extremely challenging, with the observed phenomena manifesting as numerical stability issues of the gradient.
+% Due to the recursive nature of the model, backpropagating the error signal through time is prone to make the amplitude of the gradient either vanish or explode.
+% Despite these difficulties, several approaches and optimization methods have been developed in recent years that encourage further exploration of these models.
+
+% One of the earliest successful attempts to circumvent the issue of gradient stability was realized through a method called LSTM \cite{Schmidhuber1997}, where the gradient signal is ``latched'' by a hidden unit such that its information could be saved long enough to be useful.
+% Similar notions surround the notion of reservoir computing, such as echo-state networks, which employ feedback connections to cache arbitrary temporal information such that a second non-recursive layer ---being far easier to train--- might be able to make sense of it \cite{Jaeger2002}.
+% Alternatively, conditional DBNs have been employed to model, classify, and generate convincing sequences of human motion \cite{JMLR2011}, and can be thought of as a probabilistic CNN.
+% Recent research has found that more complex optimization methods are sufficient to train RNNs directly without changing the underlying model \cite{Martens2010}, giving encouraging qualitative results on motion \cite{Sutskever2008} and text generation \cite{Sutskever2011}.
+% There has also been initial work investigating discriminative recursive models that also leverage unsupervised training \cite{Rolfe2013}.
+% This research is particularly exciting, as it demonstrates that such models are actually within reach.
+% Reflecting on the corpus of deep learning work in the past decade however, it should be noted that the majority of these breakthroughs ignore audio, and even more so music, signals, focusing instead on vision or natural language processing tasks.
+
 
 
 \section{Summary}
