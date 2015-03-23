@@ -342,47 +342,96 @@ and two, presented in Subsection \ref{subsec:learning}, the parameters of this f
 Finally, though not strictly necessary, neural network research has produced an array of ``tricks of the trade'', detailed in Subection \ref{subsec:tricks}.
 
 
-\subsection{Modular Operations}
+\subsection{Modular Architectures}
 \label{subsec:architectures}
 
-Building blocks of neural networks.
-A bit like legos; from a few basic pieces, you can build elaborate structures \cite{inceptionnet}.
-S'all fair game so long as you can differentiate it.
+% Building blocks of neural networks.
+It is a hallmark of deep neural networks that system architectures are constructed from only a handful of unique processing units, repeated and arranged to form complex structures.
+This modular approach to system design allows the researcher to focus on each operation at different levels of abstraction;
+from a few basic building blocks, it is straightforward to create elaborate architectures \cite{inceptionnet}.
+While any mathematical operation can be easily incorporated into a neural network, so long as it is differentiable, there are a handful of common operations that are worth discussing.
 
-\subsubsection{Linear Algebra}
+\subsubsection{Composite Architectures}
 
-% Fully connected / affine
 Conventionally, a neural network transforms an input $X_{1}$ into an output $Z_{L}$ via a composite nonlinear function $F(\cdot \vert \Theta)$, given a parameter set $\Theta$.
-This is traditionally achieved as a cascade of $L$ simpler nonlinear functions $f_l(\cdot \vert \theta_l)$, referred to as layers, the order of which is indexed by $l$:
+This is traditionally, but not necessarily, achieved as a cascade of $L$ self-contained operations, $f_l(\cdot \vert \theta_l)$, referred to as layers, nodes, or subfunctions, the order of which is indexed by $l$:
 
 \begin{equation}
 \label{eq:layers}
 F(X_{1} \vert \Theta) = f_{L}(  ... f_2(f_1(X_{1} \vert \theta_1) \vert \theta_2) ) ... \vert \theta_{L})
 \end{equation}
 
-\noindent In this formulation, $F = [f_1, f_2, ... f_{L} ]$ is the set of layer functions, $\Theta = [\theta_1, \theta_2, ... \theta_{L} ]$ is the corresponding set of layer parameters, the output of one layer is passed as the input to the next, as $X_{l+1} = Z_{l}$, and the overall \emph{depth} of the network is given by $L$.
+\noindent In this formulation, $F = [f_1, f_2, ... f_{L} ]$ is the set of layers, $\Theta = [\theta_1, \theta_2, ... \theta_{L} ]$ is the corresponding set of parameters, the output of one layer is passed as the input to the next, as $X_{l+1} = Z_{l}$, and the overall \emph{depth} of the network is given by $L$.
 
+% Thus the design of an architecture must address several interrelated questions:
+% what functions make up the network?
+% how do these relate to the data being processed, or the problem being addressed?
+It is worth noting that this sequential cascade of operations is merely common practice and not a hard and fast rule.
+Some networks make use of interesting types of connectivity between layers, referred to as ``skip-connections'' \cite{LeCun};
+others adopt an explicit graphical interpretation, encouraging the description of the network in terms of nodes and edges.
+The considerable flexibility afforded by this modular design approach is both one of the greatest advantages, and criticisms, of deep neural networks.
 
-While a layer $f_l$ can be any differentiable function, we limit our focus in this work to fully-connected, or \emph{affine}, transformations, defined by the following:
+\subsubsection{Affine Projection}
+
+The fundamental building block of the classic neural network is the affine transformation:
 
 \begin{equation}
 \label{eq:fclayer}
-f_l(X_l \vert \theta_l) = h( W \bullet X_{l} + b), \theta_l = [W, b]
+Z_l = f_l(X_l \vert \theta_l) = h( W \bullet X_{l} + b), \theta_l = [W, b]
 \end{equation}
 
-\noindent Here, the input $X_l$ is flattened to a column vector of length $N$ and the dot-product is computed with a weight matrix $W$ of shape $(M, N)$, followed by an additive vector bias term $b$ with length $M$.
-Note that an affine layer transforms an $N$-dimensional input to an $M$-dimensional output, referred to as the \emph{width} of the layer.
-The final operation is a point-wise nonlinearity, $h(\cdot)$, defined here as $tanh(\cdot)$, which is bounded on $(-1, 1)$.
+\noindent Here, the input to the $l^{th}$ layer, $X_l$, is flatten to a column vector of length $N$, projected against a weight matrix, $W$, of shape $(M, N)$, added to a vector bias term, $b$, of length $M$, and passed through some transfer function, $h()$.
+As addressed shortly, the transfer function is generally some pointwise nonlinearity, although the linear matrix product can be seen as a special case of Eq. \ref{eq:fclayer}.
+Alternatively, this operation is also known as a fully-connected or matrix-product layer.
+This common subfunction descends directly from the perceptron, and is the core operation of the multi-layer perceptron.
+Additionally, the affine transformation is a crucial processing block, because, as it will soon be discussed, many other subfunctions can be interpreted as a special instance of a matrix-product.
+
+\subsubsection{Local Receptive Fields}
 
 % Local Receptive Fields
-Fully connected matrices that are only connected to local neighborhoods.
-This can be generalized as a very large dot product where most parameters are fixed to zero.
+% Fully connected matrices that are only connected to local neighborhoods.
+Though somewhat out of order chronologically, the nearest neighbor to an affine transformation in the realm of deep learning are ``local receptive fields'' \cite{someone}.
+Based on observations of visual systems, local receptive fields exploit correlations found in spatial pixel neighborhoods to reduce the complexity of features to be learned.
+Most importantly, local receptive fields can be realized as an affine transformation against a mostly-sparse set of weights, like the following:
 
-% Convolutions
-Same formulation as local receptive fields, except the parameters are tied across location.
+\begingroup
+\renewcommand*{\arraystretch}{0.8}
+$$
+\begin{bmatrix}
+w_{0, 0} & w_{0, 1} & \dots  & w_{0, M} & 0 & \dots & 0 & 0 \\
+w_{1, 0} & w_{1, 1} & \dots  & w_{1, M} & 0 & \dots & 0 & 0 \\
+\vdots & \vdots & \ddots & \vdots & 0 & \ddots & 0 & 0 \\
+w_{K, 0} & w_{K, 1} & \dots  & w_{K, M} & 0 & \dots & 0 & 0 \\
+0 & w_{K + 1, 1} & w_{K + 1, 2} & \dots  & w_{K + 1, M + 1} & 0 & \dots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & 0 & \ddots & \vdots \\
+0 & w_{2K, 1} & w_{2K, 2} & \dots  & w_{2K, M + 1} & 0 & \dots & 0 \\
+0 & \ddots & \vdots & \vdots & \ddots & \dots & \dots & 0 \\
+\dots & 0 & w_{i, j} & w_{i, j + 1} & \dots & w_{i, j + M} & 0 & \dots \\
+\dots & 0 & w_{i + 1, j} & w_{i + 1, j + 1} & \dots & w_{i + 1, j + M} & 0  & \dots  \\
+\dots & 0 & \vdots & \vdots & \ddots & \vdots & 0 & \dots \\
+\dots & 0 & w_{i + K, j} & w_{i+K, j + 1} & \dots & w_{i + K, j + M} & 0  & \dots  \\
+\dots & \dots & \dots & \dots & \dots & \dots & \dots & \ddots
+\end{bmatrix}
+$$
+\endgroup
+
+\noindent Here, $M$ adjacent features are projected against $K$ different combinations of weights, and translated across all possible shifts of a given input.
+This formulation is particularly interesting, as it illustrates the inherent difficulty posed by the universal approximation theorem.
+Technically, a local receptive field can be implemented as a simple matrix-product;
+however, its true value is realized in the hard-coded sparisity of the operation.
+
+Furthermore, audio signals do not exhibit the same correlations observed in visual signals, and correlation assumptions may break down in different scenarios.
+Natural sound, for example, is harmonic in nature, and it is reasonable to assume that octave relationships may have a stronger connection that neighboring frequencies.
+Some research has argued that different types of connectivity could be determined from data \cite{Coates2012?}, but this has not been extensively explored in the deep learning literature.
+
+
+\subsubsection{Convolutions}
+
+Extending the connectivity of local receptive fields, convolutions offer the benefit of sharing the \emph{exact} same parameters across location in an input representation.
+except the parameters are tied across location.
 
 % Other connectivities
-Could be data driven, a la Coates et al \cite{Coates2012?}.
+
 
 \subsubsection{Nonlinearities}
 
@@ -487,9 +536,9 @@ Reduces theoretical bounds on generalization error.
 \subsubsection{Data Augmentation}
 
 
-\subsubsection{Bootstrapping Additional Information}
-Sparse coding
-Jordan Net
+% \subsubsection{Bootstrapping Additional Information}
+% Sparse coding
+% Jordan Net
 
 
 \section{Previous Efforts in Automatic Music Description}
@@ -500,50 +549,52 @@ Deep Belief Networks quickly gained popularity for genre recognition \cite{Hamel
 Incorporating longer time-scales, CNNs have also been used to classify inputs on the order of seconds for, again, genre recognition \cite{Li2010}, instrument classification \cite{Humphrey2010} and chord estimation \cite{Humphrey2011, Humphrey2012b}.
 Predictive Sparse Decomposition (PSD) and methods inspired by sparse coding have also seen a spike in activity over the last two years for a variety of tasks \cite{Henaff2011, Nam2012}, but despite being developed for deep learning, neither of these systems are actually hierarchical.
 
-% It is worthwhile to note that many, if not all, of these works have achieved state of the art performance on their respective tasks, often in the first application of the method to the area.
-% Any instances where this has occurred, however, deep learning techniques have simply been directly some kind of derived audio representation with minimal modification.
-% It is therefore important to realize that these methods have never been tailored to address the nuances of music signals, and more importantly time.
-% Overall, only CNNs make an effort to consider observations on the order of seconds, but do so in an admittedly awkward way, requiring the observation length be defined \emph{a priori}.
-% The machine is ultimately limited to the amount of information it sees in its analysis, and there is obviously no fixed duration in which all musical behavior resides.
+% Needs more from Sander, Aron van der Oord, Srikanth Cherla, Siddarth, Boulanger-Lewandowski
 
-Due to advances in machine computation, there are primarily two different ways to conceptualize the design of information processing models.
-One approach is based on signal theory as viewed through the lens of electrical engineering, whereas the other focuses on graphical models of artificial neural processing grounded in computer science.
-Though broad topics of study in themselves, they are worth mentioning together for two crucial reasons: first, a majority of inertia developed within the field of MIR is due largely to its roots in the former; and second, it is a useful juxtaposition to form when marrying these disconnected topics.
+It is worthwhile to note that many, if not all, of these works have achieved state of the art performance on their respective tasks, often in the first application of the method to the area.
+Any instances where this has occurred, however, deep learning techniques have simply been directly some kind of derived audio representation with minimal modification.
+It is therefore important to realize that these methods have never been tailored to address the nuances of music signals, and more importantly time.
+Overall, only CNNs make an effort to consider observations on the order of seconds, but do so in an admittedly awkward way, requiring the observation length be defined \emph{a priori}.
+The machine is ultimately limited to the amount of information it sees in its analysis, and there is obviously no fixed duration in which all musical behavior resides.
+
+% Due to advances in machine computation, there are primarily two different ways to conceptualize the design of information processing models.
+% One approach is based on signal theory as viewed through the lens of electrical engineering, whereas the other focuses on graphical models of artificial neural processing grounded in computer science.
+% Though broad topics of study in themselves, they are worth mentioning together for two crucial reasons: first, a majority of inertia developed within the field of MIR is due largely to its roots in the former; and second, it is a useful juxtaposition to form when marrying these disconnected topics.
 
 %Electrical engineering formalized as a discipline in the middle of the $19^{th}$ century on the heels of inventions such as the telegraph and electric power distribution.
 
-Much early work in electrical engineering stemmed from the realization that electricity could be used to represent measurable phenomena and therefore capture, store, and transmit this information.
-These representations are referred to as analog signals because they use one representation ---time-varying voltage, for example--- to mirror another one ---such as a sound pressure wave--- in a continuous fashion.
-It was soon discovered that not only could this information be represented via electricity, but that it was also possible to analyze and manipulate it for a variety of applications.
-Heavily grounded in classic numerical analysis methods of the $17^{th}$ and $18^{th}$ centuries, these methods are referred to as signal processing.
-Through experimentation in physics, scientists found that certain electromagnetic materials could be used to affect electricity in predictable ways, and when connected in an electrical circuit could be used to filter, or augment, signals.
-Importantly, the need to solve signal processing systems by inspection requires that the entire system be linear and time invariant (LTI), because the violation of either property makes mathematical analysis far too difficult, if not altogether impossible.
+% Much early work in electrical engineering stemmed from the realization that electricity could be used to represent measurable phenomena and therefore capture, store, and transmit this information.
+% These representations are referred to as analog signals because they use one representation ---time-varying voltage, for example--- to mirror another one ---such as a sound pressure wave--- in a continuous fashion.
+% It was soon discovered that not only could this information be represented via electricity, but that it was also possible to analyze and manipulate it for a variety of applications.
+% Heavily grounded in classic numerical analysis methods of the $17^{th}$ and $18^{th}$ centuries, these methods are referred to as signal processing.
+% Through experimentation in physics, scientists found that certain electromagnetic materials could be used to affect electricity in predictable ways, and when connected in an electrical circuit could be used to filter, or augment, signals.
+% Importantly, the need to solve signal processing systems by inspection requires that the entire system be linear and time invariant (LTI), because the violation of either property makes mathematical analysis far too difficult, if not altogether impossible.
 
-With the advent of solid-state transistors and subsequently computers in the mid-$20^{th}$, digital representations of signals could be produced by sampling analog waveforms to be manipulated numerically, referred to as digital signal processing (DSP).
-Digital signals---those that also represent some kind of real world phenomena, at least---differ from analog ones in two important aspects: the signal takes values from a finite set of discrete numbers, and these quantities are measured at precise moments in time.
-Therefore, digital signals are specified by a sequence of real-valued numbers $x[n]$, rather than a generated, continuous function $x(t)$.
-When this transition to numerical computation began, the effort was made to reformulate previous knowledge regarding analog signal theory and processing into the digital domain.
-Similar to those in analog theory, digital filters can be expressed explicitly by a transfer function, which can be translated directly to a set of coefficients representing the linear difference equation, generically given by the following:
+% With the advent of solid-state transistors and subsequently computers in the mid-$20^{th}$, digital representations of signals could be produced by sampling analog waveforms to be manipulated numerically, referred to as digital signal processing (DSP).
+% Digital signals---those that also represent some kind of real world phenomena, at least---differ from analog ones in two important aspects: the signal takes values from a finite set of discrete numbers, and these quantities are measured at precise moments in time.
+% Therefore, digital signals are specified by a sequence of real-valued numbers $x[n]$, rather than a generated, continuous function $x(t)$.
+% When this transition to numerical computation began, the effort was made to reformulate previous knowledge regarding analog signal theory and processing into the digital domain.
+% Similar to those in analog theory, digital filters can be expressed explicitly by a transfer function, which can be translated directly to a set of coefficients representing the linear difference equation, generically given by the following:
 
-\begin{equation}
-\label{eq:diffeq}
-\begin{array}{rcr}
-y[n] & = & b_0x[n] + b_1x[n-1] + b_2x[n-2] + b_3x[n-3] \ldots \\
- & & - a_1y[n-1] - a_2y[n-2] - a_3y[n-3] \ldots
-\end{array}
-\end{equation}
+% \begin{equation}
+% \label{eq:diffeq}
+% \begin{array}{rcr}
+% y[n] & = & b_0x[n] + b_1x[n-1] + b_2x[n-2] + b_3x[n-3] \ldots \\
+%  & & - a_1y[n-1] - a_2y[n-2] - a_3y[n-3] \ldots
+% \end{array}
+% \end{equation}
 
-There are typically said to be two categories of digital filters: Finite Impulse Response (FIR), or non-recursive, filters and Infinite Impulse Response (IIR), or recursive, filters.
-As illustrated in Figure \ref{fig:filters}, an FIR filter is actually a special case of the more general IIR filter, where the feedback connections---the $a$-coefficients in Equation (\ref{eq:diffeq})---have all been set to zero.
-Though digital filters are not constrained by the availability or precision of manufactured electrical components, they are still traditionally constrained to be LTI systems for the same reasons as their analog counterparts.
-As a result, non-linear signal processing models in both the analog and digital domains are historically unpopular due to inherent challenges in the mathematical formulation.
+% There are typically said to be two categories of digital filters: Finite Impulse Response (FIR), or non-recursive, filters and Infinite Impulse Response (IIR), or recursive, filters.
+% As illustrated in Figure \ref{fig:filters}, an FIR filter is actually a special case of the more general IIR filter, where the feedback connections---the $a$-coefficients in Equation (\ref{eq:diffeq})---have all been set to zero.
+% Though digital filters are not constrained by the availability or precision of manufactured electrical components, they are still traditionally constrained to be LTI systems for the same reasons as their analog counterparts.
+% As a result, non-linear signal processing models in both the analog and digital domains are historically unpopular due to inherent challenges in the mathematical formulation.
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\textwidth]{filters_2}
-\caption{\small{Finite Impulse Response (i) and Infinite Impulse Response (ii) digital filters. Multiplication is shown along the edges of each connection.}}
-\label{fig:filters}
-\end{figure}
+% \begin{figure}[!t]
+% \centering
+% \includegraphics[width=\textwidth]{filters_2}
+% \caption{\small{Finite Impulse Response (i) and Infinite Impulse Response (ii) digital filters. Multiplication is shown along the edges of each connection.}}
+% \label{fig:filters}
+% \end{figure}
 
 
 % Looking closely at recent work in deep learning, most of the effort has been invested in areas of static input representations, i.e. computer vision and still images.
