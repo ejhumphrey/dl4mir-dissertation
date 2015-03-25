@@ -338,8 +338,8 @@ Reflecting on the historical lineage of neural networks, it becomes apparent tha
 Thus, to help define the scope and limits of this work, this section introduces the fundamental components that contribute to a modern definition of the topic.
 Here, ``deep learning'' is defined as an approach to designing complex information processing systems, exhibiting two key traits;
 one, discussed in Subsection \ref{subsec:architectures}, the system architecture can be expressed as a composite nonlinear function, composed of many simpler operations;
-and two, presented in Subsection \ref{subsec:learning}, the parameters of this function can be ``learned'' via numerical optimzation or other automatic means.
-Finally, though not strictly necessary, neural network research has produced an array of ``tricks of the trade'', detailed in Subection \ref{subsec:tricks}.
+and two, presented in Subsection \ref{subsec:learning}, the parameters of this function can be ``learned'' by combining an objective function with numerical optimzation methods.
+Finally, modern neural network research has produced a useful array of ``tricks of the trade'', detailed in Subection \ref{subsec:tricks}, which often help squeeze every bit of performance from a model.
 
 
 \subsection{Modular Architectures}
@@ -363,13 +363,15 @@ F(X_{1} \vert \Theta) = f_{L}(  ... f_2(f_1(X_{1} \vert \theta_1) \vert \theta_2
 
 \noindent In this formulation, $F = [f_1, f_2, ... f_{L} ]$ is the set of layers, $\Theta = [\theta_1, \theta_2, ... \theta_{L} ]$ is the corresponding set of parameters, the output of one layer is passed as the input to the next, as $X_{l+1} = Z_{l}$, and the overall \emph{depth} of the network is given by $L$.
 
-% Thus the design of an architecture must address several interrelated questions:
-% what functions make up the network?
-% how do these relate to the data being processed, or the problem being addressed?
 It is worth noting that this sequential cascade of operations is merely common practice and not a hard and fast rule.
 Some networks make use of interesting types of connectivity between layers, referred to as ``skip-connections'' \cite{LeCun};
 others adopt an explicit graphical interpretation, encouraging the description of the network in terms of nodes and edges.
+Therefore the design of a network architecture must address several interrelated questions:
+what is the function being modeled?
+what domain knowledge can be leveraged to inform this design?
+and how do these relate to the data being processed, or the problem being addressed?
 The considerable flexibility afforded by this modular design approach is both one of the greatest advantages, and criticisms, of deep neural networks.
+
 
 \subsubsection{Affine Projection}
 
@@ -386,13 +388,14 @@ Alternatively, this operation is also known as a fully-connected or matrix-produ
 This common subfunction descends directly from the perceptron, and is the core operation of the multi-layer perceptron.
 Additionally, the affine transformation is a crucial processing block, because, as it will soon be discussed, many other subfunctions can be interpreted as a special instance of a matrix-product.
 
-\subsubsection{Local Receptive Fields}
+
+\subsubsection{Local Affine Transformation}
 
 % Local Receptive Fields
 % Fully connected matrices that are only connected to local neighborhoods.
-Though somewhat out of order chronologically, the nearest neighbor to an affine transformation in the realm of deep learning are ``local receptive fields'' \cite{someone}.
+Though somewhat out of order chronologically, the nearest neighbor to an affine transformation in the realm of deep learning is the ``local affine transformation'' \cite{someone}, operating only on local neighborhoods.
 Based on observations of visual systems, local receptive fields exploit correlations found in spatial pixel neighborhoods to reduce the complexity of features to be learned, generally resulting in better performance \cite{who}.
-Notably, local receptive fields can be realized as an affine transformation against a mostly-sparse set of weights, expressed as the following:
+Notably, local affine transformations can be realized as a full matrix product where most weights are zero, expressed as the following:
 
 \begingroup
 \renewcommand*{\arraystretch}{0.8}
@@ -518,17 +521,38 @@ Noting that no information flows in the negative mode, others have extended this
 % Any differentiable nonlinearity could conceivably be used here.
 
 
-\subsubsection{Other Common Operations}
+\subsubsection{Pooling}
 
 % Pooling
-the parameter $p_0, p_1$ is a two-element tuple that defines the neighborhood of the max operator along the feature dimensions.
-Max pooling is the most common form, usually applied to a local neighborhood.
-There is also the L2 variant
-Relationship to max-out networks, difference here being that pooling is typically exploiting spatial correlations.
 
+In a broad sense, \emph{pooling} operations compute local statistics over representations.
+This can be understood as a form of summarization, which trades accuracy of locality for various forms of invariance.
+Original drawing inspiration from the Hubel and Weisel experiments, the most common pooling operation is \emph{max-pooling}, which mimics the behavior of complex cells in the visual cortex by passing only the largest value within a local neighborhood.
+This offers, depending on the size of the neighborhood, invariance to scale, translation, and rotation in visual tasks, and contributes significantly to the success of convolutional networks.
+the parameter $p_0, p_1$ is a two-element tuple that defines the neighborhood of the max operator along these dimensions:
+
+
+\begin{equation}
+\label{eq:maxpool}
+\small
+\hat{Z}[x, y] = max (\mathcal{1}_{p=0}^{P} \mathcal{1}_{q=}^{Q} X[x + p, y + q]
+\end{equation}
+
+% \noindent This would later find use in \emph{max-out networks}, where the adjacent outputs of an affine transformations are max-pooled \cite{Goodfellow2011}.
+% The difference here being that conventional pooling exploits spatial correlations
+
+Other forms of pooling exist, though less common in practice.
+Similar in nature, \emph{L2-pooling} computes the magnitude vector of a neighborhood in Euclidean space \cite{LeCunStudent}.
+This can be interpreted as a softer form of max-pooling, where all inputs contribute to the output, albeit dominated by the maxima.
+Finally, other statistics like the \emph{mean}, \emph{min}, or \emph{standard deviation} have found use in temporal pooling \cite{Hamel2011}.
+
+
+\subsubsection{Constraints}
+
+Given the many degrees of freedom that can be realized with neural networks, it is often necessary to constrain representations to behave in certain ways.
 %Softmax
-When used as a classification system, the first $L-1$ layers of a neural network can be viewed as feature extractors, and the last layer, $f_L$, is a simple linear classifier.
-The output representation can be made to behave like a posterior by constraining the $L_1$-norm of the output to equal $1$.
+Perhaps the most common instance of this is found in classification systems, where the output of a network estimates the likelihood or affinity for some number of classes.
+The \emph{maximum a posteriori}, or MAP, decision rule is a particularly simple, and thus attractive, one in this case, which identifies the maximum likelihood as the winning class.
 Traditionally, the probability mass function $P(\cdot)$ for an input $X_1$ is achieved by applying the softmax operation to the output of the network, $Z_L$, defined as follows:
 
 \begin{equation}
@@ -540,6 +564,7 @@ Traditionally, the probability mass function $P(\cdot)$ for an input $X_1$ is ac
 Therefore, the most likely class for a prediction $Z$, is given by $k = argmax(\sigma(Z))$.
 
 % L2 constraints, bounded in volume, bounded to surface.
+
 
 \subsection{Automatic Learning}
 \label{subsec:learning}
@@ -634,6 +659,17 @@ Get more mileage out of labeled data by applying known deformations.
 Exploit the reality that modeling the synthesis process is typically easier than the analysis process.
 LeCun 1998
 Dieleman 2014 Kaggle, Galaxy Zoo
+
+
+\subsubsection{Normalization}
+
+%Enough can't be said about normalization
+
+% Unit scaling
+
+% Standardization
+
+% Local contrast normalization
 
 
 \section{Related Efforts in Automatic Music Description}
