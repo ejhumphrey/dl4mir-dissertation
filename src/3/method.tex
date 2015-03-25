@@ -391,8 +391,8 @@ Additionally, the affine transformation is a crucial processing block, because, 
 % Local Receptive Fields
 % Fully connected matrices that are only connected to local neighborhoods.
 Though somewhat out of order chronologically, the nearest neighbor to an affine transformation in the realm of deep learning are ``local receptive fields'' \cite{someone}.
-Based on observations of visual systems, local receptive fields exploit correlations found in spatial pixel neighborhoods to reduce the complexity of features to be learned.
-Most importantly, local receptive fields can be realized as an affine transformation against a mostly-sparse set of weights, like the following:
+Based on observations of visual systems, local receptive fields exploit correlations found in spatial pixel neighborhoods to reduce the complexity of features to be learned, generally resulting in better performance \cite{who}.
+Notably, local receptive fields can be realized as an affine transformation against a mostly-sparse set of weights, expressed as the following:
 
 \begingroup
 \renewcommand*{\arraystretch}{0.8}
@@ -415,82 +415,156 @@ w_{K, 0} & w_{K, 1} & \dots  & w_{K, M} & 0 & \dots & 0 & 0 \\
 $$
 \endgroup
 
-\noindent Here, $M$ adjacent features are projected against $K$ different combinations of weights, and translated across all possible shifts of a given input.
+\noindent Here, $M$ adjacent features are projected against $K$ different combinations of weights, and this local connectivity is translated across all possible locations of a given input.
 This formulation is particularly interesting, as it illustrates the inherent difficulty posed by the universal approximation theorem.
-Technically, a local receptive field can be implemented as a simple matrix-product;
-however, its true value is realized in the hard-coded sparisity of the operation.
+Technically, a local receptive field can be implemented as a matrix-product;
+learning this behavior, however, is quite difficult.
+First off, this particular sparse connectivity would need to be learned redundantly.
+Additionally, such true sparsity is challenging to learn, and it is unlikely such behavior would be so well localized.
+Finally, the prospect of learning this particular topology from a fully-connected matrix demands a prohibitive number of parameters, throttling both computation and the learning process.
 
-Furthermore, audio signals do not exhibit the same correlations observed in visual signals, and correlation assumptions may break down in different scenarios.
+Furthermore, this spatially correlated topology is unique to visual signals, and such connectivity assumptions may not map to other domains.
 Natural sound, for example, is harmonic in nature, and it is reasonable to assume that octave relationships may have a stronger connection that neighboring frequencies.
-Some research has argued that different types of connectivity could be determined from data \cite{Coates2012?}, but this has not been extensively explored in the deep learning literature.
+Some research has argued that different types of connectivity could be determined from data \cite{Coates2012?}, but this has yet to be extensively explored in the deep learning literature.
 
 
 \subsubsection{Convolutions}
 
-Extending the connectivity of local receptive fields, convolutions offer the benefit of sharing the \emph{exact} same parameters across location in an input representation.
-except the parameters are tied across location.
+Extending the topology of local receptive fields, convolutions further simplify this process by sharing the \emph{exact} same parameters across location in an input representation.
+Also known as weight tying, a convolution is generically expressed by the following:
 
-% Other connectivities
+\begin{equation}
+\label{eq:convlayer}
+\small
+f_l(X_l \vert \theta_l) = h(X_{l} \circledast W + b), \theta_l = [W, b]
+\end{equation}
+
+\noindent In deep learning literature, there are typically two kinds of convolution operations indicated by the $\circledast$.
+The first, and perhaps original, interpretation is referred to as a ``2D'' convolution:
+
+\begin{equation}
+\label{eq:convolution}
+\small
+\hat{Z}[m, a, b]_l =\sum_{i=0}^{N} \sum_{j=-\infty}^{\infty} \sum_{k=-\infty}^{\infty} X_l[i, x, y]W[m, a - j, b - k]
+\end{equation}
+
+\noindent Here the convolution is computed by convolving a 3D input tensor, $X$, consisting of $N$ \emph{feature maps}, with a collection of $M$ 2D weight \emph{kernels}, $W$, followed by the addition of a vector bias term $b$.
+In this formulation, $X$ has shape $(N, d_0, d_1)$ where $(d_0,d_1)$ is the shape of each map, $W$ has shape $(M, m_0, m_1)$, where $(m_0,m_1)$ define the size of the kernel.
+Note that in the 2D formulation, the activation of a kernel is summed equally across the separate feature maps, and thus the degrees of freedom for such a kernel are across spatial and feature map dimensions.
+
+Alternatively, the other common variant of the $\circledast$ operator is the 3D convolution, written as follows:
+
+\begin{equation}
+\label{eq:convolution}
+\small
+\hat{Z}_l[m, a, b] =\sum_{i=0}^{N} \sum_{j=-\infty}^{\infty} \sum_{k=-\infty}^{\infty} X[i, x, y]W[m, i, a - j, b - k]
+\end{equation}
+
+\noindent The input, $X$, is again a 3D tensor of feature maps, but now the weight tensor used in the convolution, $W$, is 4D, with shape $(M, N, m_0, m_1)$.
+Whereas before, in the 2D case, each kernel translated across feature maps, the 3D case aligns a kernel with the number of feature maps, $N$.
+Thus, in the instance that $N=1$, both operations are equivalent.
+Due to the local connectivity across feature maps, 3D convolutions require $N$ times more parameters than their 2D cousin, but far fewer than an equivalent full matrix product.
+Using kernels that are sensitive to characteristics across different simultaneous feature maps allows for correlations to be discovered across the same representation.
+
+
+% There are two primary benefits to using convolutional layers in a deep network; the number of parameters to learn is greatly reduced because only a local neighborhood, rather than the entire input, is processed by each kernel; and two, the kernel is translated across all shifts of the input, allowing it to encode the same feature regardless of absolute position; we refer the interested reader to \cite{LeCun2010} for a more extensive review.
+
+
+% \subsubsection{Recursive Operations}
+% Is this even necessary?
+% Related to HMMs, stateful
+% Notoriously difficult to train
+% Unroll a fixed number of steps, with burn in
+% Echo state networks
+% Heuristics: LSTM, gradient clipping
+% Various mileage.
 
 
 \subsubsection{Nonlinearities}
 
-Logistic / sigmoid, hyperbolic tangent.
-Close cousins, but generally hyperbolic tangent has gained favor for being centered about the origin.
+A seemingly simple piece of the deep learning toolkit, pointwise nonlinearities are crucial to the construction of complex networks.
+In the absence of nonlinear behavior, a cascade of linear systems is itself another linear system.
+Nonlinear operations, however, change the overall behavior of the composite function, and are the source of representational power in deep networks.
+Conventionally referred to as \emph{transfer} or \emph{activation} functions, these operations are typically applied to the output of other linear functions, e.g. after an affine transformation.
 
-Rectified linear, piecewise linear model. % relationship to random forests?
-Results in naturally sparse representations.
-Doesn't saturate in the positve region, but no information flows in the negative mode.
-Leaky ReLU, gradient everywhere.
+The two basic nonlinear functions in deep networks are the logistic, or sigmoid, and the related hyperbolic tangent:
+
+\begin{align*}
+  logistic(x) = \frac{1}{1 + \mathrm{e}^{-x}}\\
+  tanh(x) = \frac{1 - \mathrm{e}^{-2x}} {1 + \mathrm{e}^{-2x}}
+\label{eq:basic_nonlinearities}
+\end{align*}
+
+Shown in Figure \ref{fig:nonlinearities}, both functions have inflection points at zero, saturate toward infinity in both directions, and are everywhere differentiable.
+While the logistic initially came into practice as a smooth approximation to the unit step function, the hyperbolic tangent has gained favor for being centered about the origin.
+The saturating behavior of these functions is significant, because training a poorly initialized network may be painfully slow, if even possible, due to small gradients at the limits.
+
+More recently, the \emph{Rectified Linear Unit} (ReLU), or halfwave rectification, has seen a considerable uptick in usage in deep networks:
+
+\begin{align*}
+  relu(x) = max(x, 0) = x * (x > 0)\\
+\label{eq:relu}
+\end{align*}
+
+% piecewise linear model. % relationship to random forests?
+\noindent Notably, it was demonstrated in \cite{Hinton} that, with sufficient data, rectified linear units could achieve state of the art performance without unsupervised pretraining.
+Though the theory is still catching up to the practice, there are two widely held rationalizations of this behavior.
+Most importantly, the function does not saturate in the positve region, and thus gradients propagate freely through an arbitrarily deep network.
+Additionaly, the hard threshold results in naturally sparse representations, a ``good thing'' in classification systems.
+Noting that no information flows in the negative mode, others have extended this idea into the ``leaky ReLU'', but these have not see such widespread attention \cite{Ng?}.
+
+% Full wave rectification, soft approximations?
+% Shrinkage functions, common in sparse coding
+% Any differentiable nonlinearity could conceivably be used here.
+
+
+\subsubsection{Other Common Operations}
+
+% Pooling
+the parameter $p_0, p_1$ is a two-element tuple that defines the neighborhood of the max operator along the feature dimensions.
+Max pooling is the most common form, usually applied to a local neighborhood.
+There is also the L2 variant
+Relationship to max-out networks, difference here being that pooling is typically exploiting spatial correlations.
 
 %Softmax
 When used as a classification system, the first $L-1$ layers of a neural network can be viewed as feature extractors, and the last layer, $f_L$, is a simple linear classifier.
 The output representation can be made to behave like a posterior by constraining the $L_1$-norm of the output to equal $1$.
 Traditionally, the probability mass function $P(\cdot)$ for an input $X_1$ is achieved by applying the softmax operation to the output of the network, $Z_L$, defined as follows:
 
-% TODO: Isn't there a Beta term here?
 \begin{equation}
 \label{eq:softmax}
-\sigma(Z) = \frac{\exp(\beta Z)}{ \sum_{k=1}^{K}\exp{(\beta Z_k)}}
+\sigma(X) = \frac{\exp(\beta X)}{ \sum_{k=1}^{K}\exp{(\beta X_k)}}
 \end{equation}
 
-\noindent Again, note that $Z$ is the output of the final layer, $f_L$, and thus $K$ is the dimensionality of the classifier and equal to the number of classes in the problem.
+\noindent Again, note that $X$ is the output of the final layer, $f_L$, and thus $K$ is the dimensionality of the classifier and equal to the number of classes in the problem.
 Therefore, the most likely class for a prediction $Z$, is given by $k = argmax(\sigma(Z))$.
 
-Notably, any differentiable nonlinearity could conceivably be used here.
+% L2 constraints, bounded in volume, bounded to surface.
 
-
-\subsubsection{Pooling}
-
-Max pooling is the most common form, usually applied to a local neighborhood.
-Also L2 variant
-Relationship to max-out networks.
-
-
-\subsection{Supervised Learning}
+\subsection{Automatic Learning}
 \label{subsec:learning}
 
-% Automatic methods
-Random, brute force, genetic algorithms
+Having defined a deep network, it is necessary to determine an approach to finding parameters that enable this general function to perform some specific behavior.
+The deep learning is two-fold: define an objective function, and optimze to it over a collection of training data.
 
-% Gradient methods, a fighting chance
-Ideally, these features are \emph{learned} automatically using what are known as gradient methods, the basic idea being that a function attempts to reduce how ``wrong'' it is by taking small steps toward better answers; by analogy, this is a bit like climbing down a mountain blind-folded.
-Here, gradients are computed with $K>1$, but much smaller than the total number of observations, by sampling datapoints from the training set and averaging the loss over the batch.
-Specifically, the update rule for $\Theta$ is defined as its difference with the gradient of the scalar loss $\mathcal{L}$ with respect to the parameters $\Theta$, weighted by the learning rate $\eta$, given by the following:
 
-\begin{equation}
-\label{eq:updaterule}
-\Theta \leftarrow \Theta - \eta * \frac{ \delta \mathcal{L}}{\delta \Theta}
-\end{equation}
+\subsubsection{Objective Functions}
 
 Energy based learning
-Loss functional
+Low-energy corresponds to likely states.
+Define a loss functional (function that takes a function)
+Enables inference
 
-
+Here, a few loss functions of note are discussed; for a comprehensive review, the curious reader is directed to \cite{LeCun2006}.
 % Perceptron Loss, error function
+Basic error function is the perceptron loss:
 
-% Contrastive terms
+\begin{equation}
+\label{eq:nll}
+\mathcal{L}_perceptron(Y_k | X, \Theta) = || Y_k - f(X | \Theta) ||_2
+\end{equation}
 
+\noindent Some comment about this thing.
 
 % Negative Log-likelihood
 Having written the full network as a probability mass function, the network can be trained by iteratively minimizing the negative log-likelihood of the correct class for a set of $K$ observations:
@@ -502,7 +576,28 @@ Having written the full network as a probability mass function, the network can 
 
 \noindent Expressed in this manner, $X^k$ and $Y^k$ are the input data and corresponding class label, respectively of the $k^{th}$ observation.
 
-We can then minimize this loss function via mini-batch stochastic gradient descent.
+
+\subsubsection{Numerical Optimization}
+
+% Automatic methods
+Learning should be automatic
+Random, brute force, genetic algorithms fit the bill.
+No reasonable expectation of finding a good answer.
+
+% Gradient methods, a fighting chance
+Gradient methods, while greedy, at least attempt to go toward better answers.
+The basic idea being that a function attempts to reduce how ``wrong'' it is by taking small steps toward better answers; by analogy, this is a bit like climbing down a mountain blind-folded.
+Specifically, the update rule for $\Theta$ is defined as its difference with the gradient of the scalar loss $\mathcal{L}$ with respect to the parameters $\Theta$, weighted by the learning rate $\eta$, given by the following:
+
+\begin{equation}
+\label{eq:updaterule}
+\Theta \leftarrow \Theta - \eta * \frac{ \delta \mathcal{L}}{\delta \Theta}
+\end{equation}
+
+As shown in Figure \ref{fig:loss_surface}, this algorithm can be susceptible to bad local optima in highly non-convex surfaces.
+There are additionally degenerate cases such that a first-order method like this may be very slow, and thus higher order methods BGFS, L-BGFS, have been devised to deal with such issues.
+Higher order methods often entail a higher computational cost.
+In practice however, gradient descent is often sufficent with some slight modifcations, such as the occasional computation of the Hessian \cite{} or Nesterov momentum.
 
 
 
@@ -519,34 +614,49 @@ L0 and L1 loss are closely related, will drive values all the way to zero.
 
 \subsubsection{Data-Driven Initialization}
 
-Core idea behind the last significant breakthrough of the modern era.
+Core idea behind the first significant breakthrough of the modern era.
 Get parameters of the network closer to a good solution.
 Resolves poorly conditioned networks.
 Alleviates the vanishing gradient problem.
-
-Recently it was observed that with enough data, rectified linear units, or both, this is less crucial than once thought.
+Less important now, given relu's; still useful for problems which lack sufficient labeled data.
 
 
 \subsubsection{Dropout}
-Preventing co-adaptation of parameters.
+Prevents co-adaptation of parameters \cite{Hinton2012}.
 Related to model averaging.
-Reduces theoretical bounds on generalization error.
+Trains a subset of all networks at every iteration.
+Reduces the theoretical bound on generalization error.
 
 
 \subsubsection{Data Augmentation}
 
+Get more mileage out of labeled data by applying known deformations.
+Exploit the reality that modeling the synthesis process is typically easier than the analysis process.
+LeCun 1998
+Dieleman 2014 Kaggle, Galaxy Zoo
 
-% \subsubsection{Bootstrapping Additional Information}
-% Sparse coding
-% Jordan Net
 
+\section{Related Efforts in Automatic Music Description}
 
-\section{Previous Efforts in Automatic Music Description}
+% NMF all the rage
+Source separation
 
-This realization is beginning to spread throughout the MIR community, and there is, understandably, an increasing interest in the application of deep learning methods to these problems.
-Among the first uses of deep learning were the application of CNNs to the detection of onsets \cite{Lacoste2007} and long short-term memory to model symbolic music sequences \cite{Eck2008}.
-Deep Belief Networks quickly gained popularity for genre recognition \cite{Hamel2009}, mood estimation \cite{Schmidt2011}, note transcription \cite{Nam2011}, and artist recognition \cite{Dieleman2011}, but somewhat surprisingly many of these methods operate on single, short-time observations of the music signal.
-Incorporating longer time-scales, CNNs have also been used to classify inputs on the order of seconds for, again, genre recognition \cite{Li2010}, instrument classification \cite{Humphrey2010} and chord estimation \cite{Humphrey2011, Humphrey2012b}.
+While far from widespread, an increasing number of researchers are investing more time and effort into the application of deep learning to challenges in content-based music informatics.
+Deep Belief Networks quickly gained popularity for genre recognition \cite{Hamel2009}, mood estimation \cite{Schmidt2011}, note transcription \cite{Nam2011}, and artist recognition \cite{Dieleman2011}.
+
+% Convolutional networks
+Many early applications operate on single frame observations of a music signal.
+Among the first uses of deep learning were the application of convolutional networks to the detection of onsets \cite{Lacoste2007}
+Incorporating longer time-scales, convolutional networks have also been explored for, again, genre recognition \cite{Li2010}, instrument similarity \cite{Humphrey2010}, chord estimation \cite{Humphrey2011, Humphrey2012b}, and onset detection \cite{Schluter2014}.
+Recursive networks have been explored for sequence modelling \cite{Boulanger2013} and pitch analysis \cite{Sigtia2014}.
+\cite{Cherla2014}.
+\cite{Durand2015}
+
+% Recursive models
+and long short-term memory to model symbolic music sequences \cite{Eck2008}.
+
+% Other related stuff
+Conditional networks were explored for rhythm pattern analysis \cite{Battenberg2012}.
 Predictive Sparse Decomposition (PSD) and methods inspired by sparse coding have also seen a spike in activity over the last two years for a variety of tasks \cite{Henaff2011, Nam2012}, but despite being developed for deep learning, neither of these systems are actually hierarchical.
 
 % Needs more from Sander, Aron van der Oord, Srikanth Cherla, Siddarth, Boulanger-Lewandowski
