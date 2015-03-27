@@ -544,26 +544,45 @@ the parameter $p_0, p_1$ is a two-element tuple that defines the neighborhood of
 Other forms of pooling exist, though less common in practice.
 Similar in nature, \emph{L2-pooling} computes the magnitude vector of a neighborhood in Euclidean space \cite{LeCunStudent}.
 This can be interpreted as a softer form of max-pooling, where all inputs contribute to the output, albeit dominated by the maxima.
-Finally, other statistics like the \emph{mean}, \emph{min}, or \emph{standard deviation} have found use in temporal pooling \cite{Hamel2011}.
+Finally, other normalized statistics like the \emph{mean}, \emph{min}, or \emph{standard deviation} have found use in temporal pooling \cite{Hamel2011}.
+It is a particular advantage of these pooling functions that they can be applied globally to variable length inputs as a means of producing equivalently-shaped summary statistics, a common challenge faced in processing music signals, e.g. songs, of different durations.
 
 
-\subsubsection{Constraints}
+\subsubsection{Classifiers}
 
 Given the many degrees of freedom that can be realized with neural networks, it is often necessary to constrain representations to behave in certain ways.
 %Softmax
 Perhaps the most common instance of this is found in classification systems, where the output of a network estimates the likelihood or affinity for some number of classes.
-The \emph{maximum a posteriori}, or MAP, decision rule is a particularly simple, and thus attractive, one in this case, which identifies the maximum likelihood as the winning class.
-Traditionally, the probability mass function $P(\cdot)$ for an input $X_1$ is achieved by applying the softmax operation to the output of the network, $Z_L$, defined as follows:
+The \emph{maximum likelihood}, or ML, decision rule is a simple, and thus attractive, one in this case, which identifies the maximum likelihood as the winning class index:
+
+\begin{equation}
+\label{eq:map}
+\hat{\Theta}_{\mathrm{ML}}(x)
+= \underset{\theta}{\operatorname{arg ~ max}} \ f(x | \Theta)
+\end{equation}
+
+\noindent To leverage this formulation, it is necessary to make the network's output behave like a posterior likelihood estimator, i.e. non-negative and sums to 1.
+This is traditionally achieved in deep networks by flattening the output of an architecture and passing it through the \emph{softmax} function, defined as follows:
 
 \begin{equation}
 \label{eq:softmax}
-\sigma(X) = \frac{\exp(\beta X)}{ \sum_{k=1}^{K}\exp{(\beta X_k)}}
+\sigma(Z) = \frac{\exp(\beta Z)}{ \sum_{k=1}^{K}\exp{(\beta Z_k)}}
 \end{equation}
 
-\noindent Again, note that $X$ is the output of the final layer, $f_L$, and thus $K$ is the dimensionality of the classifier and equal to the number of classes in the problem.
-Therefore, the most likely class for a prediction $Z$, is given by $k = argmax(\sigma(Z))$.
+\noindent Here, $Z$ is the output of the final layer, $f_L$, $K$ is the dimensionality of the classifier, equal to the number of classes in the problem, and $\beta$ is a hyperparameter that controls the dynamic range sensitivity of the function.
+For $\beta \to 0_+$, all classes trend to a uniform probability, while the inverse is true for $\beta \to \inf$.
+Geometrically, the softmax operation can be understood as constraining a point in $K$-dimensional space to the surface of a simplex, i.e. its resultant vector has unit magnitude in $L_1$ space.
 
-% L2 constraints, bounded in volume, bounded to surface.
+% Radial Basis
+The other common approach to classification in neural networks is with a Radial Basis function, i.e. the $L_2$ distance to a collection of class centroids:
+
+\begin{equation}
+f(x) = \sum(x - \mathbf{w})^2
+\end{equation}
+
+Equivalent to template matching or nearest centroid classification, the advantage of incorporating the radial basis function \emph{in} a network is two-fold:
+first, parameters can be optimized to a set of chosen centroid, which may have semantic importance, as in \cite{LeCun1998};
+and second, these class centroids could be learned in the process of numerical optimzation.
 
 
 \subsection{Automatic Learning}
@@ -665,7 +684,14 @@ Dieleman 2014 Kaggle, Galaxy Zoo
 
 %Enough can't be said about normalization
 
-% Unit scaling
+% L2 constraints, bounded in volume, bounded to surface.
+Though often viewed It is also common to constrain the \emph{parameters} weights of a function in $L_2$-space.
+This often takes two forms.
+In some cases, like \cite{HintonDropout}, parameters are simply constrained inside the volume of the given hypersphere; any time parameters are updated to values that result in a magnitude larger than 1, they are rescaled.
+This constraint gives parameters freedom to adapt to the nuances of the data without growing arbitrarily large to offset the contributions of small weights.
+Bounding parameters shares a loose connection to weight decay, but there is no penalty term factored into the objective function.
+Alternatively, there are also successful instances of weights being constrained to the surface of the $L_2$ hypersphere \cite{LeCun}
+
 
 % Standardization
 
