@@ -349,21 +349,21 @@ Finally, modern neural network research has produced a useful array of ``tricks 
 It is a hallmark of deep neural networks that system architectures are constructed from only a handful of unique processing units, repeated and arranged to form complex structures.
 This modular approach to system design allows the researcher to focus on each operation at different levels of abstraction;
 from a few basic building blocks, it is straightforward to create elaborate architectures \cite{inceptionnet}.
-While any mathematical operation can be easily incorporated into a neural network, so long as it is differentiable, there are a handful of common operations that are worth discussing.
-
-\subsubsection{Composite Architectures}
 
 Conventionally, a neural network transforms an input $X_{1}$ into an output $Z_{L}$ via a composite nonlinear function $F(\cdot \vert \Theta)$, given a parameter set $\Theta$.
-This is traditionally, but not necessarily, achieved as a cascade of $L$ self-contained operations, $f_l(\cdot \vert \theta_l)$, referred to as layers, nodes, or subfunctions, the order of which is indexed by $l$:
+This is traditionally, but not necessarily, achieved as a cascade of $L$ self-contained operations, $f_l(\cdot \vert \theta_l)$, referred to as \emph{layers}, \emph{nodes}, or \emph{subfunctions}, the order of which is given by $l$:
 
 \begin{equation}
 \label{eq:layers}
 F(X_{1} \vert \Theta) = f_{L}(  ... f_2(f_1(X_{1} \vert \theta_1) \vert \theta_2) ) ... \vert \theta_{L})
 \end{equation}
 
-\noindent In this formulation, $F = [f_1, f_2, ... f_{L} ]$ is the set of layers, $\Theta = [\theta_1, \theta_2, ... \theta_{L} ]$ is the corresponding set of parameters, the output of one layer is passed as the input to the next, as $X_{l+1} = Z_{l}$, and the overall \emph{depth} of the network is given by $L$.
+\noindent In this formulation, $F = [f_1, f_2, ... f_{L} ]$ is the set of layers, $\Theta = [\theta_1, \theta_2, ... \theta_{L} ]$ is the corresponding set of parameters, the output of one layer is passed as the input to the next, as $X_{l+1} = Z_{l}$
+Generally speaking, the overall \emph{depth} of a network is by $L$;
+more accurately, however, processing depth as a means to representational power is determined by the number of nonlinear operations in a network.
+The \emph{width} of a network, on the other hand, is determined by the dimensionality of the intermediary representations as information flows through the graph.
 
-It is worth noting that this sequential cascade of operations is merely common practice and not a hard and fast rule.
+It is worth noting that this sequential cascade of operations is only common practice and not a hard and fast rule.
 Some networks make use of interesting types of connectivity between layers, referred to as ``skip-connections'' \cite{LeCun};
 others adopt an explicit graphical interpretation, encouraging the description of the network in terms of nodes and edges.
 Therefore the design of a network architecture must address several interrelated questions:
@@ -372,10 +372,11 @@ what domain knowledge can be leveraged to inform this design?
 and how do these relate to the data being processed, or the problem being addressed?
 The considerable flexibility afforded by this modular design approach is both one of the greatest advantages, and criticisms, of deep neural networks.
 
+While nearly any mathematical operation can be easily incorporated into a neural network, so long as it is differentiable, there are a handful of common operations and conventions worth discussing.
 
-\subsubsection{Affine Projection}
+\subsubsection{Affine Transform}
 
-The fundamental building block of the classic neural network is the affine transformation:
+The fundamental building block of the classic neural network is the \emph{affine transform}:
 
 \begin{equation}
 \label{eq:fclayer}
@@ -383,9 +384,11 @@ Z_l = f_l(X_l \vert \theta_l) = h( W \bullet X_{l} + b), \theta_l = [W, b]
 \end{equation}
 
 \noindent Here, the input to the $l^{th}$ layer, $X_l$, is flatten to a column vector of length $N$, projected against a weight matrix, $W$, of shape $(M, N)$, added to a vector bias term, $b$, of length $M$, and passed through some transfer function, $h()$.
-As addressed shortly, the transfer function is generally some pointwise nonlinearity, although the linear matrix product can be seen as a special case of Eq. \ref{eq:fclayer}.
-Alternatively, this operation is also known as a fully-connected or matrix-product layer.
+As addressed shortly, the transfer function is generally some pointwise nonlinearity;
+the linear matrix, or \emph{dot}, product is then a special case of Eq. \ref{eq:fclayer}.
+Alternatively, this operation is also known as a \emph{fully-connected} or \emph{multiperceptron} layer, to distinguish its topology from other
 This common subfunction descends directly from the perceptron, and is the core operation of the multi-layer perceptron.
+In principle, the
 Additionally, the affine transformation is a crucial processing block, because, as it will soon be discussed, many other subfunctions can be interpreted as a special instance of a matrix-product.
 
 
@@ -393,7 +396,7 @@ Additionally, the affine transformation is a crucial processing block, because, 
 
 % Local Receptive Fields
 % Fully connected matrices that are only connected to local neighborhoods.
-Though somewhat out of order chronologically, the nearest neighbor to an affine transformation in the realm of deep learning is the ``local affine transformation'' \cite{someone}, operating only on local neighborhoods.
+Though a recent development, the nearest neighbor to an affine transformation in the realm of deep learning is the \emph{local} affine transformation \cite{someone}, operating only on neighborhood partitions of an input.
 Based on observations of visual systems, local receptive fields exploit correlations found in spatial pixel neighborhoods to reduce the complexity of features to be learned, generally resulting in better performance \cite{who}.
 Notably, local affine transformations can be realized as a full matrix product where most weights are zero, expressed as the following:
 
@@ -418,11 +421,11 @@ w_{K, 0} & w_{K, 1} & \dots  & w_{K, M} & 0 & \dots & 0 & 0 \\
 $$
 \endgroup
 
-\noindent Here, $M$ adjacent features are projected against $K$ different combinations of weights, and this local connectivity is translated across all possible locations of a given input.
+\noindent Here, $M$ adjacent features are projected against $K$ different combinations of weights, and this locally dense connectivity is translated across all possible locations of a given input.
 This formulation is particularly interesting, as it illustrates the inherent difficulty posed by the universal approximation theorem.
-Technically, a local receptive field can be implemented as a matrix-product;
-learning this behavior, however, is quite difficult.
-First off, this particular sparse connectivity would need to be learned redundantly.
+Technically, a local receptive field can be implemented as a significantly larger fully-connected matrix product;
+learning this behavior directly, however, can be quite difficult.
+First off, this particular sparse connectivity would need to be learned redundantly in all locations of an input.
 Additionally, such true sparsity is challenging to learn, and it is unlikely such behavior would be so well localized.
 Finally, the prospect of learning this particular topology from a fully-connected matrix demands a prohibitive number of parameters, throttling both computation and the learning process.
 
@@ -433,7 +436,7 @@ Some research has argued that different types of connectivity could be determine
 
 \subsubsection{Convolutions}
 
-Extending the topology of local receptive fields, convolutions further simplify this process by sharing the \emph{exact} same parameters across location in an input representation.
+Extending the topology of local receptive fields, convolutions further simplify the learning process by \emph{sharing} parameters across all locations in an input representation.
 Also known as weight tying, a convolution is generically expressed by the following:
 
 \begin{equation}
@@ -548,21 +551,16 @@ Finally, other normalized statistics like the \emph{mean}, \emph{min}, or \emph{
 It is a particular advantage of these pooling functions that they can be applied globally to variable length inputs as a means of producing equivalently-shaped summary statistics, a common challenge faced in processing music signals, e.g. songs, of different durations.
 
 
-\subsubsection{Classifiers}
+\subsubsection{Classification Functions}
 
-Given the many degrees of freedom that can be realized with neural networks, it is often necessary to constrain representations to behave in certain ways.
+While the system components named previously are sufficient for modeling continuous variables, classification systems require a decision function to select a discrete class as the ``winner''.
+Perhaps the simplest decision rules are the \emph{argmax} or, its complement, the \emph{argmin}, which return the index of the largest or smallest value, respectively, in a representation.
+Thus, these are often used in two semantically opposite conditions:
+the former is used in systems that estimate similarity or likelihood, where larger values are better;
+and inversely, the latter is used in systems that estimate dissimilarity or distance, where smaller values are better.
+
 %Softmax
-Perhaps the most common instance of this is found in classification systems, where the output of a network estimates the likelihood or affinity for some number of classes.
-The \emph{maximum likelihood}, or ML, decision rule is a simple, and thus attractive, one in this case, which identifies the maximum likelihood as the winning class index:
-
-\begin{equation}
-\label{eq:map}
-\hat{\Theta}_{\mathrm{ML}}(x)
-= \underset{\theta}{\operatorname{arg ~ max}} \ f(x | \Theta)
-\end{equation}
-
-\noindent To leverage this formulation, it is necessary to make the network's output behave like a posterior likelihood estimator, i.e. non-negative and sums to 1.
-This is traditionally achieved in deep networks by flattening the output of an architecture and passing it through the \emph{softmax} function, defined as follows:
+One common approach to obtaining a likelihood estimate from a neural network is by flattening the output of the final, often linear, layer through the \emph{softmax} function, defined as follows:
 
 \begin{equation}
 \label{eq:softmax}
@@ -574,15 +572,17 @@ For $\beta \to 0_+$, all classes trend to a uniform probability, while the inver
 Geometrically, the softmax operation can be understood as constraining a point in $K$-dimensional space to the surface of a simplex, i.e. its resultant vector has unit magnitude in $L_1$ space.
 
 % Radial Basis
-The other common approach to classification in neural networks is with a Radial Basis function, i.e. the $L_2$ distance to a collection of class centroids:
+The other common approach to classification in neural networks is to find the nearest neighbor, centroid, or template to a given output, given some distance function.
+In this case, not only is the network itself a variable component, but also the reference representations used for comparison.
+Thus, it may be advantageous to incorporate these ``target'' representations into the network itself and minimize the energy over a discrete representation via the Radial Basis function:
 
 \begin{equation}
 f(x) = \sum(x - \mathbf{w})^2
 \end{equation}
 
-Equivalent to template matching or nearest centroid classification, the advantage of incorporating the radial basis function \emph{in} a network is two-fold:
-first, parameters can be optimized to a set of chosen centroid, which may have semantic importance, as in \cite{LeCun1998};
-and second, these class centroids could be learned in the process of numerical optimzation.
+\noindent Functionally equivalent to template matching or nearest centroid classification in Euclidean space, the advantage of incorporating the radial basis function \emph{in} a network is two-fold:
+first, parameters can be optimized to a set of chosen targets, which may have semantic importance, as in \cite{LeCun1998};
+and second, these class targets can be learned from the data.
 
 
 \subsection{Automatic Learning}
