@@ -181,51 +181,24 @@ In the face of widespread pessimism toward neural computing, some researchers wo
 Over the course of thirty some years, these diligent efforts would result in crucial breakthroughs that, in combination with the steady churn of technological progress, would fundamentally change the landscape of neural network research.
 While no one facet can truly be credited with reviving the field, each would play an integral role in helping the research community again warm up to neural networks.
 
-\subsubsection{Stochastic Gradient Descent}
+\subsubsection{Efficient Error Backpropagation}
 \label{subsec:sgd}
 
 % Back-propagation of errors
 Via the perceptron algorithm, a machine effectively ``learns'' to classify data by finding parameters that optimize a given objective function.
 This learning strategy must be modified in the multilayer case, as it is not possible to directly update the parameters through the heaviside, or unit step, function.
 Early researchers noted that if the discontinuous activation function is replaced with a logistic, or sigmoid, the composite multilayer network is \emph{differentiable}.
-Computing a model's fitness as a scalar \emph{loss}, this value can be differentiated with respect to every parameter in the function, thus \emph{back-propagating} error through the network \cite{Hinton1986}:
-
-\begin{equation}
-\label{eq:xor}
-\frac{\partial~\mathcal{L}}{\partial~\Theta}  = ?
-\end{equation}
-
+Thus, as will be discussed in more detail in Section \ref{subsubsec:numopt}, it is possible to use this gradient information to optimize the parameters of a network given an objective fitness measure, effectively \emph{back-propagating} error through the network \cite{Hinton1986}.
 
 % Issues of gradient descent
 % This is a critical Once you can differentiate the network, gradient methods can be used to optimize the parameters.
-Error back-propagation demonstrated that, so long as a network was everywhere differentiable, it was theoretically possible to optimize the objective function over a dataset by slowly adjusting parameters towards better solutions.
-Framed as a minimization problem, a model's error can be incrementally decreased by taking small steps toward better parameters.
-This optimization method, referred to as \emph{gradient descent}, was not without its deficiencies, however.
-First and foremost, the loss of a given configuration was typically computed over the entire dataset, which may prove computationally expensive for sufficiently large collections.
-Additionally, gradient descent is a greedy search algorithm, and was reportedly prone to finding poor local minima, as illustrated in Figure \ref{fig:local_min}.
-
-\begin{figure}
-\begin{centering}
-\includegraphics[width=0.4\textwidth]{pink_muffin}
-\caption{Gradient descent, yo.}
-\label{fig:local_min}
-\end{centering}
-\end{figure}
-
+This approach was not without its deficiencies, however.
+First and foremost, the error term was typically computed over the entire dataset, which often proved computationally expensive for sufficiently large collections.
+Additionally, early efforts found this particular approach often resulted in poor answers, and struggled to update parameters of networks with many layers.
 %Stochastic Gradient Descent
-In 1987, however, LeCun demonstrated that a \emph{stochastic} variant of gradient descent could potentially be used to circumvent these issues \cite{LeCun1987}.
-Whereas conventional gradient descent had been formulated as an optimization over an entirely collection of datapoints, this new version randomly sampled training samples from a collection and computed an update step based on single datapoint.
-Though the gradient is much noiser, this strategy is still effective,significantly faster, and may even be less susceptible to poor local minima as a result.
-Importantly, this notion can be generalized as \emph{mini-batch} gradient descent, where the number of datapoints used to compute parameter updates is a hyperparameters, varying from 1 to the total number of datapoints available for training.
-Covarying inversely with the learning rate, illustrated in Figure \ref{fig:sgd}, larger batch sizes serve to smooth parameter updates as a function of iteration.
-
-\begin{figure}
-\begin{centering}
-\includegraphics[width=0.4\textwidth]{pink_muffin}
-\caption{\emph{Stochastic} gradient descent, yo.}
-\label{fig:local_min}
-\end{centering}
-\end{figure}
+In 1987, however, LeCun demonstrated that a \emph{stochastic} variant of this algorithm that was far more efficient, and even circumvented some of these issues \cite{LeCun1987}.
+Whereas conventional optimization occurs over an entire collection of datapoints, this efficient version randomly subsamples the training set and computes the error term over fewer datapoints.
+Though the error estimate is much noiser, the strategy is still effective,significantly faster, and may even be less susceptible to bad parameters as a result.
 
 \subsubsection{Convolutional Neural Networks}
 \label{subsec:convnets}
@@ -350,15 +323,15 @@ It is a hallmark of deep neural networks that system architectures are construct
 This modular approach to system design allows the researcher to focus on each operation at different levels of abstraction;
 from a few basic building blocks, it is straightforward to create elaborate architectures \cite{inceptionnet}.
 
-Conventionally, a neural network transforms an input $X_{1}$ into an output $Z_{L}$ via a composite nonlinear function $F(\cdot \vert \Theta)$, given a parameter set $\Theta$.
+Conventionally, a neural network transforms an input $X$ into an output $Z$ via a composite nonlinear function $\mathcal{f}(\cdot \vert \Theta)$, given a parameter set $\Theta$.
 This is traditionally, but not necessarily, achieved as a cascade of $L$ self-contained operations, $f_l(\cdot \vert \theta_l)$, referred to as \emph{layers}, \emph{nodes}, or \emph{subfunctions}, the order of which is given by $l$:
 
 \begin{equation}
 \label{eq:layers}
-F(X_{1} \vert \Theta) = f_{L}(  ... f_2(f_1(X_{1} \vert \theta_1) \vert \theta_2) ) ... \vert \theta_{L})
+Z = \mathcal{f}(X \vert \Theta) = f_{L}(  ... f_2(f_1(X \vert \theta_1) \vert \theta_2) ) ... \vert \theta_{L})
 \end{equation}
 
-\noindent In this formulation, $F = [f_1, f_2, ... f_{L} ]$ is the set of layers, $\Theta = [\theta_1, \theta_2, ... \theta_{L} ]$ is the corresponding set of parameters, the output of one layer is passed as the input to the next, as $X_{l+1} = Z_{l}$
+\noindent In this formulation, $\mathcal{f} = \{f_1, f_2, ... f_{L} \}$ is the set of layers, $\Theta = \{\theta_1, \theta_2, ... \theta_{L} \}$ is the corresponding set of parameters, the output of one layer is passed as the input to the next, as $X_{l+1} = Z_{l}$
 Generally speaking, the overall \emph{depth} of a network is by $L$;
 more accurately, however, processing depth as a means to representational power is determined by the number of nonlinear operations in a network.
 The \emph{width} of a network, on the other hand, is determined by the dimensionality of the intermediary representations as information flows through the graph.
@@ -560,7 +533,7 @@ the former is used in systems that estimate similarity or likelihood, where larg
 and inversely, the latter is used in systems that estimate dissimilarity or distance, where smaller values are better.
 
 %Softmax
-One common approach to obtaining a likelihood estimate from a neural network is by flattening the output of the final, often linear, layer through the \emph{softmax} function, defined as follows:
+One common approach to obtaining a likelihood estimate from a neural network is to flatten the output of the final, often linear, layer and pass it through the \emph{softmax} function, defined as follows:
 
 \begin{equation}
 \label{eq:softmax}
@@ -572,77 +545,152 @@ For $\beta \to 0_+$, all classes trend to a uniform probability, while the inver
 Geometrically, the softmax operation can be understood as constraining a point in $K$-dimensional space to the surface of a simplex, i.e. its resultant vector has unit magnitude in $L_1$ space.
 
 % Radial Basis
-The other common approach to classification in neural networks is to find the nearest neighbor, centroid, or template to a given output, given some distance function.
-In this case, not only is the network itself a variable component, but also the reference representations used for comparison.
-Thus, it may be advantageous to incorporate these ``target'' representations into the network itself and minimize the energy over a discrete representation via the Radial Basis function:
+The other common approach to classification in neural networks is to identify the nearest target, template, or centroid to the output, given some notion of distance.
+In this case, not only is the network itself a variable, but also the representations used for computing distance.
+Thus, it may be advantageous to incorporate these target representations into the network itself and take the winning class to be the one with the lowest energy, via the \emph{radial basis} function:
 
 \begin{equation}
-f(x) = \sum(x - \mathbf{w})^2
+f(x | \theta) = \sum(x - \mathbf{w})^2, \theta = [w]
 \end{equation}
 
 \noindent Functionally equivalent to template matching or nearest centroid classification in Euclidean space, the advantage of incorporating the radial basis function \emph{in} a network is two-fold:
 first, parameters can be optimized to a set of chosen targets, which may have semantic importance, as in \cite{LeCun1998};
 and second, these class targets can be learned from the data.
+Care must be exercised when attempting to learn these bases though, as a trivial solution exists at the point where all distances are zero.
+Without additional constraints on the learning problem, a network may learn to drive the input to the radial basis function to zero, thus making all distances arbitrarily small.
 
 
 \subsection{Automatic Learning}
 \label{subsec:learning}
 
-Having defined a deep network, it is necessary to determine an approach to finding parameters that enable this general function to perform some specific behavior.
-The deep learning is two-fold: define an objective function, and optimze to it over a collection of training data.
+Recall that the overarching goal here is to model the relationship between a collection of input data and desired outputs.
+The building blocks described previously are used to construct powerful, complex functions, but this is only half the design problem;
+it is then necessary to find the parameters that enable this general function to perform some specific behavior.
+Analogously to objected oriented programming, a network's equation family defines its \emph{class}, whereas the parameters define its \emph{instance}.
+
+Importantly, assuming the desired outputs are known, it is possible to measure how well a given function approximates this relationship.
+Now consider that there exists a hypothetical space of all possible solutions and, in it, at least \emph{one} function that optimally satisfies this measure.
+In this interpretation, the process of finding such a function can be thought of as a \emph{search}, and thus the ideas of ``learning'' and ``searching'' can be used interchangeably.
+Unfortunately, the space of all possible solutions is effectively infinite and cannot be explored exhaustively, automatically or otherwise.
+However, conceptualizing functions in terms of classes and instances provides an elegant way of making this search significantly more manageable:
+a function's class, which can be purposefully designed, greatly reduces the space of all possible instances to a much smaller subspace that \emph{can} be explored.
+
+With this in mind, the distinction between function classes and instances is an practical one to make.
+By heavily restricting the space of possible solutions, automatically searching this subspace becomes feasible.
+Furthermore, differentiable fitness measures allow for the application of gradient-based optimization methods to find good parameters, freeing the researcher to focus less on the specific parameters of a system and more on the abstract design of the underlying model.
+Learning is advantageous because it simplifies the search for good parameters, accelerates research, yields flexible systems that can adapt to new data, and facilitates the discovery of new solutions not previously considered.
+While it might seem like this violates the ``No Free Lunch'' theorem, ``training'' a network shifts the focus on system design from a micro to macro level, comprised of two components: defining a suitable objective function, and numerically optimizing the parameters over a collection of training data.
 
 
-\subsubsection{Objective Functions}
+\subsubsection{Loss Functions}
 
-Energy based learning
-Low-energy corresponds to likely states.
-Define a loss functional (function that takes a function)
-Enables inference
+%Energy based learning
+It is worth noting that there are various, roughly equivalent interpretations of neural network training and optimization.
+While largely inspired by \cite{LeCun2006}, the perspective presented here takes a far more constrained approach to \emph{inference}, whereby prediction is achieved by the forward propagation of an input through a model.
+% To simplify the discussion, the architecture of a neural network only specifies those operations necessary to achieve some behavior.
+All additional operations necessary to measure the quality of a model can be considered supplementary \emph{meta-function} that sits on top of the desired model during training only.
+As illustrated in Figure \ref{fig:training_harness}, this ``scaffolding'' is discarded once training completes, leaving the model of interest.
 
-Here, a few loss functions of note are discussed; for a comprehensive review, the curious reader is directed to \cite{LeCun2006}.
-% Perceptron Loss, error function
-Basic error function is the perceptron loss:
+ % and the curious reader is directed thusly for a more thorough treatment than the one warranted here.
+In the most general sense, this evaluative component is known as a \emph{loss} function, $L$, quantifying the degree of fitness between a model, $\mathcal{f}$, its parameters, $\Theta$, and a collection of $N$labeled data, $\mathcal{D} = \{ \dots, (X_i, Y_i), \dots \}$, where $X_i$ is the $i^{th}$ observation and $Y_i$ its corresponding desired output:
 
 \begin{equation}
-\label{eq:nll}
-\mathcal{L}_perceptron(Y_k | X, \Theta) = || Y_k - f(X | \Theta) ||_2
+\label{eq:genloss}
+\mathcal{L}(D | \Theta) =  \frac{1}{M}\sum_{m=0}^{1\leq~M\leq~N}L(Y_m | X_m, \mathcal{f}, \Theta))
 \end{equation}
 
-\noindent Some comment about this thing.
+\noindent Here, the scalar loss, $\mathcal{L}$, is computed by averaging the per-sample loss over some number of observations, $M$, referred to as the batch size.
+Thus, having designed or constrained the network, $\mathcal{f}$, the optimal parameters, $\hat{\Theta}$, are those that minimize the loss over the data:
+
+\begin{equation}
+\label{eq:genloss}
+\hat{\Theta} = \min\limits_{\Theta \in \mathcal{\Theta}}\mathcal{L}(D | \Theta)
+\end{equation}
+
+Given this common formulation, the choice of loss function for a particular problem becomes another modular design decision.
+While there is really no limit on how mathematical operations can be composed to form a loss function, there are a few standard measures of note.
+% Perceptron Loss, error function
+Perhaps the most common loss function is the \emph{mean squared error}, which measures the squared Euclidean distance between the desired output and the estimated output produced by the network:
+
+\begin{equation}
+\label{eq:mse}
+L_{mse}(Y | X, \mathcal{f}, \Theta)) = || Y - \mathcal{f}(X | \Theta) ||_2
+\end{equation}
+
+\noindent A versatile function, the squared error loss is a common choice for regression problems where domain knowledge does not immediately offer a better intution for computing distance between representations.
+Notably, the squared error loss is functionally equivalent to a radial basis function with a finite number of target values.
+The choice to include this operation internal to a model, rather than incorporating it into the loss function, is ultimately determined by whether the model is being used for regression or classification.
+
+% Margins - hard 'n soft
+The \emph{margin} is another common component in loss function design, finding an intersection with support vector machines \cite{}.
+Mathematically similar to the rectified linear unit described previously, the margin's role in loss function design is to incur no penalty when its input drops below a given value $m$:
+
+\begin{equation}
+\label{eq:mse}
+L_{margin}(x | m) = max(0, x - m)
+\end{equation}
+
+\noindent The margin itself has no notion of correctness, though, and is often used in conjunction with operations that measure relative quality, i.e. distance.
+For example, a margin could be used to penalize a model when the distance between inputs of the same class is outside a given radius;
+conversely, the opposite behavior is achieved by negating the argument.
 
 % Negative Log-likelihood
-Having written the full network as a probability mass function, the network can be trained by iteratively minimizing the negative log-likelihood of the correct class for a set of $K$ observations:
+The final loss function of interest here is the \emph{negative log-likelihood} loss, a common criterion for classification problems.
+For networks that produce probability mass functions over a set of $K$ classes, e.g. via the softmax operation, the parameters can be optimized by minimizing the correct classe's negative log-likelihood:
 
 \begin{equation}
 \label{eq:nll}
-\mathcal{L}=-\sum_{k=0}^K log(P(X^k = Y^k \vert \Theta))
+\mathcal{L}_{nll}=-log(P(X^k = Y^k \vert \Theta))
 \end{equation}
 
-\noindent Expressed in this manner, $X^k$ and $Y^k$ are the input data and corresponding class label, respectively of the $k^{th}$ observation.
+\noindent Expressed in this manner, $X^k$ and $Y^k$ are the input data and predicted output corresponding to a class label, $k$.
+Optimizing this measure maximizes the class conditional probabilities over a collection of data.
+Importantly, due to the unit magnitude constraint offered by the softmax operation, pushing down on the correct answer has the effect of pulling \emph{up} on the values of all other classes.
 
 
 \subsubsection{Numerical Optimization}
-
+\label{subsubsec:numopt}
 % Automatic methods
-Learning should be automatic
-Random, brute force, genetic algorithms fit the bill.
-No reasonable expectation of finding a good answer.
+Once the quality of a model's configuration can be expressed as a single scalar quantity, it becomes immediately possible to automate the search of this space.
+Given infinite time and computational power, this could at least theoretically be achieved by the application of an exhaustive, brute force search.
+Practically speaking, however, such naive strategies are unlikely to uncover any solutions of value due to the immensity of the search space.
+%No reasonable expectation of finding a good answer.
+
+\begin{figure}
+\begin{centering}
+\includegraphics[width=0.6\textwidth]{descent}
+\caption{Greedy gradient descent analogy.}
+\label{fig:local_min}
+\end{centering}
+\end{figure}
 
 % Gradient methods, a fighting chance
-Gradient methods, while greedy, at least attempt to go toward better answers.
-The basic idea being that a function attempts to reduce how ``wrong'' it is by taking small steps toward better answers; by analogy, this is a bit like climbing down a mountain blind-folded.
-Specifically, the update rule for $\Theta$ is defined as its difference with the gradient of the scalar loss $\mathcal{L}$ with respect to the parameters $\Theta$, weighted by the learning rate $\eta$, given by the following:
+Gradient methods, on the other hand, exploit ``local'' improvements as a means of proceeding toward better answers.
+A simple analogy helps illustrate both the intuition, and some deficiencies of the approach.
+Consider the task of climbing down a hill blindfolded, illustrated in Figure \ref{fig:descent}.
+At any given time, one might poke about in every direction in an effort to find the steepest decline, and then, take a single step in the most immediately promising direction.
+Eventually, save for some technical exceptions, this strategy will lead to a condition in which a locally optimal condition has been reached, i.e. any step increases elevation.
+But is this the bottom of the mountain, or has our climber gotten stuck in a valley?
+Thus it is an inherent difficulty of such an algorithm that it will lead to \emph{an} answer, but not necessarily the globally optimal one.
+Additionally, given its greedy nature, the best step \emph{now} might not be the best step overall;
+this is apparent in the diagram, where the best inital step is in the opposite direction, to the left, of the global optima, to the right.
+This further illustrates the importance of initialization, and the effect that an unfortunate starting point can have on the optimzation process.
+
+Expressed more formally, the gradient descent update rule over a set of parameters, $\Theta$, is defined as its difference with the gradient of the scalar loss $\mathcal{L}$ over a set of datapoints, $\hat{D} \in D$, with respect to these parameters, weighted by a learning rate $\eta$:
 
 \begin{equation}
 \label{eq:updaterule}
-\Theta \leftarrow \Theta - \eta * \frac{ \delta \mathcal{L}}{\delta \Theta}
+\Theta_{n+1} \leftarrow \Theta_n - \eta * \frac{ \delta \mathcal{L(\hat{D} | \Theta_n)}}{\delta \Theta_n}
 \end{equation}
 
-As shown in Figure \ref{fig:loss_surface}, this algorithm can be susceptible to bad local optima in highly non-convex surfaces.
-There are additionally degenerate cases such that a first-order method like this may be very slow, and thus higher order methods BGFS, L-BGFS, have been devised to deal with such issues.
-Higher order methods often entail a higher computational cost.
-In practice however, gradient descent is often sufficent with some slight modifcations, such as the occasional computation of the Hessian \cite{} or Nesterov momentum.
+\noindent It is apparent from this formulation that a model's ability to learn is a direct result of the estimate of the scalar loss, which depends not only on the model, its parameters, and the choice of loss function, but \emph{also} the data over which it is measured.
+While early applications of gradient descent for training neural networks would compute parameter updates using the entire collection of datapoints availble for training, deep learning typically leverages batch methods to approximate the overall loss.
 
+Though the work presented here will focus exclusively on classic gradient descent as the numerical optimization method of choice, it is worth noting that there are alternative methods and extensions one could employ.
+In addition to known issues regarding poor local minima, there are also degenerate cases in which a first-order method like this may be very slow to converge \cite{}.
+In practice however, gradient descent is often sufficent with some slight modifcations, such as the use of Nesterov momentum \cite{}.
+Alternatively, \emph{Quasi-Newton} methods, like BFGS, compute approximations to higher order partial derivatives, which converge with fewer iterations and are less susceptible to problematic behavior.
+These higher order methods often entail a higher computational cost, however, and it is not uncommon to employ them in tandem with simpler gradient descent \cite{Koray}.
 
 
 \subsection{Tricks of the Trade}
