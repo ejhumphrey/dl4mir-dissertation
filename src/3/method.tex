@@ -696,28 +696,87 @@ These higher order methods often entail a higher computational cost, however, an
 \subsection{Tricks of the Trade}
 \label{subsec:tricks}
 
+Armed with versatile complex functions and a means to automatically learn parameters, deep learning seems perfectly posed to tackle a vast array of information processing problems.
+For some time however, however, only a handful of researchers were able to get positive results, thus earning it its reputation as a ``dark art.''
+As with many things, the devil is truly in the details, and over time the various tricks and less principled practices necessary for success have been consolidated into a set of common strategies \cite{Bengio2012Practical}.
+
 %   -- Tricks
-\subsubsection{Regularization \& Sparsity}
-Reduce over-fitting via weight decay.
-L2 penalties make values small without going to zero
+\subsubsection{Penalizing Bad Behavior}
 
-Sparse representation are good.
-L0 and L1 loss are closely related, will drive values all the way to zero.
+The goal of architecting a deep network is adjust the representational power of the model to a given problem, incorporating known constraints where possible.
+More often than not, however, a the inherent complexity of a particular model vastly exceeds the latent complexity of the data at hand.
+As a result, the learning process will result in parameter configurations that perform well on the training data, but fail to generalize to unseen data.
+Conceptually, this can be understood as the model having too many options when achieving its goal state, and happening to pick one that is bad for reasons that do not factor into its objective function.
+It can be said that the learning problem is under-determined, and thus additional penalties can be added to the overall loss.
+Interestingly enough, this penalty-based approach is common practice in other greedy optimization systems, like capitalistic markets, where taxes and fines serve to discourage certain outcomes, e.g. dumping industrial by-products in a river.
 
-\subsubsection{Data-Driven Initialization}
+While it is conceivable that any number of undesirable system behaviors could be quantified by some scalar measure, there are two general approaches common across deep learning.
+% Weight Decay
+The first, referred to as weight decay, ridge regression, or $L_2$-regularization, is classic across machine learning, and finds use in a variety of learning algorithms:
 
-Core idea behind the first significant breakthrough of the modern era.
-Get parameters of the network closer to a good solution.
-Resolves poorly conditioned networks.
-Alleviates the vanishing gradient problem.
+\begin{equation}
+\mathcal{L}_{decay}=\sum_i\lambda~||\Theta_i||_2
+\end{equation}
+
+Here, the vector magnitude of the $i^{th}$ parameter, $\Theta_i$, is weighted by a hyperparameter, $\lambda_i$, and summed together as a scalar penalty.
+Conventionally, the same weight is applied to all parameters, although differently shaped parameters will bias the cumulative term.
+During optimization, this has the effect of driving parameters toward, but not exactly, zero, providing an intuitive interpretation consistent with Occam's razor, i.e. prefer simpler solutions.
+This often prevents the network from overfitting the training data exactly, and resulting in solutions that generalize better.
+
+Whereas weight decay is applied to the parameters of network, \emph{sparsity} penalties are applied over intermediary representations in a network, taking the form of a cumulative weighted vector magnitude in $L_1$ space:
+
+\begin{equation}
+\mathcal{L}_{sparsity}=\sum_i\lambda~||Z_i||_1
+\end{equation}
+
+Importantly, minimizing the $L_1$-loss is equivalent to minimizing the $L_0$-loss, the function that counts non-zero coefficients.
+As a result, this penalty will prefer sparse representations, which are generally understood as a ``good'' thing in representation learning, helping to \emph{disentangle} features in the data \cite{Goodfellow}.
+
+
+\subsubsection{Parameter Initialization}
+
+As shown previously in the discussion of gradient descent, poor initial conditions can delay, or in some cases even prevent, an optimization algorithm from finding good solutions.
+Attempts to train deep networks with error back-propagation can compound this issue, as an error signal can become insignificantly small after several layers under certain conditions.
+While this is somewhat sensitive to the architectural decisions made, such as the choice of non-linearities used, all networks are sensitive to parameter initialization.
+
+In general, sampling coefficients from appropriately tuned random distributions leads to reasonably good results.
+There is little consensus on the advantages of a uniform versus normal distribution for initialization, but the primary factor to control in either case is the dynamic range or scale.
+As a rule of thumb, this can be automated somewhat by using the \emph{fan-in}, or dimensionality of the input, to keep the activations of within the operating region of saturating transfer functions, i.e. sigmoid or hyperbolic tanget.
+Rectified linear units, on the other hand, are far less sensitive to the choice of initialization, as half of its operating region is non-saturating, contributing to their rise in popularity.
+As a result, sufficiently small, centered normal distributions, $\mathcal{N}(\mu=0, \sigma~\approx~0.01)$, work well in practice.
+
+Alternatively, unsupervised \emph{pre-training} methods, credited with effectively jump-starting the rennaisance of deep learning, can be used to initialize networks in a data-driven manner \cite{Hinton2006}.
+RBM's are the probabilistic interpretation
+Gibbs sampling and contrastive divergence, produce increasingly realistic samples from the model.
+Autoencoders are the deterministic and come in two variants, denoising and contractive.
+The former uses deformations, to be discussed shortly.
+The latter uses weight tying across the encoder and decoder stages.
+In either case, this is performed in a greedy, layer-wise manner.
+Then once all layers have been wrung out, convention supervised training can proceed.
+This works in theory by getting parameters of the network closer to a good solution.
 Less important now, given relu's; still useful for problems which lack sufficient labeled data.
 
 
 \subsubsection{Dropout}
-Prevents co-adaptation of parameters \cite{Hinton2012}.
-Related to model averaging.
-Trains a subset of all networks at every iteration.
-Reduces the theoretical bound on generalization error.
+
+Another recent addition to canon of deep learning practicum is the training strategy known as \emph{dropout} \cite{Hinton2012}.
+As the name suggests, some percentage of parameters in a network are randomly ``dropped'' during training in estimating the loss and computing an update step.
+The details of how exactly this is done varies slightly from subfunction to subfunction, but a description in terms of an affine transformation is sufficiently illustrative:
+
+\begin{align*}
+Z = f(Z | p) = Z * B(1, p)^M
+\end{align*}
+
+\noindent Here the
+, drawn from a binomial distribution with probability $p$
+To offset the effect of smaller activation magnitudes resulting from fewer weights being used during training, these outputs are each divided by the probability that a .
+
+While this can be easily implemented by multiplying a network's parameters by a boolean mask, this is functionally equivalent to subsampling a larger space of parameters.
+As a result, this process is closely related to the idea of model averaging, or \emph{bagging}, whereby one of many complementary models is updated at each training iteration.
+This process also reduces the theoretical bound on generalization error, and has been proven to greatly improve results for models prone to overfitting.
+
+The intuition for dropout is
+Prevents co-adaptation of parameters .
 
 
 \subsubsection{Data Augmentation}
@@ -748,90 +807,32 @@ Alternatively, there are also successful instances of weights being constrained 
 
 \section{Related Efforts in Automatic Music Description}
 
-% NMF all the rage
-Source separation
-
 While far from widespread, an increasing number of researchers are investing more time and effort into the application of deep learning to challenges in content-based music informatics.
+% MLPs, DBNs
+Many early applications operate on single frame observations of a music signal.
 Deep Belief Networks quickly gained popularity for genre recognition \cite{Hamel2009}, mood estimation \cite{Schmidt2011}, note transcription \cite{Nam2011}, and artist recognition \cite{Dieleman2011}.
 
 % Convolutional networks
-Many early applications operate on single frame observations of a music signal.
+
 Among the first uses of deep learning were the application of convolutional networks to the detection of onsets \cite{Lacoste2007}
-Incorporating longer time-scales, convolutional networks have also been explored for, again, genre recognition \cite{Li2010}, instrument similarity \cite{Humphrey2010}, chord estimation \cite{Humphrey2011, Humphrey2012b}, and onset detection \cite{Schluter2014}.
-Recursive networks have been explored for sequence modelling \cite{Boulanger2013} and pitch analysis \cite{Sigtia2014}.
-\cite{Cherla2014}.
+More recently, convolutional networks have also been explored for genre recognition \cite{Li2010}, instrument similarity \cite{Humphrey2010}, chord estimation \cite{Humphrey2011, Humphrey2012b}, and onset detection \cite{Schluter2014}.
 \cite{Durand2015}
+\cite{Dieleman2014}
 
 % Recursive models
+Some have gotten recursive networks to work
 and long short-term memory to model symbolic music sequences \cite{Eck2008}.
+\cite{BoulangerLewandowski2013}
+\cite{Cherla2014}
+Recursive networks have been explored for sequence modelling \cite{Boulanger2013} and pitch analysis \cite{Sigtia2014}.
 
 % Other related stuff
 Conditional networks were explored for rhythm pattern analysis \cite{Battenberg2012}.
 Predictive Sparse Decomposition (PSD) and methods inspired by sparse coding have also seen a spike in activity over the last two years for a variety of tasks \cite{Henaff2011, Nam2012}, but despite being developed for deep learning, neither of these systems are actually hierarchical.
+Sparse coding was applied to the
+\cite{Smith2006}
 
-% Needs more from Sander, Aron van der Oord, Srikanth Cherla, Siddarth, Boulanger-Lewandowski
-
-It is worthwhile to note that many, if not all, of these works have achieved state of the art performance on their respective tasks, often in the first application of the method to the area.
-Any instances where this has occurred, however, deep learning techniques have simply been directly some kind of derived audio representation with minimal modification.
-It is therefore important to realize that these methods have never been tailored to address the nuances of music signals, and more importantly time.
-Overall, only CNNs make an effort to consider observations on the order of seconds, but do so in an admittedly awkward way, requiring the observation length be defined \emph{a priori}.
-The machine is ultimately limited to the amount of information it sees in its analysis, and there is obviously no fixed duration in which all musical behavior resides.
-
-% Due to advances in machine computation, there are primarily two different ways to conceptualize the design of information processing models.
-% One approach is based on signal theory as viewed through the lens of electrical engineering, whereas the other focuses on graphical models of artificial neural processing grounded in computer science.
-% Though broad topics of study in themselves, they are worth mentioning together for two crucial reasons: first, a majority of inertia developed within the field of MIR is due largely to its roots in the former; and second, it is a useful juxtaposition to form when marrying these disconnected topics.
-
-%Electrical engineering formalized as a discipline in the middle of the $19^{th}$ century on the heels of inventions such as the telegraph and electric power distribution.
-
-% Much early work in electrical engineering stemmed from the realization that electricity could be used to represent measurable phenomena and therefore capture, store, and transmit this information.
-% These representations are referred to as analog signals because they use one representation ---time-varying voltage, for example--- to mirror another one ---such as a sound pressure wave--- in a continuous fashion.
-% It was soon discovered that not only could this information be represented via electricity, but that it was also possible to analyze and manipulate it for a variety of applications.
-% Heavily grounded in classic numerical analysis methods of the $17^{th}$ and $18^{th}$ centuries, these methods are referred to as signal processing.
-% Through experimentation in physics, scientists found that certain electromagnetic materials could be used to affect electricity in predictable ways, and when connected in an electrical circuit could be used to filter, or augment, signals.
-% Importantly, the need to solve signal processing systems by inspection requires that the entire system be linear and time invariant (LTI), because the violation of either property makes mathematical analysis far too difficult, if not altogether impossible.
-
-% With the advent of solid-state transistors and subsequently computers in the mid-$20^{th}$, digital representations of signals could be produced by sampling analog waveforms to be manipulated numerically, referred to as digital signal processing (DSP).
-% Digital signals---those that also represent some kind of real world phenomena, at least---differ from analog ones in two important aspects: the signal takes values from a finite set of discrete numbers, and these quantities are measured at precise moments in time.
-% Therefore, digital signals are specified by a sequence of real-valued numbers $x[n]$, rather than a generated, continuous function $x(t)$.
-% When this transition to numerical computation began, the effort was made to reformulate previous knowledge regarding analog signal theory and processing into the digital domain.
-% Similar to those in analog theory, digital filters can be expressed explicitly by a transfer function, which can be translated directly to a set of coefficients representing the linear difference equation, generically given by the following:
-
-% \begin{equation}
-% \label{eq:diffeq}
-% \begin{array}{rcr}
-% y[n] & = & b_0x[n] + b_1x[n-1] + b_2x[n-2] + b_3x[n-3] \ldots \\
-%  & & - a_1y[n-1] - a_2y[n-2] - a_3y[n-3] \ldots
-% \end{array}
-% \end{equation}
-
-% There are typically said to be two categories of digital filters: Finite Impulse Response (FIR), or non-recursive, filters and Infinite Impulse Response (IIR), or recursive, filters.
-% As illustrated in Figure \ref{fig:filters}, an FIR filter is actually a special case of the more general IIR filter, where the feedback connections---the $a$-coefficients in Equation (\ref{eq:diffeq})---have all been set to zero.
-% Though digital filters are not constrained by the availability or precision of manufactured electrical components, they are still traditionally constrained to be LTI systems for the same reasons as their analog counterparts.
-% As a result, non-linear signal processing models in both the analog and digital domains are historically unpopular due to inherent challenges in the mathematical formulation.
-
-% \begin{figure}[!t]
-% \centering
-% \includegraphics[width=\textwidth]{filters_2}
-% \caption{\small{Finite Impulse Response (i) and Infinite Impulse Response (ii) digital filters. Multiplication is shown along the edges of each connection.}}
-% \label{fig:filters}
-% \end{figure}
-
-
-% Looking closely at recent work in deep learning, most of the effort has been invested in areas of static input representations, i.e. computer vision and still images.
-% As evidenced by music, audio, and video, time plays an extremely important role in the way that information is conveyed.
-% Though CNNs have been applied to signals with a temporal dimension \cite{LeCun1994}, recursive architectures have shown promise for addressing the problem of time and sequences in data.
-% Initial efforts to train RNNs however, even with supervised methods, proved extremely challenging, with the observed phenomena manifesting as numerical stability issues of the gradient.
-% Due to the recursive nature of the model, backpropagating the error signal through time is prone to make the amplitude of the gradient either vanish or explode.
-% Despite these difficulties, several approaches and optimization methods have been developed in recent years that encourage further exploration of these models.
-
-% One of the earliest successful attempts to circumvent the issue of gradient stability was realized through a method called LSTM \cite{Schmidhuber1997}, where the gradient signal is ``latched'' by a hidden unit such that its information could be saved long enough to be useful.
-% Similar notions surround the notion of reservoir computing, such as echo-state networks, which employ feedback connections to cache arbitrary temporal information such that a second non-recursive layer ---being far easier to train--- might be able to make sense of it \cite{Jaeger2002}.
-% Alternatively, conditional DBNs have been employed to model, classify, and generate convincing sequences of human motion \cite{JMLR2011}, and can be thought of as a probabilistic CNN.
-% Recent research has found that more complex optimization methods are sufficient to train RNNs directly without changing the underlying model \cite{Martens2010}, giving encouraging qualitative results on motion \cite{Sutskever2008} and text generation \cite{Sutskever2011}.
-% There has also been initial work investigating discriminative recursive models that also leverage unsupervised training \cite{Rolfe2013}.
-% This research is particularly exciting, as it demonstrates that such models are actually within reach.
-% Reflecting on the corpus of deep learning work in the past decade however, it should be noted that the majority of these breakthroughs ignore audio, and even more so music, signals, focusing instead on vision or natural language processing tasks.
-
+It is worthwhile to note that many, if not all, of these works have attained state of the art performance on their respective tasks, often in the first application of the method to the area.
 
 
 \section{Summary}
