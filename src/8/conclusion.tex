@@ -10,18 +10,39 @@
 
 
 \section{Summary of Results}
-Carrot cake croissant tart bonbon candy biscuit donut liquorice muffin.
-Jelly beans gummies cheesecake cotton candy bonbon chocolate cake croissant gingerbread macaroon.
-Tiramisu liquorice brownie sesame snaps dragee sugar plum tiramisu jelly-o.
-Pastry bonbon pastry cheesecake applicake powder candy tart.
-Marzipan dessert ice cream brownie wafer cookie marshmallow.
-Carrot cake pudding brownie carrot cake dessert icing brownie chocolate.
+
+Automatic music description is at the heart of content-based music informatics research.
+Progress seems to have slowed.
+Reassessed common practice and identified three possible deficiencies worth addressing:
+hand-crafted feature design is not sustainable, shallow architectures struggle to model complex data, and we don't have any good strategies for time.
+Deep architectures and feature learning demonstrate promise in music analysis tasks, thus motivating the exploration of deep learning in automatic music description.
+
+After reviewing the history and fundamental components of deep learning, this work shifted focus to explore these methods directly.
+As a first inquiry, a deep convolutional network was applied to the task of timbre similarity, achieving three goals:
+the model is able to learn relevant signal-level features that give rise to source identification;
+the resulting output space is organized in a semantically meaningful way;
+and the smoothness of the space is indicated by error analysis.
+The approach presented here also offers novel extensions to previous efforts in pairwise training, achieving extremely robust representations despite a considerable reduction in dimensionality.
+And perhaps most importantly, these results are obtained without the need for costly subjective pairwise ratings of content.
+
+Whereas timbre similarity served as a relatively constrained problem, the shift to automatic chord estimation sought to test the limits of deep learning at a well-established music informatics challenge.
+Competitive performance is achieved with a deep convolutional neural network, evaluated in both a conventional and large-vocabulary variant of the task.
+Somewhat more interestingly, rigorous error analysis reveals that efforts in automatic chord estimation are converging to a glass ceiling, due in large part to the objective formulation of an often subjective experience.
+The problems caused by the tenuous nature of ``ground truth'' annotations are exacerbated by efforts to treat chord estimation as a flat, rather than hierarchical, classification task.
+Therefore, the singlemost critical advancement facing the topic of automatic chord estimation is a re-evaluation of the task the community is attempting to solve and the data used to do so.
+
+Despite these difficulties, the chord estimation data is leveraged to ask a slightly different question: can a model be built to automatically predict chords as guitar tablature?
+Using yet another deep convolutional architecture, global performance statistics are improved over the general chord estimation system, while offering significant practical benefits.
+In addition to being a high-performing system, the fretboard estiamtions are immediately human-readable and thus attractive from a user experience perspective.
+Such a representation is also advantageous from a data collection, correction, and validation standpoints, significantly reducing the degree of pre-requisite skill necessary to contribute annotations.
+
+Finally,
 
 
 \section{The Future of Deep Learning in MIR}\label{sec:conclusions}
 \label{sec:future}
 
-In this article, we have sought to better understand the current state of affairs in content-based music informatics and diagnose potential deficiencies in state of the art approaches, finding three specific shortcomings: hand-crafted feature design is not sustainable, shallow architectures are fundamentally limited, and short-time analysis alone fails to capture long-term musical structure.
+This dissertation has sought to better understand the current state of affairs in content-based music informatics and diagnose potential deficiencies in state of the art approaches, finding three specific shortcomings: hand-crafted feature design is not sustainable, shallow architectures are fundamentally limited, and short-time analysis alone fails to capture long-term musical structure.
 Several arguments then motivate the position that deep learning is particularly well-suited to address each of these difficulties.
 By embracing feature learning, it is possible to optimize a system's internal feature representation, perhaps even discovering it outright, while deep architectures are especially well-suited to characterize the hierarchical nature of music.
 It was further shown that the community is already beginning to naturally adopt parts of the broader deep learning landscape, and that these methods can be seen as the next logical step in the research trajectory.
@@ -70,7 +91,6 @@ This is but one open question facing deep learning in music signal processing, a
 
 
 \subsection{Potential Impact}
-
 
 In addition to hopefully advancing the discipline beyond current glass ceilings, there are several potential benefits to the adoption and research of deep learning in music informatics.
 Though learning can discover useful features that were previously overlooked or not considered, this advantage is amplified for new challenges and applications that do not offer much guiding intuition.
