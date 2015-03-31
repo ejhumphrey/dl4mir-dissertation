@@ -745,16 +745,15 @@ As a rule of thumb, this can be automated somewhat by using the \emph{fan-in}, o
 Rectified linear units, on the other hand, are far less sensitive to the choice of initialization, as half of its operating region is non-saturating, contributing to their rise in popularity.
 As a result, sufficiently small, centered normal distributions, $\mathcal{N}(\mu=0, \sigma~\approx~0.01)$, work well in practice.
 
-Alternatively, unsupervised \emph{pre-training} methods, credited with effectively jump-starting the rennaisance of deep learning, can be used to initialize networks in a data-driven manner \cite{Hinton2006}.
-RBM's are the probabilistic interpretation
-Gibbs sampling and contrastive divergence, produce increasingly realistic samples from the model.
-Autoencoders are the deterministic and come in two variants, denoising and contractive.
-The former uses deformations, to be discussed shortly.
-The latter uses weight tying across the encoder and decoder stages.
-In either case, this is performed in a greedy, layer-wise manner.
-Then once all layers have been wrung out, convention supervised training can proceed.
-This works in theory by getting parameters of the network closer to a good solution.
-Less important now, given relu's; still useful for problems which lack sufficient labeled data.
+Alternatively, unsupervised \emph{pre-training} methods, credited with effectively jump-starting the rennaisance of deep learning, can be used to initialize networks in a data-driven manner.
+Though there are different perspectives on how this can be achieved, the core concept is the same:
+using a large amount of unlabeled data, train a deep network to reconstruct realistic observations in a greedy, layer-wise manner.
+Then, once all layers have been initialized, conventional supervised training can be applied.
+In theory, this data-driven process works by getting the parameters of the network closer to a good solution.
+The first successful realization of this idea used an undirected probabilistic model known as a restricted Boltzmann machine (RBM) \cite{Hinton2006}, leveraging Gibbs sampling and contrastive divergence to produce realistic samples from the model.
+The deterministic variant is the autoencoder, which use data augmentation, sparsity, or weight tying to train a pair of deep, invertible functions \cite{Courville, Bengio, Vincent}.
+Most recently, unsupervised pre-training has fallen out of favor somewhat, as comparable results can be obtained with rectified linear units and randomized weights, provided there is sufficient labeled data.
+That said, this strategy may still prove useful for problems in which it is difficult to obtain a large amount of labeled information, such as personalized systems.
 
 
 \subsubsection{Dropout}
@@ -764,19 +763,17 @@ As the name suggests, some percentage of parameters in a network are randomly ``
 The details of how exactly this is done varies slightly from subfunction to subfunction, but a description in terms of an affine transformation is sufficiently illustrative:
 
 \begin{align*}
-Z = f(Z | p) = Z * B(1, p)^M
+Z = f(Z | p) = \frac{1}{(1 - p)} Z * \mathcal{B}(1, p)^M
 \end{align*}
 
-\noindent Here the
-, drawn from a binomial distribution with probability $p$
-To offset the effect of smaller activation magnitudes resulting from fewer weights being used during training, these outputs are each divided by the probability that a .
+\noindent Here, the activations of an affine transformation, $Z$, a column vector of length $M$, are masked by a binomial distribution, $\mathcal{B}$, with probability $p$.
+To offset the effect of smaller magnitudes resulting from fewer units being active during training, these outputs are scaled by one minus the probability parameter.
+Applied in this manner, this prevents rows, or bases, in the matrix projection from contributing to the final output, inhibiting the co-adaptation of parameters.
+Thus dropout is effective because the parameters are unable to depend on one another for effectiveness, and tend to learn independently good features.
 
-While this can be easily implemented by multiplying a network's parameters by a boolean mask, this is functionally equivalent to subsampling a larger space of parameters.
-As a result, this process is closely related to the idea of model averaging, or \emph{bagging}, whereby one of many complementary models is updated at each training iteration.
-This process also reduces the theoretical bound on generalization error, and has been proven to greatly improve results for models prone to overfitting.
-
-The intuition for dropout is
-Prevents co-adaptation of parameters .
+Additionally, dropout has an interesting relationship with model averaging, or \emph{bagging}.
+Masking parameters has the effect of selecting a subset of parameters from the given model, and therefore one of many complementary models is updated at each training iteration.
+This reduces the theoretical bound on generalization error, and has been proven to greatly improve results for models prone to overfitting.
 
 
 \subsubsection{Data Augmentation}
@@ -799,10 +796,11 @@ This constraint gives parameters freedom to adapt to the nuances of the data wit
 Bounding parameters shares a loose connection to weight decay, but there is no penalty term factored into the objective function.
 Alternatively, there are also successful instances of weights being constrained to the surface of the $L_2$ hypersphere \cite{LeCun}
 
-
 % Standardization
 
 % Local contrast normalization
+
+% PCA
 
 
 \section{Related Efforts in Automatic Music Description}
