@@ -50,7 +50,7 @@ Is the community considering all possible approaches to solve these problems \ci
 
 Building on the premise that automatic music description is indeed valuable, this chapter is an attempt to answer the remainder of these questions.
 Section \ref{sec:common} critically reviews conventional approaches to content-based analysis and identifies three major deficiencies of current systems: the sub-optimality of hand-designing features, the limitations of shallow architectures, and the short temporal scope of conventional signal processing.
-Section \ref{sec:deep_learning} then introduces the ideas of deep architectures and feature learning in terms of music signal processing, two complementary approaches to system design that may alleviate these issues.
+Section \ref{sec:deep_learning} then introduces the ideas of deep architectures and feature learning in terms of music signal processing, two complementary approaches to system design that may alleviate these issues, and surveys the application of these methods in this domain.
 Finally, Section \ref{sec:discussion} summarizes the concepts covered herein, and discusses why it is critical point in time for the music informatics community to consider alternative approaches.
 
 
@@ -262,6 +262,26 @@ The function considered here, a linear dot product, is very constrained, and ``b
 Additionally, it is possible to directly inspect the learned weights because the system is straightforward; more complex models, however, will make this process far more difficult.
 
 
+\subsection{Previous Deep Learning Efforts in Music Informatics}
+
+While far from widespread, an increasing number of researchers have begun investigating deep learning to challenges in content-based music informatics.
+% MLPs, DBNs
+The most common form of deep learning explored for music applications focuses on such models to single frames of a music signal for genre recognition \cite{Hamel2009}, mood estimation \cite{Schmidt2011}, note transcription \cite{Nam2011}, and artist recognition \cite{Dieleman2011}.
+% Convolutional networks
+Meanwhile, the earliest instance of modern deep learning methods applied to music signals is found in the use of convolutional networks for the detection of onsets \cite{Lacoste2007}.
+More recently, convolutional networks have also been explored for genre recognition \cite{Li2010}, instrument similarity \cite{Humphrey2010}, chord estimation \cite{Humphrey2011, Humphrey2012b}, and onset detection \cite{Schluter2014}.
+% Recursive models
+Recursive neural networks, a powerful, if troublesome, model for sequential data, have also found success in chord transcription \cite{Boulanger2013} and polyphonic pitch analysis \cite{Sigtia2014}.
+Additionally, predictive sparse decomposition (PSD) and other methods inspired by sparse coding have also seen a spike in interest \cite{Henaff2011, Nam2012}, but despite the connection to deep learning, neither of these systems are actually hierarchical.
+Regardless, it is worthwhile to note that many, if not all, of these works have attained state of the art performance on their respective tasks, often in the first application of the method to the area.
+
+% Symbolic?
+% Beyond the space of audio signal processing, deep networks have also been used in to model symbolic music information.
+% Conditional networks were demonstrated rhythm pattern analysis \cite{Battenberg2012}.
+% Long short-term memory to model symbolic music sequences \cite{Eck2008}.
+% Multiple viewpoint for similarity \cite{Cherla2014}
+
+
 \section{Discussion}
 \label{sec:discussion}
 
@@ -270,18 +290,14 @@ Revisiting common approaches to the design of music signal processing systems re
 manual feature design cannot scale to every problem the field will need to solve;
 many architectures are too shallow to adequately model the complexity of the data;
 and there currently are not many good answers for handling longer time-scales.
+
 In looking to other related disciplines, it seems deep learning may help address some, if not all, of these challenges.
 Deep architectures are able to distribute complexity across multiple processing layers, thus being able to model more complex data.
 Feature learning, on the other hand, allows for the automatic optimization of known objective functions, making it easier to discover signal-level characteristics relevant to a given task faster.
+In fact, a handful of previous deep learning efforts within music informatics have already begun to demonstrate the promise of such methods.
 
 Notably, these are crucial observations to make now for a variety of reasons.
 From a practical standpoint, many in the research community are investing considerable effort in the curation of datasets.
 While some, like \cite{medley}, have gone to great lengths to clear licenses for the source audio signals, most use commercial recordings and thus sharing the original content is problematic.
 As a result, it is becoming standard practice to apply a respected, but non-invertible, feature extraction algorithm over the original audio content and share the extracted statistics with the community, e.g. the Million Song Dataset \cite{BertinMahieux2014}.
 While these efforts are commendable, such datasets are ultimately limited by the feature extraction algorithm employed.
-
-% Pivot -- unnecessary?
-% Synthesizing the collective observations made herein, this study now shifts focus to deep learning and the application of it to various problems in automatic music description.
-% The following chapter introduces a formal definition of deep learning, as well as provide background and a proper survey of recent advances in the field.
-% Afterwards, the main research contributions of this work are found in the application of deep learning to different problems in content-based music informatics.
-% Importantly, this inquiry aims to identify where it succeeds, where it struggles, and what can be learned from both.

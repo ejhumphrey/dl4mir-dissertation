@@ -7,49 +7,21 @@
 \graphicspath{{3/figures/}}
 
 \chapter{Deep Learning}
-\label{chp:background}
-% This article is structured very well: http://www.toptal.com/machine-learning/an-introduction-to-deep-learning-from-perceptrons-to-deep-networks
-% Goals:
-%  - Provide contextual background for deep networks (how did we get here)
-%  - Equate traditional digital signal processing and deep learning
-%  - Define the necessary pieces of deep learning
-
-% Outline
-%  - Background
-%   -- Origins
-%   -- Breakthroughs
-%   -- State of the Art / recent developments
-%  - Formal Definitions
-%   -- What is ``deep learning''; non-linear function, parameterized, differentiable, optimized to a given objective criterion.
-%   -- Architectures
-%    --- Affine Layers
-%    --- Convolutions (2d, 3d)
-%    --- Nonlinearities
-%    --- Pooling
-%   -- Energy-based Learning
-%    --- Scalar objective criteria (Loss Functionals)
-%    --- Stochastic Minibatch Gradient Descent
-%   -- Tricks
-%    --- Regularization & Sparsity
-%    --- Parameter Initialization
-%    --- Dropout
-%    --- Data Augmentation
-%  - Relationship to Audio DSP
+\label{chp:deep_learning}
 
 
 Deep learning descends from a long and contested history of artificial intelligence, information theory, and computer science.
 The goals of the this chapter are two-fold:
-Section \ref{background} first offers a concise summary of the history of deep learning in three parts, detailing the origins, critical advances, and current state of the art of neural networks.
-
-Afterwards, a formal treatment of deep learning is addressed:
+Section \ref{sec:background} first offers a concise summary of the history of deep learning in three parts, detailing the origins, critical advances, and current state of the art of neural networks.
+Afterwards, a formal treatment of deep learning is addressed in three parts:
 Section \ref{sec:arch} introduces the architectural components of deep networks;
-Section \ref{sec:learning} formally addresses the actual ``learning'' process;
-Section \ref{sec:tricks} covers a handful of pertinent tricks of the trade, enabling the practical realization of such models;
-and finally, Section \ref{sec:dsp} draws the relationships between this lineage and conventional approaches to digital signal processing.
+Section \ref{sec:learning} introduces the process of automatic learning, covering the design of loss functions and basic theory of gradient-based optimization;
+and Section \ref{sec:tricks} outlines various tricks of the trade and other practical considerations in the use of deep learning.
+Finally, the concepts introduced in this chapter are briefly summarized in \ref{sec:summary}.
 
 
 \section{A Brief History of Neural Networks}
-
+\label{sec:background}
 Despite the recent wave of interest and excitement surrounding it, the core principles of deep learning were originally devised halfway through the 20th century, grounded in mathematics established even earlier.
 As a direct descendant of neural networks ---computational models with an ambitious moniker burdened by a tumultuous past--- the very mention of deep learning often ellicts several warranted, if suspicious, questions: What's the difference? What's changed? Why do they suddenly work \emph{now}?
 Thus, before diving into a formal review of the deep learning and its various components, it is worthwhile to contextualize the research trajectory that has led to today.
@@ -89,11 +61,12 @@ Given the clear application to the field of computational logic, artifical neuro
 On its own, an artifical neuron is only a general processing structure, and the parameters it takes will specify the precise behavior of the model.
 Arriving at these parameters, however, was nontrivial and required manual derivation.
 Thus, in 1957, Frank Rosenblatt's invention of the \emph{Perceptron} algorithm signficantly altered how artificial neurons were conceived \cite{Rosenblatt1957}.
-Building upon the work of Pitts and McCulloch, the algorithm, given in \ref{alg:perceptron_fit}, offered an automated method of ``learning'' the parameters necessary to achieve binary classification over a collection of data:
+Building upon the work of Pitts and McCulloch, the algorithm, given in \ref{alg:perceptron}, offered an automated method of ``learning'' the parameters necessary to achieve binary classification over a collection of data:
 
 \begin{algorithm}[H]
 \caption{Find the optimal parameters for a Perceptron over a collection of data.}
-\label{array-sum}
+\label{alg:perceptron}
+\small
 \begin{algorithmic}[1]
 \Procedure{FitPerceptron}{$\mathbf{x}, \mathbf{y}, \eta, n_{max}$}
     \State $\mathbf{w} \gets \mathcal{0}_{D + 1, 2}$
@@ -469,9 +442,9 @@ Conventionally referred to as \emph{transfer} or \emph{activation} functions, th
 The two basic nonlinear functions in deep networks are the logistic, or sigmoid, and the related hyperbolic tangent:
 
 \begin{align*}
-  logistic(x) = \frac{1}{1 + \mathrm{e}^{-x}}\\
-  tanh(x) = \frac{1 - \mathrm{e}^{-2x}} {1 + \mathrm{e}^{-2x}}
-\label{eq:basic_nonlinearities}
+  logistic(x) = \frac{1}{1 + \mathrm{e}^{-x}} \\
+  tanh(x) = \frac{1 - \mathrm{e}^{-2x}} {1 + \mathrm{e}^{-2x}} \\
+% \label{eq:basic_nonlinearities}
 \end{align*}
 
 Shown in Figure \ref{fig:nonlinearities}, both functions have inflection points at zero, saturate toward infinity in both directions, and are everywhere differentiable.
@@ -482,7 +455,7 @@ More recently, the \emph{Rectified Linear Unit} (ReLU), or halfwave rectificatio
 
 \begin{align*}
   relu(x) = max(x, 0) = x * (x > 0)\\
-\label{eq:relu}
+% \label{eq:relu}
 \end{align*}
 
 % piecewise linear model. % relationship to random forests?
@@ -511,7 +484,7 @@ the parameter $p_0, p_1$ is a two-element tuple that defines the neighborhood of
 \begin{equation}
 \label{eq:maxpool}
 \small
-\hat{Z}[x, y] = max (\mathcal{1}_{p=0}^{P} \mathcal{1}_{q=}^{Q} X[x + p, y + q]
+\hat{Z}[x, y] = max (\mathbf{1}_{p=0}^{P} \mathbf{1}_{q=0}^{Q} X[x + p, y + q]
 \end{equation}
 
 % \noindent This would later find use in \emph{max-out networks}, where the adjacent outputs of an affine transformations are max-pooled \cite{Goodfellow2011}.
@@ -680,16 +653,16 @@ Expressed more formally, the gradient descent update rule over a set of paramete
 
 \begin{equation}
 \label{eq:updaterule}
-\Theta_{n+1} \leftarrow \Theta_n - \eta * \frac{ \delta \mathcal{L(\hat{D} | \Theta_n)}}{\delta \Theta_n}
+\Theta_{n+1} \leftarrow \Theta_n - \eta * \frac{ \partial \mathcal{L}(\hat{D}~|~\Theta_n)}{\partial \Theta_n}
 \end{equation}
 
 \noindent It is apparent from this formulation that a model's ability to learn is a direct result of the estimate of the scalar loss, which depends not only on the model, its parameters, and the choice of loss function, but \emph{also} the data over which it is measured.
 While early applications of gradient descent for training neural networks would compute parameter updates using the entire collection of datapoints availble for training, deep learning typically leverages batch methods to approximate the overall loss.
 
 Though the work presented here will focus exclusively on classic gradient descent as the numerical optimization method of choice, it is worth noting that there are alternative methods and extensions one could employ.
-In addition to known issues regarding poor local minima, there are also degenerate cases in which a first-order method like this may be very slow to converge \cite{}.
-In practice however, gradient descent is often sufficent with some slight modifcations, such as the use of Nesterov momentum \cite{}.
-Alternatively, \emph{Quasi-Newton} methods, like BFGS, compute approximations to higher order partial derivatives, which converge with fewer iterations and are less susceptible to problematic behavior.
+In addition to known issues regarding poor local minima, there are also degenerate cases in which a first-order method like this may be very slow to converge \cite{badSGD}.
+In practice however, gradient descent is often sufficent with some slight modifcations, such as the use of Nesterov momentum \cite{Nesterov}.
+Alternatively, \emph{Quasi-Newton} methods compute approximations to higher order partial derivatives, which converge with fewer iterations and are less susceptible to problematic behavior \cite{BFGS}.
 These higher order methods often entail a higher computational cost, however, and it is not uncommon to employ them in tandem with simpler gradient descent \cite{Koray}.
 
 
@@ -729,8 +702,8 @@ Whereas weight decay is applied to the parameters of network, \emph{sparsity} pe
 \mathcal{L}_{sparsity}=\sum_i\lambda~||Z_i||_1
 \end{equation}
 
-Importantly, minimizing the $L_1$-loss is equivalent to minimizing the $L_0$-loss, the function that counts non-zero coefficients.
-As a result, this penalty will prefer sparse representations, which are generally understood as a ``good'' thing in representation learning, helping to \emph{disentangle} features in the data \cite{Goodfellow}.
+\noindent Importantly, minimizing the $L_1$-loss is equivalent to minimizing the $L_0$-loss, the function that counts non-zero coefficients.
+As a result, this penalty will prefer sparse representations, which help \emph{disentangle} factors of variation in the data \cite{Goodfellow}.
 
 
 \subsubsection{Parameter Initialization}
@@ -778,59 +751,30 @@ This reduces the theoretical bound on generalization error, and has been proven 
 
 \subsubsection{Data Augmentation}
 
-Get more mileage out of labeled data by applying known deformations.
-Exploit the reality that modeling the synthesis process is typically easier than the analysis process.
-LeCun 1998
-Dieleman 2014 Kaggle, Galaxy Zoo
+A common strategy among deep learning practitioners is to leverage domain knowledge wherever possible.
+While this has an obvious connection to the architectural design and choice of loss function, another oft exploited, though less documented, opportunity is through the application of data augmentation.
+The main idea here is that a collection of labeled data can be manipulated in varying degrees of realism.
+This exploits the common scenario that modeling the synthesis process is typically easier than the analysis process.
+While the most effective distortions are rather domain specific, common deformations include operations such as translation, scaling, additive noise, nonlinear distortion.
+In this space of music, this could range from signal level attributes, like perceptual codecs or production effects, to musically inspired augmentations, such as pitch shifting or time-stretching.
 
 
 \subsubsection{Normalization}
 
-%Enough can't be said about normalization
+Finally, enough cannot be said about the importance of proper data normalization.
+The simplest form of data normalization is maximum scaling, such that all datapoints are bounded on the same input region \cite{MNIST}.
+Another form of dynamic range control is achieved by normalizing inputs to have unit magnitude in some $L_p$-space, e.g. Euclidean \cite{Koray}.
+Alternatively, coefficient-wise \emph{standardization} is strongly advocated, e.g. subtract the mean and divide by standard deviation \cite{LeCun}.
+This can be extended via principal components analysis (PCA), which offers the added benefit of dimensionality reduction, or PCA-whitening (alternatively, ZCA), which ``whitens'' the data by scaling coefficients by their eigenvalues.
+Lastly, \emph{local contrast normalization} (LCN) has proven to be a particularly useful approach to data normalization \cite{LeCun}.
+Finding inspiration from biological processes, LCN performs a form of automatic gain control over local neighborhoods, and can lead to surprisingly discriminative features even in the absence of training \cite{Koray}.
 
 % L2 constraints, bounded in volume, bounded to surface.
-Though often viewed It is also common to constrain the \emph{parameters} weights of a function in $L_2$-space.
-This often takes two forms.
-In some cases, like \cite{HintonDropout}, parameters are simply constrained inside the volume of the given hypersphere; any time parameters are updated to values that result in a magnitude larger than 1, they are rescaled.
+In addition to constraining the input space, it is also common to constrain the \emph{parameters} within a network, often taking two forms.
+In some cases, like \cite{HintonDropout}, parameters are simply constrained inside the volume of the given hypersphere, such that any time parameters are updated to values that result in a magnitude larger than 1, they are rescaled.
 This constraint gives parameters freedom to adapt to the nuances of the data without growing arbitrarily large to offset the contributions of small weights.
-Bounding parameters shares a loose connection to weight decay, but there is no penalty term factored into the objective function.
-Alternatively, there are also successful instances of weights being constrained to the surface of the $L_2$ hypersphere \cite{LeCun}
-
-% Standardization
-
-% Local contrast normalization
-
-% PCA
-
-
-\section{Related Efforts in Automatic Music Description}
-
-While far from widespread, an increasing number of researchers are investing more time and effort into the application of deep learning to challenges in content-based music informatics.
-% MLPs, DBNs
-Many early applications operate on single frame observations of a music signal.
-Deep Belief Networks quickly gained popularity for genre recognition \cite{Hamel2009}, mood estimation \cite{Schmidt2011}, note transcription \cite{Nam2011}, and artist recognition \cite{Dieleman2011}.
-
-% Convolutional networks
-
-Among the first uses of deep learning were the application of convolutional networks to the detection of onsets \cite{Lacoste2007}
-More recently, convolutional networks have also been explored for genre recognition \cite{Li2010}, instrument similarity \cite{Humphrey2010}, chord estimation \cite{Humphrey2011, Humphrey2012b}, and onset detection \cite{Schluter2014}.
-\cite{Durand2015}
-\cite{Dieleman2014}
-
-% Recursive models
-Some have gotten recursive networks to work
-and long short-term memory to model symbolic music sequences \cite{Eck2008}.
-\cite{BoulangerLewandowski2013}
-\cite{Cherla2014}
-Recursive networks have been explored for sequence modelling \cite{Boulanger2013} and pitch analysis \cite{Sigtia2014}.
-
-% Other related stuff
-Conditional networks were explored for rhythm pattern analysis \cite{Battenberg2012}.
-Predictive Sparse Decomposition (PSD) and methods inspired by sparse coding have also seen a spike in activity over the last two years for a variety of tasks \cite{Henaff2011, Nam2012}, but despite being developed for deep learning, neither of these systems are actually hierarchical.
-Sparse coding was applied to the
-\cite{Smith2006}
-
-It is worthwhile to note that many, if not all, of these works have attained state of the art performance on their respective tasks, often in the first application of the method to the area.
+Bounding parameters shares a loose connection to weight decay, in parameters are prevented from growing arbitrarily large, without the need for additional penalties or hyperparameters.
+Alternatively, there are also successful instances of weights being constrained to the surface of the $L_2$ hypersphere, a common approach in various forms of sparse coding \cite{Koray}.
 
 
 \section{Summary}
