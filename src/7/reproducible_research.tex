@@ -9,19 +9,21 @@
 \chapter{Workflows for Reproducible Research}
 \label{chp:reproducibility}
 
-In recent years, the philosophy of open source software has begun taking root in scientific research, particularly among computer science efforts.
+In recent years, the philosophy of open source software has begun taking root in scientific research, particularly in the field of computer science.
 There are several reasons why open research is beneficial to the greater body of human knowledge, but three are of particular value here.
 First, sharing code and data allows others to reproduce previous results, a fundamental tenet of the scientific method.
 Open source implementations are invaluable for sufficiently complex systems.
-It may be near impossible to describe every minute detail in a publication necessary for someone else to replicate the obtained results; for some cases, in fact, the only artifact that can do this unambiguously is the source code itself.
+It may be near impossible to describe every minute detail in a publication necessary for someone else to replicate the obtained results;
+for some works, in fact, the only artifact that can do this unambiguously is the source code itself.
 Second, and in a related vein, open research makes is both easier and faster to build upon and extend the previous work of others.
 Even in the instance a researcher is able to recreate a published system, the time and effort necessary to get to this point is significant and arguably unnecessary.
-Granted, while there is an educational component inherent to the re-implementation of previous work, the situation is akin to long division: it is certainly valuable to learn \emph{how} to divide by hand, but no one shuns the use of a calculator on a day to day basis.
+Granted, while there is an educational component inherent to the re-implementation of previous work, the situation is akin to long division:
+it is certainly valuable to learn \emph{how} to divide by hand, but no one shuns the use of a calculator on a day to day basis.
 Lastly, it is a good and responsible act to contribute tools and software back to the larger research community.
 All research stands on the shoulders of previous efforts, from improving on a recently published algorithm to the decades-old linear algebra routines doing all its number crunching.
 The reality is that no one individual has ever truly solved anything on their own, and sharing the fruits of one's research endeavors serves the common good.
 
-With these motivations in mind, this chapter details the various open source contributions made in the course of this work, culminating in a single code repository used to produce the results contained herein.
+With these motivations in mind, this chapter details the several open source contributions made in the course of this work, culminating in a single code repository used to produce the results contained herein.
 These software tools consist of the following:
 Section \ref{sec:jams} describes JAMS, a JSON annotated music specification;
 Section \ref{sec:biggie} introduces Biggie, an HDF5 interface for interacting with notoriously big data;
@@ -129,62 +131,62 @@ Complementing the creation and use of human annotations, JAMS makes it easier to
 \section{Biggie}
 \label{sec:biggie}
 
-Audio signals are high dimensional data, and it is useful to develop ways of capturing signal level information and associating it all with the same conceptual object, i.e. a recording.
-In this way, \emph{biggie} is the high-dimensional, signal-level equivalent to JAMS.
-Allows the user to compute an arbitrary set of time-aligned representations from a given audio signal and sponge this information together.
-This data is then associated in a key-value store, where each object is given a unique key, making it easy to align signal descriptions with human annotations.
-Biggie also allows random access, facilitating bootstrap sampling and stochastic training (see pescador).
-Being based on HDF5, biggie scales to arbitrarily large datasets; however, as it shares a common interface with common dictionaries, the memory footprint scales gracefully with available computational resources.
+Audio signals, and the various time-aligned representations they might take, are high dimensional data, and it is useful to develop ways of capturing signal level information and associating it all with the same conceptual object, i.e. a recording.
+Conceptually, \emph{biggie}\url{http://github.com/ejhumphrey/biggie} is the high-dimensional, signal-level equivalent to JAMS, introducing two basic objects.
+An \emph{entity} is a struct-like object designed to keep various numerical representations together.
+These objects are then freely written to and read from a \emph{stash}, a persistent, i.e. on-disk, key-value store.
+Here, each entity is given a unique key, making it easy to align a dictionary of signals with a dictionary of annotations.
+Biggie also allows random access, facilitating bootstrap sampling and stochastic training\footnote{\url{https://github.com/bmcfee/pescador}}.
+Leveraging the h5py\footnote{\url{http://www.hdfgroup.org/HDF5/}} library under the hood and based on HDF5\footnote{\url{http://www.hdfgroup.org/HDF5/}}, biggie scales to arbitrarily large datasets;
+however, as it shares a common interface with common dictionaries, the memory footprint scales gracefully with available computational resources.
 
+% Notably, HDF5 is a cross-language data format designed for storing large amounts of numerical data in a hierarchical manner.
 
-\subsection{Entities}
-\label{subsec:entities}
+% \subsection{Entities}
+% \label{subsec:entities}
 
-Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
-Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
-Croissant cotton candy chupa chups.
-Cheesecake tart bear claw brownie sugar plum.
+% Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
+% Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
+% Croissant cotton candy chupa chups.
+% Cheesecake tart bear claw brownie sugar plum.
 
-\subsection{Stash}
-\label{subsec:stash}
+% \subsection{Stash}
+% \label{subsec:stash}
 
-Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
-Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
-Croissant cotton candy chupa chups.
-Cheesecake tart bear claw brownie sugar plum.
+% Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
+% Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
+% Croissant cotton candy chupa chups.
+% Cheesecake tart bear claw brownie sugar plum.
 
+% \subsection{Python API}
+% \label{subsec:biggie_tools}
 
-
-\subsection{Python API}
-\label{subsec:biggie_tools}
-
-\url{http://github.com/ejhumphrey/biggie}.
 
 \section{Optimus}
 \label{sec:optimus}
 
-Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
-Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
-Croissant cotton candy chupa chups.
-Cheesecake tart bear claw brownie sugar plum.
+% What is the problem
+Theano is powerful, and repeating experiments is necessary, but serialization is difficult.
+The common approach in Python, known as ``pickling'', is sensitive to code changes, and thus something pickled previously may not work in the future.
+Unsuitable for projects under active development.
+Additionally, designing every neural network in Theano can be time-consuming, and does offer the most friendly user interface.
+This is especially true when attempting to work with non-standard architectures, such as guitar fretboard models or pairwise training strategies.
 
-\subsection{Goals}
-\label{subsec:goals}
+% How does optimus solve these problems
+Optimus \url{http://github.com/ejhumphrey/optimus} is a direct effort to solve both of these problems in a flexible, yet user friendly, manner.
+To simplify the creation, training, and application of neural networks, common building blocks are provided as natively serializable objects that can be wired together in an graphical manner.
+% Inputs, outputs.
+First, optimus allows the user to define any number of named inputs and outputs, making it easy to adapt to various problems.
+% Nodes and math
+Then, using a large collection of \emph{nodes}, arbitrary acyclic, i.e. no loops, graphs can be architected, making use of common subfunctions like the ``Affine'' or ``Conv3D'' operations.
+% Losses
+While nearly any loss function can be realized from these basic building blocks, a handful of standard \emph{losses} are provided, simplifying design.
+The topology between these parts is given by a routing table, and passed off to a \emph{graph}, which connects the dots and returns an optionally trainable function.
+Furthermore, given the flexibility to define topologies in a processing graph, it is simple to explore a variety of modifications, such as layerwise hyperparameters or tapping various intermediary representations as outputs.
 
-Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
-Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
-Croissant cotton candy chupa chups.
-Cheesecake tart bear claw brownie sugar plum.
-
-\subsection{Example}
-\label{subsec:example}
-
-Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
-Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
-Croissant cotton candy chupa chups.
-Cheesecake tart bear claw brownie sugar plum.
-
-\url{http://github.com/ejhumphrey/optimus}.
+In additiona to the user-facing advantages, robust serialization is achieved by expressing processing graph definitions as JSON and archives of C-arrays.
+Though currently unsupported, this offers the additional benefit that it would be straightforward to optimus models across languages in the future.
+Finally, as parameter assignments are expressed through named nodes and fields, it is trivial to not only save parameters but easily initialize them by arbitrary means, such as pre-training or using supervised learning on hand-crafted functions.
 
 
 \section{mir\_eval}
@@ -237,33 +239,13 @@ This is achieved by forming the union of the boundaries in each sequence, sampli
 The cumulative score, referred to as \emph{weighted chord symbol recall}, is tallied over a set audio files by discrete summation, where the importance of each score is weighted by the duration of each annotation~\cite{cho2013mirex}.
 
 
-\section{Deep Learning for MIR}
+\section{Deep Learning for Music Informatics}
 \label{sec:dl4mir}
 
-Shell scripts for feature extraction, training, and evaluation.
-Results tabulated in iPython notebooks for reference and repeatability.
-
-\subsection{Timbre}
-
-Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
-Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
-Croissant cotton candy chupa chups.
-Cheesecake tart bear claw brownie sugar plum.
-
-\subsection{Chords}
-
-Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
-Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
-Croissant cotton candy chupa chups.
-Cheesecake tart bear claw brownie sugar plum.
-
-
-\subsection{Guitar}
-
-Carrot cake marzipan gummies croissant oat cake pie candy canes chocolate.
-Sugar plum jelly beans oat cake cake jujubes jelly chupa chups biscuit \ref{fig:muffin}.
-Croissant cotton candy chupa chups.
-Cheesecake tart bear claw brownie sugar plum.
+The aggregate code base used herein, referred to as \emph{dl4mir}\url{http://github.com/ejhumphrey/dl4mir}, is also made available.
+This resource provides shell scripts for feature extraction, training, and evaluation.
+All reported results and figures provided in this document are contained in iPython notebooks for reference and repeatability.
+Effort has been made to minimize dependencies and remove vestigial code.
 
 
 \section{Summary}
