@@ -25,14 +25,14 @@ The reality is that no one individual has ever truly solved anything on their ow
 
 With these motivations in mind, this chapter details the several open source contributions made in the course of this work, culminating in a single code repository used to produce the results contained herein.
 These software tools consist of the following:
-Section \ref{sec:jams} describes JAMS, a JSON annotated music specification;
-Section \ref{sec:biggie} introduces Biggie, an HDF5 interface for interacting with notoriously big data;
-Section \ref{sec:optimus} details a user-friendly library for building and serializing arbitrary acyclic processing graphs;
+Section \ref{sec:jams} describes \texttt{jams}, a JSON annotated music specification and python API for rich music descriptions;
+Section \ref{sec:biggie} introduces \texttt{biggie}, an HDF5 interface for interacting with notoriously big data;
+Section \ref{sec:optimus} details \texttt{optimus}, a user-friendly library for building and serializing arbitrary acyclic processing graphs;
 Section \ref{sec:mir_eval} discusses relevant contributions to \texttt{mir\_eval}, a transparent framework for evaluating MIR systems;
-and finally, Section \ref{sec:dl4mir} outlines the framework used here to complete this research.
+and finally, Section \ref{sec:dl4mir} outlines \texttt{dl4mir}, the framework used here to complete this research.
 
 
-\section{JAMS: A JSON Annotated Music Specification}
+\section{\texttt{jams}}
 \label{sec:jams}
 
 Music annotations ---the collection of observations made by one or more agents about an acoustic music signal--- are an integral component of content-based music informatics methodology, and are necessary for designing, evaluating, and comparing computational systems.
@@ -128,7 +128,7 @@ Many common datasets are also provided in this format to further encourage adopt
 Complementing the creation and use of human annotations, JAMS makes it easier to operate on this information, such as augmenting audio and annotations in parallel \footnote{\url{http://github.com/bmcfee/muda}}.
 
 
-\section{Biggie}
+\section{\texttt{biggie}}
 \label{sec:biggie}
 
 Audio signals, and the various time-aligned representations they might take, are high dimensional data, and it is useful to develop ways of capturing signal level information and associating it all with the same conceptual object, i.e. a recording.
@@ -162,7 +162,7 @@ however, as it shares a common interface with common dictionaries, the memory fo
 % \label{subsec:biggie_tools}
 
 
-\section{Optimus}
+\section{\texttt{optimus}}
 \label{sec:optimus}
 
 % What is the problem
@@ -184,45 +184,22 @@ While nearly any loss function can be realized from these basic building blocks,
 The topology between these parts is given by a routing table, and passed off to a \emph{graph}, which connects the dots and returns an optionally trainable function.
 Furthermore, given the flexibility to define topologies in a processing graph, it is simple to explore a variety of modifications, such as layerwise hyperparameters or tapping various intermediary representations as outputs.
 
-In additiona to the user-facing advantages, robust serialization is achieved by expressing processing graph definitions as JSON and archives of C-arrays.
+In addition to the user-facing advantages, robust serialization is achieved by expressing processing graph definitions as JSON and archives of multidimensional arrays.
 Though currently unsupported, this offers the additional benefit that it would be straightforward to optimus models across languages in the future.
 Finally, as parameter assignments are expressed through named nodes and fields, it is trivial to not only save parameters but easily initialize them by arbitrary means, such as pre-training or using supervised learning on hand-crafted functions.
 
 
-\section{mir\_eval}
+\section{\texttt{mir\_eval}}
 \label{sec:mir_eval}
 
-Much of the research in Music Information Retrieval (MIR) involves the development of systems that process raw music data to produce semantic information.
-The goal of these systems is frequently defined as attempting to duplicate the
-performance of a human listener given the same task~\cite{downie2003toward}.
-A natural way to determine a system's effectiveness might be for a human to study the output produced by the system and judge its correctness.
-However, this would yield only subjective ratings, and would also be extremely time-consuming when evaluating a system's output over a large corpus of music.
-
-Instead, objective metrics are developed to provide a well-defined way of computing a score which indicates each system's output's correctness.
-These metrics typically involve a heuristically-motivated comparison of the system's output to a reference which is known to be correct.
-Over time, certain metrics have become standard for each task, so that the performance
-of systems created by different researchers can be compared when they are evaluated
-over the same dataset~\cite{downie2003toward}.
-Unfortunately, this comparison can be confounded by small details of the implementations or procedures that can have disproportionate impacts on the resulting scores.
-
-% MIREX is the standard, but it's not community-developed, not transparent, not well-documented, uses multiple languages, is coupled to NEMA, not easy to use, dependencies, not used outside of MIREX, etc.
-For the past 10 years, the yearly Music Information Retrieval Evaluation eXchange
-(MIREX) has been a forum for comparing MIR algorithms over common datasets~\cite{downie2008music}.
-By providing a standardized shared-task setting, MIREX has become critically useful for tracking progress in MIR research.
-MIREX is built upon the Networked Environment for Music Analysis (NEMA)~\cite{west2010networked}, a large-scale system which includes exhaustive functionality for evaluating, summarizing, and displaying evaluation results.
-The NEMA codebase includes multiple programming languages and dependencies (some of which, Matlab, are proprietary) so compiling and running it at individual sites is nontrivial.
-%
-%Due to its scale, characteristics, and intended use,
-In consequence, the NEMA system is rarely used for evaluating MIR algorithms outside of
-the setting of MIREX~\cite{downie2008music}.
-Instead, researchers often create their own implementations of common metrics for evaluating their algorithms.
-These implementations are thus not standardized, and may contain differences in details, or even bugs, that confound comparisons.
-
-These factors motivate the development of a standardized software package which implements the most common metrics used to evaluate MIR systems.
-Such a package should be straightforward to use and well-documented so that it can be easily adopted by MIR researchers.
-In addition, it should be community-developed and transparently implemented so that all design decisions are easily understood and open to discussion and improvement.
-
-\subsection{Chords}
+As addressed at the outset of this work, the conventional formulation of many music description tasks attempts to model the behavior of an expert human listener.
+Framing the problem as an objective mapping between inputs and outputs allows for objective quantitative evaluation, thus providing common dimensions on which to compare algorithms and systems against each other.
+The particular dimensions on which an algorithm is evaluated is almost by definition specific to the application, and different metrics have evolved over time to provide musically meaningful assessment.
+Many such scoring functions are nontrivial to implement, however, and small details can give rise to variability in resulting metrics.
+The Music Information Retrieval Evaluation Exchange (MIREX), the community's annual algorithm bake-off, has helped provide a standard evaluation portal, but the code base is uses multiple languages, difficult to compile, and, as a result, seldom used outside the event.
+Instead, researchers often implement the common metrics for evaluating their algorithms.
+These implementations are not standardized, and may differ sufficiently in important details, or even contain bugs, confounding comparisons.
+Therefore, the \texttt{mir\_eval} project sought to address these challenges for a variety of well-established tasks \cite{Raffel2014}.
 
 Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord estimation is an ongoing topic of discussion, due to issues with vocabularies, comparison semantics, and other lexicographical challenges unique to the task~\cite{pauwels2013evaluating}.
 One source of difficulty stems from an inherent subjectivity in ``spelling'' a chord name and the level of detail a human observer can provide in a reference annotation~\cite{ni2013understanding}.
@@ -233,13 +210,12 @@ constituent parts, based on the syntax of~\cite{harte2010towards}.
 For example, the chord label \texttt{G:maj(6)/5} is mapped to three pieces of information: the root (``G''), the root-invariant active semitones as determined by the quality shorthand (``maj'') and scale degrees (``6''), and the bass interval (``5'').
 Based on this representation, an estimated chord label can be compare with a reference by defining a comparison function between these invariant representations.
 Any encoded chords that are deemed to be ``out of gamut'' return a negative score to be easily filtered.
-
 Track-wise scores are computed by weighting each comparison by the duration of its interval, over all intervals in an audio file.
 This is achieved by forming the union of the boundaries in each sequence, sampling the labels, and summing the time intervals of the ``correct'' ranges.
 The cumulative score, referred to as \emph{weighted chord symbol recall}, is tallied over a set audio files by discrete summation, where the importance of each score is weighted by the duration of each annotation~\cite{cho2013mirex}.
 
 
-\section{Deep Learning for Music Informatics}
+\section{\texttt{dl4mir}}
 \label{sec:dl4mir}
 
 The aggregate code base used herein, referred to as \emph{dl4mir}\url{http://github.com/ejhumphrey/dl4mir}, is also made available.

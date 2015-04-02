@@ -2,22 +2,29 @@
 \chapter{Conclusion}
 \label{chp:conclusion}
 
-% Bob L. Sturm: Whether or not a dataset, or set of datasets, is "good" depends on its relevance to the scientific question that is being asked. In a very real sense, the least of one's worries should be datasets. Much more effort must be made in the design, implementation and analysis of valid and relevant experiments.
+We've covered a lot of ground here.
+Shed some tears, had some laughs.
+But now it's time to say goodbye.
+This chapter concludes this work in two parts.
+First, Section \ref{sec:summary} summarizes the work performed and novel contritributions made therein.
+Second, Section \ref{sec:future} offers perspectives for the future, including an assessment of outstanding challenges and the potential impact of continued research in this domain.
 
-% Objective assumption is broken.
-% Maybe progress is decellerating due to methodological problems, not because we're necessarily doing anything wrong.
-% Consistent with Sturm
-
-
-\section{Summary of Results}
+\section{Summary of Findings}
 
 Automatic music description is at the heart of content-based music informatics research.
-Progress seems to have slowed.
-Reassessed common practice and identified three possible deficiencies worth addressing:
+This is super useful for problems where manual annotation doesn't scale, such as acoustic similarity, as well as problems where most people lack the musical expertise to perform the task at all, such as transcription.
+While the topic has real value, progress seems to have slowed, and we wanted to know why.
+Thus common practice in automatic music description was revisited, leading to the identification of three deficiencies worth addressing:
 hand-crafted feature design is not sustainable, shallow architectures struggle to model complex data, and we don't have any good strategies for time.
 Deep architectures and feature learning demonstrate promise in music analysis tasks, thus motivating the exploration of deep learning in automatic music description.
 
-After reviewing the history and fundamental components of deep learning, this work shifted focus to explore these methods directly.
+At this point it was necessary to consider what is ``deep learning'', and why is this an option now?
+The history of the field was re-examined, showing that after an over-hyped introduction, neural networks languished through the latter part of the 20th century.
+This period of skepticism and disinterest gave technology time to catch up to the theory, and after a serious of significant research contributions, deep learning made a triumphant return to the fore of computer science, toppling longstanding benchmarks seemingly overnight.
+While this has brought about a second wave of hype and interest, a more established theory of deep networks is being curated.
+As reviewed, the modern practice of deep learning consists of a handful of modular processing blocks, strung together in differentiable functions and numerically optimized to an objective function via gradient-based methods, complemented by a growing suite of practical tricks of the trade.
+
+Having reviewed the modern core of deep learning, this work shifted focus to explore these methods directly.
 As a first inquiry, a deep convolutional network was applied to the task of timbre similarity, achieving three goals:
 the model is able to learn relevant signal-level features that give rise to source identification;
 the resulting output space is organized in a semantically meaningful way;
@@ -34,13 +41,25 @@ Therefore, the singlemost critical advancement facing the topic of automatic cho
 Despite these difficulties, the chord estimation data is leveraged to ask a slightly different question: can a model be built to automatically predict chords as guitar tablature?
 Using yet another deep convolutional architecture, global performance statistics are improved over the general chord estimation system, while offering significant practical benefits.
 In addition to being a high-performing system, the fretboard estiamtions are immediately human-readable and thus attractive from a user experience perspective.
-Such a representation is also advantageous from a data collection, correction, and validation standpoints, significantly reducing the degree of pre-requisite skill necessary to contribute annotations.
+Such a representation is also advantageous from a data collection, correction, and validation standpoints, significantly reducing the degree of prerequisite skill necessary to contribute annotations.
 
-Finally,
+Finally, the various open source software artifacts developed in the course of this research are introduced and detailed:
+\texttt{jams}, the structured music annotation format designed for multiplicity of both annotator perspective and task namespace;
+\texttt{biggie}, an approach to managing large collections of numerical data for training stochastic learning algorithms;
+\texttt{optimus}, a user-friendly library for describing and serializing trainable processing graphs;
+\texttt{mir\_eval}, a suite of evaluation tools for benchmarking music description algorithms;
+and finally \texttt{dl4mir}, a common framework for the systems and results presented here.
 
 
-\section{The Future of Deep Learning in MIR}\label{sec:conclusions}
+\section{Perspectives on Future Work}
 \label{sec:future}
+
+% Bob L. Sturm: Whether or not a dataset, or set of datasets, is ``good'' depends on its relevance to the scientific question that is being asked. In a very real sense, the least of one's worries should be datasets. Much more effort must be made in the design, implementation and analysis of valid and relevant experiments.
+
+% Objective assumption is broken.
+% Maybe progress is decellerating due to methodological problems, not because we're necessarily doing anything wrong.
+% Consistent with Sturm
+
 
 This dissertation has sought to better understand the current state of affairs in content-based music informatics and diagnose potential deficiencies in state of the art approaches, finding three specific shortcomings: hand-crafted feature design is not sustainable, shallow architectures are fundamentally limited, and short-time analysis alone fails to capture long-term musical structure.
 Several arguments then motivate the position that deep learning is particularly well-suited to address each of these difficulties.
