@@ -14,8 +14,7 @@ Second, Section \ref{sec:future} offers perspectives for the future, including a
 Automatic music description is at the heart of content-based music informatics research.
 This is super useful for problems where manual annotation doesn't scale, such as acoustic similarity, as well as problems where most people lack the musical expertise to perform the task at all, such as transcription.
 While the topic has real value, progress seems to have slowed, and we wanted to know why.
-Thus common practice in automatic music description was revisited, leading to the identification of three deficiencies worth addressing:
-hand-crafted feature design is not sustainable, shallow architectures struggle to model complex data, and we don't have any good strategies for time.
+Thus common practice in automatic music description was revisited, leading to the identification of three deficiencies worth addressing: hand-crafted feature design is not sustainable, shallow architectures are fundamentally limited, and short-time analysis alone fails to capture long-term musical structure.
 Deep architectures and feature learning demonstrate promise in music analysis tasks, thus motivating the exploration of deep learning in automatic music description.
 
 At this point it was necessary to consider what is ``deep learning'', and why is this an option now?
@@ -56,21 +55,71 @@ and finally \texttt{dl4mir}, a common framework for the systems and results pres
 
 % Bob L. Sturm: Whether or not a dataset, or set of datasets, is ``good'' depends on its relevance to the scientific question that is being asked. In a very real sense, the least of one's worries should be datasets. Much more effort must be made in the design, implementation and analysis of valid and relevant experiments.
 
-% Objective assumption is broken.
-% Maybe progress is decellerating due to methodological problems, not because we're necessarily doing anything wrong.
-% Consistent with Sturm
+
+The research cycle for computational behavioral modeling consists of six steps:
+
+% \begin{enumerate}
+% \item Define the problem.
+% \item Collect data.
+% \item Build a solution.
+% \item Evaluate the model.
+% \item Repeat.
+% \end{enumerate}
+
+\begin{enumerate}
+\item Define the problem.
+\item Collect data.
+\item Form a hypothesis.
+\item Conduct experiments to test the hypothesis.
+\item Interpret and analyze the experimental results.
+\item Repeat.
+\end{enumerate}
+
+This work explored deep learning as a flexible, yet powerful, answer for (3), but there is much work to be done in the other discrete stages.
+We could extend the list of deficiencies to include another; methodological issues in music informatics.
+
+% Problem formulation and rigor / definitions
+Most current music informatics challenges evolved naturally from a logical progression of work.
+Many research topics have inertia, and thus the problem definition is defined implicitly, rather than explicitly.
+Other facets of the research cycle have or had influenced the problem definition.
+Often, this was driven in no small part by the data available to a researcher.
+What is it to define a problem?
+You have to worry about scope, requirements, and limitations.
+
+What is the problem chord recognition is really trying to solve?
+``Can a machine provide reliable chord transcriptions?'' is a very different question from ``Can a machine predict these chord transcriptions?''
+Importantly, it's not hard to imagine even a human based system that achieves a ``yes'' and ``no'' respectively.
+
+In others formulation of the music description task is underspecified.
+This is consistent with at least part of the position motivated recently by Sturm \cite{}, who argues that classic problems in music informatics lack sufficiently rigorous definitions to ever be solved.
+Though not as egregious as a task like genre, this is the primary outcome from the chapter on chord recognition, showing that a lack of clarity in the task description makes the target an impossilbe one to hit.
+
+% Data collection
+% Using data you trust; garbage in, garbage out
+You can train on noisy data, but you cannot and should not evaluate an algorithm objectively with it.
+This is sensitive to the question being asked.
+
+% Form and test a hypothesis
+We're really good at this part.
+We build a lot of stuff, so much so that we've kind of forgotten about the other things.
 
 
-This dissertation has sought to better understand the current state of affairs in content-based music informatics and diagnose potential deficiencies in state of the art approaches, finding three specific shortcomings: hand-crafted feature design is not sustainable, shallow architectures are fundamentally limited, and short-time analysis alone fails to capture long-term musical structure.
-Several arguments then motivate the position that deep learning is particularly well-suited to address each of these difficulties.
-By embracing feature learning, it is possible to optimize a system's internal feature representation, perhaps even discovering it outright, while deep architectures are especially well-suited to characterize the hierarchical nature of music.
-It was further shown that the community is already beginning to naturally adopt parts of the broader deep learning landscape, and that these methods can be seen as the next logical step in the research trajectory.
-As we look toward exploring these methods further in the context of MIR, it is beneficial to outline domain-specific challenges and the impact such a conceptual reformulation might have on the discipline.
+% Evaluation
+% objective versus subjective eval
+Returning to the beginning of this inquiry, it was stated that the goal of evaluation is to leverage objective measures of subjective experience, being that the true measure of value is system agreement with human experts.
+But what does it mean for this goal when we find that humans don't agree with other humans?
+Or perhaps
+
+
+
+
+
+
 
 \begin{figure}
 \begin{centering}
 \includegraphics[width=0.6\textwidth]{deephype}
-\caption{\emph{Stochastic} gradient descent, yo.}
+\caption{\emph{Gartner Hype cycle of neural networks.}
 \label{fig:deephype}
 \end{centering}
 \end{figure}
