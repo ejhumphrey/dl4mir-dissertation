@@ -2,28 +2,27 @@
 \chapter{Conclusion}
 \label{chp:conclusion}
 
-We've covered a lot of ground here.
-Shed some tears, had some laughs.
-But now it's time to say goodbye.
-This chapter concludes this work in two parts.
-First, Section \ref{sec:summary} summarizes the work performed and novel contritributions made therein.
-Second, Section \ref{sec:future} offers perspectives for the future, including an assessment of outstanding challenges and the potential impact of continued research in this domain.
+This thesis has explored the application of deep learning methods to the general domain of automatic music description, focusing on timbre similarity and automatic chord estimation.
+Encouraging performance is obtained in both areas, advancing the state of art in the latter, while providing deeper insight to the tasks at hand.
+These observations encourage the slight reformulation of chord estimation as a representation learning, rather than a classification, problem, resulting in a high performing system with myriad practical benefits.
+This chapter summarizes the main contritributions of this work, and offers perspectives for the future, including an assessment of outstanding challenges and the potential impact of continued research in this domain.
 
-\section{Summary of Findings}
+\section{Summary}
 
 Automatic music description is at the heart of content-based music informatics research.
-This is super useful for problems where manual annotation doesn't scale, such as acoustic similarity, as well as problems where most people lack the musical expertise to perform the task at all, such as transcription.
-While the topic has real value, progress seems to have slowed, and we wanted to know why.
-Thus common practice in automatic music description was revisited, leading to the identification of three deficiencies worth addressing: hand-crafted feature design is not sustainable, shallow architectures are fundamentally limited, and short-time analysis alone fails to capture long-term musical structure.
-Deep architectures and feature learning demonstrate promise in music analysis tasks, thus motivating the exploration of deep learning in automatic music description.
+This is necessary for problems where manual annotation does not scale, such as acoustic similarity, as well as problems where most people lack the musical expertise to perform the task well, such as transcription.
+While this topic is independently valuable, it would seem that progress is decelerating, and thus any efforts to correct this course must first determine why.
+In Chapter \ref{chp:context}, common practice in automatic music description was revisited, leading to the identification of three deficiencies worth addressing:
+hand-crafted feature design is not sustainable, shallow architectures are fundamentally limited, and short-time analysis alone fails to capture long-term musical structure.
+Deep architectures and feature learning were shown to hold promise in music analysis tasks, evidenced both conceptually and by its growing success, motivating the exploration of deep learning in automatic music description.
 
-At this point it was necessary to consider what is ``deep learning'', and why is this an option now?
-The history of the field was re-examined, showing that after an over-hyped introduction, neural networks languished through the latter part of the 20th century.
+At this point, it was necessary to consider what is ``deep learning'', and why is this an option now?
+In Chapter \ref{chp:deep_learning}, the history of the field was first re-examined, showing that after an over-hyped introduction, neural networks languished through the latter part of the 20th century.
 This period of skepticism and disinterest gave technology time to catch up to the theory, and after a serious of significant research contributions, deep learning made a triumphant return to the fore of computer science, toppling longstanding benchmarks seemingly overnight.
-While this has brought about a second wave of hype and interest, a more established theory of deep networks is being curated.
+While this has brought about a second wave of hype and interest, it also encouraging the curation of a more established theory of deep networks.
 As reviewed, the modern practice of deep learning consists of a handful of modular processing blocks, strung together in differentiable functions and numerically optimized to an objective function via gradient-based methods, complemented by a growing suite of practical tricks of the trade.
 
-Having reviewed the modern core of deep learning, this work shifted focus to explore these methods directly.
+Having reviewed the modern core of deep learning, this work shifted focus in Chapter \ref{chp:timbre} to explore these methods directly.
 As a first inquiry, a deep convolutional network was applied to the task of timbre similarity, achieving three goals:
 the model is able to learn relevant signal-level features that give rise to source identification;
 the resulting output space is organized in a semantically meaningful way;
@@ -31,18 +30,18 @@ and the smoothness of the space is indicated by error analysis.
 The approach presented here also offers novel extensions to previous efforts in pairwise training, achieving extremely robust representations despite a considerable reduction in dimensionality.
 And perhaps most importantly, these results are obtained without the need for costly subjective pairwise ratings of content.
 
-Whereas timbre similarity served as a relatively constrained problem, the shift to automatic chord estimation sought to test the limits of deep learning at a well-established music informatics challenge.
+Whereas timbre similarity served as a relatively constrained problem, Chapter \ref{chp:chord_estimation} sought to test the limits of deep learning as applied to automatic chord estimation, a well-established music informatics challenge.
 Competitive performance is achieved with a deep convolutional neural network, evaluated in both a conventional and large-vocabulary variant of the task.
 Somewhat more interestingly, rigorous error analysis reveals that efforts in automatic chord estimation are converging to a glass ceiling, due in large part to the objective formulation of an often subjective experience.
 The problems caused by the tenuous nature of ``ground truth'' annotations are exacerbated by efforts to treat chord estimation as a flat, rather than hierarchical, classification task.
 Therefore, the singlemost critical advancement facing the topic of automatic chord estimation is a re-evaluation of the task the community is attempting to solve and the data used to do so.
 
 Despite these difficulties, the chord estimation data is leveraged to ask a slightly different question: can a model be built to automatically predict chords as guitar tablature?
-Using yet another deep convolutional architecture, global performance statistics are improved over the general chord estimation system, while offering significant practical benefits.
+Therefore, in Chapter \ref{chp:guitar}, again using a deep convolutional architecture, global performance statistics are improved over the general chord estimation system, while offering significant practical benefits.
 In addition to being a high-performing system, the fretboard estiamtions are immediately human-readable and thus attractive from a user experience perspective.
 Such a representation is also advantageous from a data collection, correction, and validation standpoints, significantly reducing the degree of prerequisite skill necessary to contribute annotations.
 
-Finally, the various open source software artifacts developed in the course of this research are introduced and detailed:
+Finally, the various open source software artifacts developed in the course of this research are introduced and detailed in Chapter \ref{chp:reproducibility}:
 \texttt{jams}, the structured music annotation format designed for multiplicity of both annotator perspective and task namespace;
 \texttt{biggie}, an approach to managing large collections of numerical data for training stochastic learning algorithms;
 \texttt{optimus}, a user-friendly library for describing and serializing trainable processing graphs;
@@ -53,27 +52,61 @@ and finally \texttt{dl4mir}, a common framework for the systems and results pres
 \section{Perspectives on Future Work}
 \label{sec:future}
 
+Based on the work performed herein and observations made in the process, this section contains several suggestions for future directions and future work.
+
+
+\subsection{The Role of Deep Learning in System Design}
+
+% Tie it all together
+Thus, after an impeccably rocky start, neural networks are finally having their day in the sun.
+Shown in Figure \ref{fig:deephype}, it is interesting to consider that the path of deep learning has closely followed Gartner's technology Hype Cycle.
+Settling in as another computational tool in the belt (PCA or SVMs), following the hype cycle; we are in the path to productivity.
+Have a better idea of how they can work.
+What have we actually learned from previous struggles? Are we at risk of repeating the past?
+More domains are adopting, but not all domains have.
+
+\begin{figure}
+\begin{centering}
+\includegraphics[width=0.6\textwidth]{deephype}
+\caption{\emph{Gartner Hype cycle of neural networks.}
+\label{fig:deephype}
+\end{centering}
+\end{figure}
+
+\emph{Is deep learning some magic bullet?}
+Of course not.
+\emph{Is it intelligent?}
+Hardly.
+But is it useful?
+Can it accelerate the process of system design and implementation?
+Can it allow the clever researcher to quickly vet ideas and rapidly prototype systems?
+The answer to all of these is ``yes''.
+Once out from under the shadow of skepticism, deep learning is but a tool ---a powerful tool, but a tool nonetheless--- to include in the toolbelt of the information science practitioner.
+It is not without its deficiencies
+
+
+\subsection{Methodology in Content-Based Music Informatics}
+
 % Bob L. Sturm: Whether or not a dataset, or set of datasets, is ``good'' depends on its relevance to the scientific question that is being asked. In a very real sense, the least of one's worries should be datasets. Much more effort must be made in the design, implementation and analysis of valid and relevant experiments.
 
-
-The research cycle for computational behavioral modeling consists of six steps:
-
-% \begin{enumerate}
-% \item Define the problem.
-% \item Collect data.
-% \item Build a solution.
-% \item Evaluate the model.
-% \item Repeat.
-% \end{enumerate}
+The scientific method for the computational modeling of some behavior consists of five steps:
 
 \begin{enumerate}
 \item Define the problem.
 \item Collect data.
-\item Form a hypothesis.
-\item Conduct experiments to test the hypothesis.
-\item Interpret and analyze the experimental results.
-\item Repeat.
+\item Build a solution.
+\item Evaluate the model.
+\item Iterate.
 \end{enumerate}
+
+% \begin{enumerate}
+% \item Define the problem.
+% \item Collect data.
+% \item Form a hypothesis.
+% \item Conduct experiments to test the hypothesis.
+% \item Interpret and analyze the experimental results.
+% \item Repeat.
+% \end{enumerate}
 
 This work explored deep learning as a flexible, yet powerful, answer for (3), but there is much work to be done in the other discrete stages.
 We could extend the list of deficiencies to include another; methodological issues in music informatics.
@@ -99,7 +132,7 @@ Though not as egregious as a task like genre, this is the primary outcome from t
 You can train on noisy data, but you cannot and should not evaluate an algorithm objectively with it.
 This is sensitive to the question being asked.
 
-% Form and test a hypothesis
+% Build a solution
 We're really good at this part.
 We build a lot of stuff, so much so that we've kind of forgotten about the other things.
 
@@ -110,27 +143,6 @@ Returning to the beginning of this inquiry, it was stated that the goal of evalu
 But what does it mean for this goal when we find that humans don't agree with other humans?
 Or perhaps
 
-
-
-
-
-
-
-\begin{figure}
-\begin{centering}
-\includegraphics[width=0.6\textwidth]{deephype}
-\caption{\emph{Gartner Hype cycle of neural networks.}
-\label{fig:deephype}
-\end{centering}
-\end{figure}
-
-% Tie it all together
-Thus, after an impeccably rocky start, neural networks are finally having their day in the sun.
-Shown in Figure \ref{fig:deephype}, it is interesting to consider that the path of deep learning has closely followed Gartner's technology Hype Cycle.
-Settling in as another computational tool in the belt (PCA or SVMs), following the hype cycle; we are in the path to productivity.
-Have a better idea of how they can work.
-What have we actually learned from previous struggles? Are we at risk of repeating the past?
-More domains are adopting, but not all domains have.
 
 \subsection{Outstanding Challenges}
 
