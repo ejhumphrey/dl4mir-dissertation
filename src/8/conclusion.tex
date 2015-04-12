@@ -52,26 +52,110 @@ and finally \texttt{dl4mir}, a common framework for the systems and results pres
 \section{Perspectives on Future Work}
 \label{sec:future}
 
-Based on the work performed herein and observations made in the process, this section contains several suggestions for future directions and future work.
+Based on the work performed herein and observations made in the process, this section offers several perspectives on deep learning, music informatics, and the intersection between them, in the spirit of helping guide future work.
 
 
-\subsection{The Role of Deep Learning in System Design}
+\subsection{On Architectural Design in Deep Learning}
 
-% Tie it all together
-Thus, after an impeccably rocky start, neural networks are finally having their day in the sun.
+Among the most common questions currently facing the application of deep learning to any problem is that of architectural design.
+``How many layers,'' one might ask, ``or how many kernels are necessary for this to work?
+Should I use convolutions, or matrix products, or something else altogether?
+And furthermore, if and when it does actually work, what on earth is it doing?''
+Admittedly, the combination of numerical optimization and extremely versatile functions often results in systems with opaque mid-level representations, earning deep networks the reputation as ``black boxes'' and the study of them a ``dark art''.
+However, while these enigmatic functions might cause understandable confusion, the design of deep architectures is not necessarily devoid of intution.
+
+% Simply train the systems we've already got
+But where to start?
+The simplest way one might begin to explore deep learning for some problem of choice is to build some previously published algorithm and use gradient descent to fine-tune the hand crafted weights.
+There are countless MIR systems could be reformulated in the deep learning framework, such as onset detection, instrument identification, or pitch estimation.
+Most importantly, doing so eliminates the need to compare minor implementation details, like specific hyperparameters or window coefficients;
+just learn it and let it all come out in the wash.
+Addtionally, introducing the process of learning to classic music informatics systems makes it easier to \emph{combine} multiple systems to reap the benefits of model averaging.
+The key takeaway here is the notion that good architectures already exist for some problems, and that better performance can be obtained by using numerical optimization to expand the space of parameters considered.
+
+% Or explore new ones
+Critically, these lessons and practices transcend known problems to new ones.
+As demonstrated with the fretboard achitecture of Chapter \ref{chp:tabbing}, systems can be quickly constructed by appropriately constraining the behavior.
+Since a guitar has six strings, and each can only be active in one place, it makes sense to model each as a probability surface.
+That said, there is much more could be done here.
+Perhaps transition constraints could be imposed, such that the model would prefer common chord shapes, or positional constraints, whereby nearby frets are perferred to large jumps.
+In this manner, end-to-end systems can be designed and developed at a high level, and numerical optimization can be leveraged to work out the fine details.
+Furthermore, while learning can discover useful features that were previously overlooked or not considered, this advantage is amplified for new challenges and applications that do not offer much guiding intuition.
+For tasks like artist identification or automatic mixing, it is difficult to comprehend, much less articulate, exactly what signal attributes are informative to the task and how an implementation might robustly capture this information.
+
+% Going beyond problems that already provide some structural intuition, an advantage of deep learning is it's substantial flexibility.
+
+% Design is a skill to be learned.
+% Various design decisions, such as model selection, data pre-processing, and carefully choosing the building blocks of the system, can impact performance on a continuum from negligible differences in overall results to whether or not training can, or will, converge to anything useful.
+% Likewise, the same kind of intuition holds for adjusting the various hyperparameters ---learning rate, regularizers, sparsity penalties--- that may arise in the course of training.
+% The important thing to recognize though is that these are skills to be learned.
+% Using deep learning presents a design problem not altogether different from the one with which we are familiar, but the approach is overtly more abstract and conceptual, placing a greater emphasis on high-level decisions like the choice of network topology or appropriate loss function.
+
+% Abstraction
+Thus, deep learning, as an approach to system design, transforms the challenge from ``how do I \emph{implement} the desired behavior?'' to ``how do I \emph{achieve} the desired behavior?''
+The nature of this advantage is illustrated by the relationship between programming in a high-level language, like Python, and a low-level one, like assembly.
+Technically speaking, both can be used to the same ends, but high-level languages allow for faster development of complex systems by abstracting away the minute details, like memory management or the laborious task of moving data around registers.
+% Knowledge of low-level operation is often critical to success in its higher level counterpart, but powerful languages do not absolve the developer of design.
+In both cases, precise control is traded for power, leaving the developer to focus on the task at hand with greater speed and efficiency.
+Note, however, that abstraction doesn't eliminate the need for sound architecture, only the need to worry about certain facets.
+The fundamental design challenge is the same, but operating at a higher level of abstraction allows the deep learning researcher to build bigger systems faster.
+
+% Takeaway: it's not really guess work, there's still work to be done.
+Therefore, it is worthwhile to note that music informatics researchers are quite proficient at leveraging domain knowledge, engineering acumen, and a bit of intuition to architect signal processing systems;
+how many principal components should one keep of a feature representation?
+what is a suitable window size for a Fourier transform?
+how many subbands should a given filterbank have?
+The same intuition can and should be used to design deep networks, as discussed in the learning of chroma, the design of a tempo estimation system, or constructing instrument-specific models.
+% Digital signal theory is still relevant,
+Ultimately, the process of designing a deep architecture is as arbitrary or intentional as one makes it; it's only guesswork if you're guessing.
+
+
+\subsection{Practical Advice for Fellow Practitioners}
+
+%
+Everyone has opinions and perspectives, and all should be taken with a grain of salt.
+Some of the following will be contested, but
+
+\begin{enumerate}
+\item \textbf{Data is fundamental}: The data-driven researcher will live and die by the quality of data available. Lots of weakly labeled data will often trump a small amount of strongly labeled data for training, but the inverse is true for evaluation. Some things don't come out in the wash.
+Beware obscure biases in data. The network will get pulled into bad solutions because of oversights during training. This is particularly true in regression problems. Uniform presentation or likelihood scaling makes sense for problems with a discrete number of classes, but this is less obvious for continuous valued outputs.
+
+\item \textbf{Design what you know, learn what you don't}: Leverage domain knowledge where possible.
+We know lots of things about music, how can these be incorporated architecturally or training strategy to lead to better solutions.
+Curriculum learning will become a big topic in the near future, and much can be incorporated from music education and pedagogy.
+
+\item \textbf{Over-fitting is your friend}: If you can't over-fit your data, something is wrong.
+This is often due to one or more of the following three issues;
+one, it is a problem with the data, such as the observations and targets are uncorrelated or, worse, conflicting;
+two, the chosen model lacks the representational power to fit the training data;
+or three, and most problematic, the learning problem is poorly posed and optimization is getting stuck in a bad local minima.
+
+\item \textbf{Get good mileage out of greedy optimization}: Encourage good behaviour and discourage the bad. It may be easier to define the kinds of things a model \emph{shouldn't} do than the things it should. For example, the fretboard prediction network could incorporate a penalty whereby ``unplayable'' chord shapes incur a significant loss to help keep outputs in a realistic
+
+\item \textbf{The gap between ``real'' and synthetic music is closing}: Samplers, synthesizers, music production software, are all underutilized in deep learning research.
+This can also be used for data augmentation to make algorithms robust to irrelevant deformations, such as perceptual codecs, background noise, tempo modulation, etc.
+Can we functionally solve onset detection, pitch detection, or tempo estimation by rendering realistic sounding music?
+\end{enumerate}
+
+\subsection{Limitations, Criticisms, and a Healthy Dose of Realism}
+
+% Deep learning is reaching toxic levels of trendiness
+There is an empirical sense of skepticism regarding neural networks among many in the various perceptual AI communities, including MIR, due in no small part to the exaggerated promises of very early research, and popular opinion has not evolved with the science.
+
+
+% Part of a larger arc
+After an impeccably rocky start, neural networks are finally having their day in the sun.
 Shown in Figure \ref{fig:deephype}, it is interesting to consider that the path of deep learning has closely followed Gartner's technology Hype Cycle.
-Settling in as another computational tool in the belt (PCA or SVMs), following the hype cycle; we are in the path to productivity.
-Have a better idea of how they can work.
-What have we actually learned from previous struggles? Are we at risk of repeating the past?
-More domains are adopting, but not all domains have.
 
 \begin{figure}
 \begin{centering}
 \includegraphics[width=0.6\textwidth]{deephype}
-\caption{\emph{Gartner Hype cycle of neural networks.}
+\caption{Gartner Hype cycle of neural networks.}
 \label{fig:deephype}
 \end{centering}
 \end{figure}
+
+If you're learning everything, where's the research?
 
 \emph{Is deep learning some magic bullet?}
 Of course not.
@@ -82,14 +166,55 @@ Can it accelerate the process of system design and implementation?
 Can it allow the clever researcher to quickly vet ideas and rapidly prototype systems?
 The answer to all of these is ``yes''.
 Once out from under the shadow of skepticism, deep learning is but a tool ---a powerful tool, but a tool nonetheless--- to include in the toolbelt of the information science practitioner.
-It is not without its deficiencies
+Settling in as another computational tool in the belt (PCA or SVMs), following the hype cycle; we are in the path to productivity.
+Have a better idea of how they can work.
+
+There are many things it is not:
+Intelligent
+Magic
+A dark art
+A black box
+It is, however, a few things:
+A powerful approach to non-linear system design
+A possible and / or partial answer to aforementioned problems
+A close extension of common MIR methods
+
+What have we actually learned from previous struggles? Are we at risk of repeating the past?
+
+It is important to have reasonable expectations for what can be achieved with deep learning and neural networks, lest another winter comes knocking.
+Semantic gap, the limitation of audio signal processing systems whereby the information necessary to make some decision does not truly reside in the signal.
+Wiggins, offers ``the mysterious thing that is Music is an abstract and intangible cultural construct, which does not have physical existence in itself, but which is described by all three of these representational domains'', being the acoustic, the auditory, and the graphemic (notated) \cite{Wiggins2009}.
+``the fundamental source of Music --—that without which Music cannot exist—-- is in the mind: if no mind is involved, there is no Music, but only sound.''
 
 
-\subsection{Methodology in Content-Based Music Informatics}
+Fantastic non-linear models of deterministic relationships.
+Perfect for models of physical systems.
+Build systems that \emph{behave} intelligently without \emph{being} intelligent.
+Heider and Simmel \cite{Heider1944} has fascinating implications for machine perception.
+Intelligence stems from a sense of self.
+Deterministic deep networks may represent a snapshot of an intelligent agent, an instantaneous perspective, but
+Recursive networks are promising, both for introducing arbitrary time-scales of memory as well as notions of expectation.
+Priming, context, expectation, etc.
 
-% Bob L. Sturm: Whether or not a dataset, or set of datasets, is ``good'' depends on its relevance to the scientific question that is being asked. In a very real sense, the least of one's worries should be datasets. Much more effort must be made in the design, implementation and analysis of valid and relevant experiments.
+% Takeaways:
+Deep learning is a powerful tool; no more, no less.
+No free lunch, still requires design and research and work
+Explore new problems that lack intution
+Revisit problems that have it.
+At least use numerical optimization to fine tune current systems, like chroma learning, onset detection, tempo estimation.
+Interpret current systems as deep networks and then apply the same tools, such as learning, bagging, etc.
 
-The scientific method for the computational modeling of some behavior consists of five steps:
+
+\subsection{On the Apparent Rise of Glass Ceilings in Music Informatics}
+
+One of the motivating factors of this work was to understand and potentially address the increasing prevalence of diminishing returns in various music description tasks, like chord estimation, genre classification, or mood prediction.
+The main hypothesis resulting from an initial survey was the idea that common approaches to system design were inadequate, and another approach to system design, i.e. deep learning, might afford significant performance gains.
+However, one of the most significant outcomes of this work is in some sense the most unexpected:
+subtle deficiencies in methodology may be contributing as much or more to unsatisfactory results than the algorithms or approaches used to achieve them.
+
+This finding echoes a recent but fledgling trend in music informatics of critically assessing how the scientific method is applied to machine listening tasks, with meta-analyses of genre recognition \cite{Sturm20inf}, rhythmic similarity \cite{Esparza2014}, and music segmentation \cite{Neito2015}, to name a few.
+
+Conventionally, the methodology for computational modeling of music description consists of five steps:
 
 \begin{enumerate}
 \item Define the problem.
@@ -108,58 +233,54 @@ The scientific method for the computational modeling of some behavior consists o
 % \item Repeat.
 % \end{enumerate}
 
-This work explored deep learning as a flexible, yet powerful, answer for (3), but there is much work to be done in the other discrete stages.
-We could extend the list of deficiencies to include another; methodological issues in music informatics.
+Broken out in this way, the larger narrative of content-based music informatics is an simple story to tell.
+Though a young field, the majority of current research has converged to a handful of established tasks, as evidenced by the set conducted at MIREX.
+Labeled music data is notorious difficult to amass in large quantities, but resouces have grown steadily, if piecemeal, for those well-worn problems.
+In cases where it has not, researchers are faced with one of two options:
+curate the data themselves, or adapt an existing dataset to their problem.
+Having built a solution ---otherwise known as the ``fun'' part--- it is necessary to benchmark a proposed algorithm against previous efforts.
+However, to make such comparisons fairly, it is typically necessary to compute the same metrics over the same data, as the systems themselves are seldom made public.
+Thus, most research efforts today focus almost exclusively on (3) and (5), adopting or otherwise accepting the other three.
 
-% Problem formulation and rigor / definitions
-Most current music informatics challenges evolved naturally from a logical progression of work.
-Many research topics have inertia, and thus the problem definition is defined implicitly, rather than explicitly.
-Other facets of the research cycle have or had influenced the problem definition.
-Often, this was driven in no small part by the data available to a researcher.
-What is it to define a problem?
-You have to worry about scope, requirements, and limitations.
+It is critical to note, though, that these other methodological stages --- problem formulation, data curation, and evaluation--- have developed naturally over time at the community level, based not on globally optimal design but rather a combination of evolving understanding, inertia, and convenience.
+At this point, it serves to return to an initial question posed by this work:
+why \emph{are} music description systems yielding diminishing returns?
+The findings of this work, particularly in the space of automatic chord estimation, corroborate the growing trend that perhaps the biggest problem facing content-based music informatics is one of methodology.
 
-What is the problem chord recognition is really trying to solve?
-``Can a machine provide reliable chord transcriptions?'' is a very different question from ``Can a machine predict these chord transcriptions?''
-Importantly, it's not hard to imagine even a human based system that achieves a ``yes'' and ``no'' respectively.
+Leveraging previous work for perspective, it is curious to return to these methodological questions.
+Consider the case of automatic chord estimation.
+What is the scope of the problem are we really trying to solve?
+``Can an agent provide acceptable chord transcriptions?'' is a very different question from ``Can an agent reproduce \emph{these} chord transcriptions?''
+Analysis of the Rock Corpus transcriptions showed that comparing the outputs of two expert musicians can achieve a ``yes'' and ``no'' respectively.
+How do we know when we have accomplished our goals?
+Does weighted chord symbol recall with different comparison rules truly correspond to subjective experience?
+The difference in harmonic function between a \texttt{I:7} and a \texttt{I} does not match the difference between a \texttt{V:7} and a \texttt{V}, for example.
+Does the data reflect these requirements?
+Chord annotations are consist of single perspectives from myriad annotators, and we don't know who did what.
+It is inconceivable that all annotators are using the chord labels the same way.
+% Ultimately, all research is bounded by the quality of the data available for development and evaluation
 
-In others formulation of the music description task is underspecified.
-This is consistent with at least part of the position motivated recently by Sturm \cite{}, who argues that classic problems in music informatics lack sufficiently rigorous definitions to ever be solved.
-Though not as egregious as a task like genre, this is the primary outcome from the chapter on chord recognition, showing that a lack of clarity in the task description makes the target an impossilbe one to hit.
-
-% Data collection
-% Using data you trust; garbage in, garbage out
-You can train on noisy data, but you cannot and should not evaluate an algorithm objectively with it.
-This is sensitive to the question being asked.
-
-% Build a solution
-We're really good at this part.
-We build a lot of stuff, so much so that we've kind of forgotten about the other things.
-
-
-% Evaluation
-% objective versus subjective eval
-Returning to the beginning of this inquiry, it was stated that the goal of evaluation is to leverage objective measures of subjective experience, being that the true measure of value is system agreement with human experts.
-But what does it mean for this goal when we find that humans don't agree with other humans?
-Or perhaps
+At this point in the trajectory of music informatics, it is conceivable that most well-worn tasks could use a reassessment of common methodology.
+Diminishing returns is the result of not asking the right question and not using the right data to answer it.
 
 
-\subsection{Outstanding Challenges}
+\subsection{On the Importance of Music in AI Research}
 
-Reflecting on the entire discourse, there are a few legitimate obstacles to this line of research.
-The most immediate hurdle facing the adaptation of deep learning to music signal processing is merely a matter of literacy and the successful application of these methods to classic problems in MIR.
-There is an empirical sense of skepticism regarding neural networks among many in the various perceptual AI communities, including MIR, due in no small part to the exaggerated promises of very early research, and popular opinion has not evolved with the science.
-One step toward updating this perspective is through discussions like this one, by demystifying the proverbial ``black box'' and understanding what, how, and why these methods work.
-Additionally, reframing traditional problems in the viewpoint of deep learning serves as an established starting point to begin developing a good comprehension of implementing and realizing these systems.
-In a similar vein, the MIR community also possesses a mastery of digital signal theory and processing techniques, insight that could, and should, be applied to deep networks to better formulate novel or alternative theoretical foundations.
+% AI at a human level
+Artificial intelligence is a lofty goal.
+As discussed, music is fundamentally human, quintessentially intelligent.
+For all the evolutionary adaptations in nature, music is a uniquely
+human phenomena, spanning creativity, planning, memory, and meaning.
+Thus, a proposition: one cannot meaningfully make machines understand music without understanding humanity better as a result.
 
-Another, more widely known problem is the practical difficulty behind getting such methods to ``work,'' which takes a few different forms.
-Though the features, and more specifically the parameters, learned by the model are data-driven, the successful application of deep learning necessitates a thorough understanding of these methods and how to apply them to the problem at hand.
-Various design decisions, such as model selection, data pre-processing, and carefully choosing the building blocks of the system, can impact performance on a continuum from negligible differences in overall results to whether or not training can, or will, converge to anything useful.
-Likewise, the same kind of intuition holds for adjusting the various hyperparameters ---learning rate, regularizers, sparsity penalties--- that may arise in the course of training.
-The important thing to recognize though is that these are skills to be learned.
-Using deep learning presents a design problem not altogether different from the one with which we are familiar, but the approach is overtly more abstract and conceptual, placing a greater emphasis on high-level decisions like the choice of network topology or appropriate loss function.
+% AI and music at a practical research level
+Music is a different ballgame, differs from speech, vision, and natural
+language processing in key ways.
+The only real study of ``art'' in machine learning disciplines.
+Closest things are sentiment analysis and humor, which are small subsets of NLP.
+Presents opportunities unique to the domain.
 
+% Some near-field opportunities
 That said, one of the more enticing challenges facing music informatics is that time-frequency representations, though two-dimensional, are fundamentally \emph{not} images.
 When considering the application of deep learning to MIR problems, it is prudent to recognize that the majority of progress has occurred in computer vision.
 While this gives our community an excellent starting point, there are many assumptions inherent to image processing that start to break down when working with audio signals.
@@ -167,19 +288,8 @@ One such instance is the use of local receptive fields in deep learning, common 
 In these architectures, it is known that the strongest correlations in an image occur within local neighborhoods, and this knowledge is reflected in the architectural design.
 Local neighborhoods in frequency do not share the same relationship, so the natural question becomes, ``what architectures \emph{do} make sense for time-frequency representations?''
 As we saw previously, CNNs yield encouraging results on time-frequency representations of audio, but there are certainly better models to be discovered.
-This is but one open question facing deep learning in music signal processing, and a concerted research effort will likely reveal more.
 
-
-\subsection{Potential Impact}
-
-In addition to hopefully advancing the discipline beyond current glass ceilings, there are several potential benefits to the adoption and research of deep learning in music informatics.
-Though learning can discover useful features that were previously overlooked or not considered, this advantage is amplified for new challenges and applications that do not offer much guiding intuition.
-For tasks like artist identification or automatic mixing, it is difficult to comprehend, much less articulate, exactly what signal attributes are informative to the task and how an implementation might robustly capture this information.
-These problems can, however, be quantified by an objective function ---these songs are by the same artist, or this is a better mix than that one--- which allows for an automated exploration of the solution space.
-In turn, such approaches may subsequently provide insight into the latent features that inform musical judgements, or even lead to deployable systems that could adapt to the nuances of an individual.
-
-Deep learning also offers practical advantages toward accelerating research.
-Rather than trying to compare the instances from one class of functions, evaluation can take place at the class level.
-This process has the potential to be significantly faster than current research approaches because numerical methods attempt to automatically optimize the same objective function we do by hand.
-Additionally, unsupervised learning is able to make use of all recorded sound, and the data-driven prior that it leverages can be steered by creating specific distributions, e.g., learn separate priors for rock versus jazz.
-Finally, music signals provide an interesting setting in which to further explore the role of \emph{time} in perceptual AI systems, and has the potential to influence other time-series domains like video or motion capture data.
+% Some longer term ones
+Recursive networks for memory and expectation
+Agency and self-awareness
+Computational creativity
