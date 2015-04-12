@@ -55,7 +55,7 @@ and finally \texttt{dl4mir}, a common framework for the systems and results pres
 Based on the work performed herein and observations made in the process, this section offers several perspectives on deep learning, music informatics, and the intersection between them, in the spirit of helping guide future work.
 
 
-\subsection{On Architectural Design in Deep Learning}
+\subsection{Architectural Design in Deep Learning}
 
 Among the most common questions currently facing the application of deep learning to any problem is that of architectural design.
 ``How many layers,'' one might ask, ``or how many kernels are necessary for this to work?
@@ -167,72 +167,62 @@ By generating an unprecedented amount of realistic training data, can we functio
 \end{enumerate}
 
 
-\subsection{Limitations, Criticisms, and a Healthy Dose of Realism}
-
-% Deep learning is reaching toxic levels of trendiness
-There is an empirical sense of skepticism regarding neural networks among many in the various perceptual AI communities, including MIR, due in no small part to the exaggerated promises of very early research, and popular opinion has not evolved with the science.
-
+\subsection{Limitations, Served with a Side of Realism}
 
 % Part of a larger arc
-After an impeccably rocky start, neural networks are finally having their day in the sun.
-Shown in Figure \ref{fig:deephype}, it is interesting to consider that the path of deep learning has closely followed Gartner's technology Hype Cycle.
+As some of its forebears recognize and advocate, especially those who persevered through the first AI winter, it is crucial to maintain reasonable expectations for what can be achieved with deep learning.
+Shown in Figure \ref{fig:deephype}, it is interesting to consider that, to date, the path of deep learning has roughly followed Gartner's hype cycle for emerging technologies:
+after a most promising start followed by a period of disinterest, neural networks have sharply returned to prominence.
+% This trajectory is far from finished, however, and it is yet to be determined if the topic is ready for productivity or may fall victim to another winter.
 
 \begin{figure}
 \begin{centering}
 \includegraphics[width=0.6\textwidth]{deephype}
-\caption{Gartner Hype cycle of neural networks.}
+\caption{Gartner Hype cycle, applied to the trajectory of neural networks, consisting of five phases: (a) innovation, (b) peak of inflated expectations, (c) trough of disillusionment, (d) slope of enlightenment, and (e) plateau of productivity.}
 \label{fig:deephype}
 \end{centering}
 \end{figure}
 
-If you're learning everything, where's the research?
+% Deep learning is trending
+It goes almost without saying that excitement and interest in deep learning is spiking across computer science, in academia and industry alike.
+Research groups are forming based primarily on deep learning, it is being used to win increasing number of data science competitions, and the topic has become common fodder for popular science articles and interviews.
+With all the success and attention, it is easy to get carried away in thinking that deep learning is the proverbial ``magic bullet'', that it might topple all problems in due time.
 
+The reality, however, is far more modest.
+Deep learning \emph{is} indeed several important things.
+It is a powerful approach to non-linear system design.
+Deep networks make fantastic models of physical phenomena, and could have profound use in the fields of acoustics, immersive audio, or amplifier modeling.
+It is extremely versatile, and can be easily adapted in application-specific ways that other powerful machines, such as SVMs, cannot.
+And, given significant gains in compute power, the combination of architectural flexibility and numerical optimization makes it an arguably efficient research strategy, at least more so than graduate students manually tuning parameters.
+
+That said, there are a few important things deep learning is not.
+It is by no means the best answer to every problem.
+Deep learning is, in its current forms, still relatively data hungry and often computationally expensive.
+Even in the case of unsupervised pre-training, sufficient volumes of realistic data may not be trivial to obtain, as in the case of accelerometers or gyroscopes.
+To the latter point, any performance gains obtained with a deep network could be effectively negated by disproportionate increase in processing time.
+Both of these limitations are like to become less important over time, but remain relevant today.
+More conceptually, albeit somewhat contentiously, nor can the modern flavors of deep learning be called ``intelligent'';
+echoing the ghost of Searle, a system may certainly \emph{behave} intelligently without truly \emph{being} so.
+Despite the imagery evoked by metaphors and figurative language that pervade the field, deep learning has as much in common with humanity as a player piano, and learning is merely a means of programming in a data-driven manner.
+This is not to say that deep learning can or will not lead to such breakthroughs, but care should be taken when differentiating metaphor from reality.
+
+% Semantic gap, the limitation of audio signal processing systems whereby the information necessary to make some decision does not truly reside in the signal.
+% Wiggins, offers ``the mysterious thing that is Music is an abstract and intangible cultural construct, which does not have physical existence in itself, but which is described by all three of these representational domains'', being the acoustic, the auditory, and the graphemic (notated) \cite{Wiggins2009}.
+
+
+
+% Takeaways:
+What should one make of deep learning then?
+Suffice it to say that deep learning is but a tool ---a powerful tool, but a tool nonetheless--- to include in the toolbelt of the information science practitioner.
+Similar to the trajectories of other, now standard, methods, such as principal components analysis, Gaussian mixture models, or support vector machines, deep learning is settling into the final stage of its hype cycle, the point at which it becomes just another means to solve a problem.
 \emph{Is deep learning some magic bullet?}
 Of course not.
 \emph{Is it intelligent?}
 Hardly.
 But is it useful?
 Can it accelerate the process of system design and implementation?
-Can it allow the clever researcher to quickly vet ideas and rapidly prototype systems?
-The answer to all of these is ``yes''.
-Once out from under the shadow of skepticism, deep learning is but a tool ---a powerful tool, but a tool nonetheless--- to include in the toolbelt of the information science practitioner.
-Settling in as another computational tool in the belt (PCA or SVMs), following the hype cycle; we are in the path to productivity.
-Have a better idea of how they can work.
-
-There are many things it is not:
-Intelligent
-Magic
-A dark art
-A black box
-It is, however, a few things:
-A powerful approach to non-linear system design
-A possible and / or partial answer to aforementioned problems
-A close extension of common MIR methods
-
-What have we actually learned from previous struggles? Are we at risk of repeating the past?
-
-It is important to have reasonable expectations for what can be achieved with deep learning and neural networks, lest another winter comes knocking.
-Semantic gap, the limitation of audio signal processing systems whereby the information necessary to make some decision does not truly reside in the signal.
-Wiggins, offers ``the mysterious thing that is Music is an abstract and intangible cultural construct, which does not have physical existence in itself, but which is described by all three of these representational domains'', being the acoustic, the auditory, and the graphemic (notated) \cite{Wiggins2009}.
-``the fundamental source of Music --—that without which Music cannot exist—-- is in the mind: if no mind is involved, there is no Music, but only sound.''
-
-
-Fantastic non-linear models of deterministic relationships.
-Perfect for models of physical systems.
-Build systems that \emph{behave} intelligently without \emph{being} intelligent.
-Heider and Simmel \cite{Heider1944} has fascinating implications for machine perception.
-Intelligence stems from a sense of self.
-Deterministic deep networks may represent a snapshot of an intelligent agent, an instantaneous perspective, but
-Recursive networks are promising, both for introducing arbitrary time-scales of memory as well as notions of expectation.
-Priming, context, expectation, etc.
-
-% Takeaways:
-Deep learning is a powerful tool; no more, no less.
-No free lunch, still requires design and research and work
-Explore new problems that lack intution
-Revisit problems that have it.
-At least use numerical optimization to fine tune current systems, like chroma learning, onset detection, tempo estimation.
-Interpret current systems as deep networks and then apply the same tools, such as learning, bagging, etc.
+Can it allow the clever researcher to quickly vet ideas and develop complex, robust systems?
+The answer to all of these is \emph{yes}.
 
 
 \subsection{On the Apparent Rise of Glass Ceilings in Music Informatics}
@@ -294,7 +284,7 @@ At this point in the trajectory of music informatics, it is conceivable that mos
 Diminishing returns is the result of not asking the right question and not using the right data to answer it.
 
 
-\subsection{On the Importance of Music in AI Research}
+\subsection{The Significance of Music in AI Research}
 
 % AI at a human level
 Artificial intelligence is a lofty goal.
@@ -323,3 +313,6 @@ As we saw previously, CNNs yield encouraging results on time-frequency represent
 Recursive networks for memory and expectation
 Agency and self-awareness
 Computational creativity
+
+As offered by Wiggins in \cite{Wiggins2009}, ``the fundamental source of Music --—that without which Music cannot exist—-- is in the mind: if no mind is involved, there is no Music, but only sound.''
+You can model the sound without modeling the mind.
