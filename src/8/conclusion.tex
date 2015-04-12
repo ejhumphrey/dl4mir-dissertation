@@ -113,29 +113,59 @@ Ultimately, the process of designing a deep architecture is as arbitrary or inte
 \subsection{Practical Advice for Fellow Practitioners}
 
 %
-Everyone has opinions and perspectives, and all should be taken with a grain of salt.
-Some of the following will be contested, but
+While the previous discussion hopefully serves to address some of the mystery inherent to deep learning, it certainly entails the disclaimer of ``your mileage may vary.''
+The following are a handful of guidelines accumulated in the course of research;
+far more suggestion than direction, they have served well in practice.
 
 \begin{enumerate}
-\item \textbf{Data is fundamental}: The data-driven researcher will live and die by the quality of data available. Lots of weakly labeled data will often trump a small amount of strongly labeled data for training, but the inverse is true for evaluation. Some things don't come out in the wash.
-Beware obscure biases in data. The network will get pulled into bad solutions because of oversights during training. This is particularly true in regression problems. Uniform presentation or likelihood scaling makes sense for problems with a discrete number of classes, but this is less obvious for continuous valued outputs.
 
-\item \textbf{Design what you know, learn what you don't}: Leverage domain knowledge where possible.
-We know lots of things about music, how can these be incorporated architecturally or training strategy to lead to better solutions.
-Curriculum learning will become a big topic in the near future, and much can be incorporated from music education and pedagogy.
+\item \textbf{Data is fundamental}:
+The data-driven researcher will live and die by the quality of data available.
+It is widely held that lots of weakly labeled data will often trump a small amount of strongly labeled data.
+The cousin of this sentiment is once you have enough data, everything will come out in the wash.
+Take care to note that though this may hold for training, with caveats, the inverse is true for evaluation.
+Furthermore, beware obscure biases in data.
+Greedy optimization will happily yield bad solutions because of oversights in the curation of training data.
+This is particularly true of regression problems.
+It is possible to compensate for biased data in classification via uniform class presentation or likelihood scaling, but this can be far less obvious for continuous valued outputs.
 
-\item \textbf{Over-fitting is your friend}: If you can't over-fit your data, something is wrong.
+
+\item \textbf{Design what you know, learn what you don't}:
+As mentioned, neural networks offer the theoretical promise of the universal approximation theorem, but realizing such general behavior is far from trivial.
+It is therefore crucial to leverage domain knowledge where possible.
+This will typically take two forms:
+one, simplify the learning problem by removing degrees of freedom known to be irrelevant to the problem;
+two, constrain the learning problem to encourage musically plausible solutions.
+If loudness doesn't impact one's ability to recognize chords, for example, the data should probably be normalized.
+Music informatics researchers have a diverse background on which to draw, and this knowledge can be incorporated into the model or training strategy.
+Notably, curriculum learning will likely become a much larger topic in the near future, and much can be incorporated from music education and pedagogy in this process.
+
+
+\item \textbf{Over-fitting is your friend}:
+Long heralded as the boon of deep networks, over-fitting is arguably a \emph{good} sign, and far more desirable behavior than the inverse.
+Simply put, if a deep network is unable to over-fit the training data, something is likely wrong.
 This is often due to one or more of the following three issues;
-one, it is a problem with the data, such as the observations and targets are uncorrelated or, worse, conflicting;
+one, it is indicative of a problem with the data, e.g. the observations and targets are uncorrelated or, worse, conflicting;
 two, the chosen model lacks the representational power to fit the training data;
 or three, and most problematic, the learning problem is poorly posed and optimization is getting stuck in a bad local minima.
+The methods for dealing with such issues are not so well codified, but consist of data cleaning, exploring ``bigger'' models, unsupervised pre-training, changing the loss function, etc.; that said, the efficacy of such approaches will vary case by case.
 
-\item \textbf{Get good mileage out of greedy optimization}: Encourage good behaviour and discourage the bad. It may be easier to define the kinds of things a model \emph{shouldn't} do than the things it should. For example, the fretboard prediction network could incorporate a penalty whereby ``unplayable'' chord shapes incur a significant loss to help keep outputs in a realistic
 
-\item \textbf{The gap between ``real'' and synthetic music is closing}: Samplers, synthesizers, music production software, are all underutilized in deep learning research.
-This can also be used for data augmentation to make algorithms robust to irrelevant deformations, such as perceptual codecs, background noise, tempo modulation, etc.
-Can we functionally solve onset detection, pitch detection, or tempo estimation by rendering realistic sounding music?
+\item \textbf{Get good mileage out of greedy optimization}:
+Gradient descent and other such greedy methods are certainly prone to bad local minima, but it is not impossible to take active measures to discourage unfortunate solutions.
+% Encourage good behaviour and discourage the bad.
+Additionally, it may be easier to define the kinds of things a model \emph{shouldn't} do than the things it should.
+For example, a fretboard prediction network could incorporate a penalty whereby ``unplayable'' chord shapes incur significant loss to help keep outputs in a realistic space.
+
+
+\item \textbf{The gap between ``real'' and synthetic music is closing}:
+As more modern music transitions to a digital environment, the difference in quality between a real sound recording and one synthesized for research purposes is converging to zero.
+Generally speaking, samplers, synthesizers, and other music production software are underutilized in data-driven music research.
+These high quality tools can also be used for data augmentation to make algorithms robust to irrelevant deformations, such as perceptual codecs, background noise, tempo modulation, or pitch shifting.
+By generating an unprecedented amount of realistic training data, can we functionally solve tasks such as onset detection, pitch detection, or tempo estimation?
+
 \end{enumerate}
+
 
 \subsection{Limitations, Criticisms, and a Healthy Dose of Realism}
 
