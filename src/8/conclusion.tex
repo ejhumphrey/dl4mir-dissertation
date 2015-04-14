@@ -83,14 +83,6 @@ In this manner, end-to-end systems can be designed and developed at a high level
 Furthermore, while learning can discover useful features that were previously overlooked or not considered, this advantage is amplified for new challenges and applications that do not offer much guiding intuition.
 For tasks like artist identification or automatic mixing, it is difficult to comprehend, much less articulate, exactly what signal attributes are informative to the task and how an implementation might robustly capture this information.
 
-% Going beyond problems that already provide some structural intuition, an advantage of deep learning is it's substantial flexibility.
-
-% Design is a skill to be learned.
-% Various design decisions, such as model selection, data pre-processing, and carefully choosing the building blocks of the system, can impact performance on a continuum from negligible differences in overall results to whether or not training can, or will, converge to anything useful.
-% Likewise, the same kind of intuition holds for adjusting the various hyperparameters ---learning rate, regularizers, sparsity penalties--- that may arise in the course of training.
-% The important thing to recognize though is that these are skills to be learned.
-% Using deep learning presents a design problem not altogether different from the one with which we are familiar, but the approach is overtly more abstract and conceptual, placing a greater emphasis on high-level decisions like the choice of network topology or appropriate loss function.
-
 % Abstraction
 Thus, deep learning, as an approach to system design, transforms the challenge from ``how do I \emph{implement} the desired behavior?'' to ``how do I \emph{achieve} the desired behavior?''
 The nature of this advantage is illustrated by the relationship between programming in a high-level language, like Python, and a low-level one, like assembly.
@@ -173,7 +165,6 @@ By generating an unprecedented amount of realistic training data, can we functio
 As some of its forebears recognize and advocate, especially those who persevered through the first AI winter, it is crucial to maintain reasonable expectations for what can be achieved with deep learning.
 Shown in Figure \ref{fig:deephype}, it is interesting to consider that, to date, the path of deep learning has roughly followed Gartner's hype cycle for emerging technologies:
 after a most promising start followed by a period of disinterest, neural networks have sharply returned to prominence.
-% This trajectory is far from finished, however, and it is yet to be determined if the topic is ready for productivity or may fall victim to another winter.
 
 \begin{figure}
 \begin{centering}
@@ -205,11 +196,6 @@ More conceptually, albeit somewhat contentiously, nor can the modern flavors of 
 echoing the ghost of Searle, a system may certainly \emph{behave} intelligently without truly \emph{being} so.
 Despite the imagery evoked by metaphors and figurative language that pervade the field, deep learning has as much in common with humanity as a player piano, and learning is merely a means of programming in a data-driven manner.
 This is not to say that deep learning can or will not lead to such breakthroughs, but care should be taken when differentiating metaphor from reality.
-
-% Semantic gap, the limitation of audio signal processing systems whereby the information necessary to make some decision does not truly reside in the signal.
-% Wiggins, offers ``the mysterious thing that is Music is an abstract and intangible cultural construct, which does not have physical existence in itself, but which is described by all three of these representational domains'', being the acoustic, the auditory, and the graphemic (notated) \cite{Wiggins2009}.
-
-
 
 % Takeaways:
 What should one make of deep learning then?
@@ -243,7 +229,6 @@ Looking to the intersection of these areas, the research methodology of automati
 \item Iterate.
 \end{enumerate}
 
-
 With this method as a common underpinning, the evolution of content-based music informatics unfolds logically.
 Though a young field, the majority of current research has converged to a handful of established tasks, as evidenced by those conducted at MIREX.
 Labeled music data is notorious difficult to amass in large quantities, but resouces have grown steadily for those well-worn problems.
@@ -272,6 +257,5 @@ Not all substitutions are equal, as the distance in harmonic function between a 
 Understandably, it is easy to lose sight of the fact that research is not just the process of iterative system development, but the entire arc of the scientific method.
 At this point in the trajectory of music informatics, it is conceivable that several well-worn tasks could use a reassessment of what constitutes methodological best practices.
 This is hardly a novel realization, but one that warrants greater awareness within the music informatics community.
-% Interestingly enough, it has been over half a decade since Wiggins offered that ``because music is first and foremost a psychological construct, there can be no externally defined truth, and systems which aim to encode musical similarity must, by definition, do so in a human-like way.''
 It is necessary, but ultimately insufficient, to tirelessly pursue better solutions;
 we must be as dilligent in our pursuit of better problems.
