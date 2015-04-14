@@ -213,8 +213,8 @@ This is not to say that deep learning can or will not lead to such breakthroughs
 
 % Takeaways:
 What should one make of deep learning then?
-Suffice it to say that deep learning is but a tool ---a powerful tool, but a tool nonetheless--- to include in the toolbelt of the information science practitioner.
-Similar to the trajectories of other, now standard, methods, such as principal components analysis, Gaussian mixture models, or support vector machines, deep learning is settling into the final stage of its hype cycle, the point at which it becomes just another means to solve a problem.
+Suffice it to say that deep learning is just another tool ---a powerful tool, but a tool nonetheless--- to be included in the toolbelt of the information science practitioner.
+Similar to the trajectories of other, now standard, methods, such as principal components analysis, Gaussian mixture models, or support vector machines, deep learning is settling into the final stage of its hype cycle, the point at which it becomes a means to solve a problem.
 \emph{Is deep learning some magic bullet?}
 Of course not.
 \emph{Is it intelligent?}
@@ -232,9 +232,8 @@ The main hypothesis resulting from an initial survey was the idea that common ap
 However, one of the most significant outcomes of this work is in some sense the most unexpected:
 subtle deficiencies in methodology may be contributing as much or more to unsatisfactory results than the algorithms or approaches used to achieve them.
 
-This finding echoes a recent but fledgling trend in music informatics of critically assessing how the scientific method is applied to machine listening tasks, with meta-analyses of genre recognition \cite{Sturm20inf}, rhythmic similarity \cite{Esparza2014}, and music segmentation \cite{Neito2015}, to name a few.
-
-Conventionally, the methodology for computational modeling of music description consists of five steps:
+This finding reflects a small but growing trend in music informatics of critically assessing how the scientific method is applied to machine listening tasks, with meta-analyses of genre recognition \cite{Sturm20inf}, rhythmic similarity \cite{Esparza2014}, and music segmentation \cite{Neito2015}, to name a few.
+Looking to the intersection of these areas, the research methodology of automatic music description consists of five basic steps:
 
 \begin{enumerate}
 \item Define the problem.
@@ -244,21 +243,13 @@ Conventionally, the methodology for computational modeling of music description 
 \item Iterate.
 \end{enumerate}
 
-% \begin{enumerate}
-% \item Define the problem.
-% \item Collect data.
-% \item Form a hypothesis.
-% \item Conduct experiments to test the hypothesis.
-% \item Interpret and analyze the experimental results.
-% \item Repeat.
-% \end{enumerate}
 
-Broken out in this way, the larger narrative of content-based music informatics is an simple story to tell.
-Though a young field, the majority of current research has converged to a handful of established tasks, as evidenced by the set conducted at MIREX.
-Labeled music data is notorious difficult to amass in large quantities, but resouces have grown steadily, if piecemeal, for those well-worn problems.
+With this method as a common underpinning, the evolution of content-based music informatics unfolds logically.
+Though a young field, the majority of current research has converged to a handful of established tasks, as evidenced by those conducted at MIREX.
+Labeled music data is notorious difficult to amass in large quantities, but resouces have grown steadily for those well-worn problems.
 In cases where it has not, researchers are faced with one of two options:
 curate the data themselves, or adapt an existing dataset to their problem.
-Having built a solution ---otherwise known as the ``fun'' part--- it is necessary to benchmark a proposed algorithm against previous efforts.
+Having developed a solution, it is necessary to benchmark a proposed algorithm against previous efforts.
 However, to make such comparisons fairly, it is typically necessary to compute the same metrics over the same data, as the systems themselves are seldom made public.
 Thus, most research efforts today focus almost exclusively on (3) and (5), adopting or otherwise accepting the other three.
 
@@ -267,52 +258,64 @@ At this point, it serves to return to an initial question posed by this work:
 why \emph{are} music description systems yielding diminishing returns?
 The findings of this work, particularly in the space of automatic chord estimation, corroborate the growing trend that perhaps the biggest problem facing content-based music informatics is one of methodology.
 
-Leveraging previous work for perspective, it is curious to return to these methodological questions.
-Consider the case of automatic chord estimation.
-What is the scope of the problem are we really trying to solve?
+With this in mind, reconsider the case of automatic chord estimation.
+What is the scope of the problem being addressed?
 ``Can an agent provide acceptable chord transcriptions?'' is a very different question from ``Can an agent reproduce \emph{these} chord transcriptions?''
 Analysis of the Rock Corpus transcriptions showed that comparing the outputs of two expert musicians can achieve a ``yes'' and ``no'' respectively.
-How do we know when we have accomplished our goals?
-Does weighted chord symbol recall with different comparison rules truly correspond to subjective experience?
-The difference in harmonic function between a \texttt{I:7} and a \texttt{I} does not match the difference between a \texttt{V:7} and a \texttt{V}, for example.
 Does the data reflect these requirements?
-Chord annotations are consist of single perspectives from myriad annotators, and we don't know who did what.
-It is inconceivable that all annotators are using the chord labels the same way.
-% Ultimately, all research is bounded by the quality of the data available for development and evaluation
+Chord annotations consist of single perspectives from several anonymized annotators.
+It is doubtful that all annotators are using the chord labels the same way.
+How do we know when the problem is solved?
+Does weighted chord symbol recall with different comparison rules correspond to subjective experience?
+Not all substitutions are equal, as the distance in harmonic function between a \texttt{I:7} and a \texttt{I} is quite different from a \texttt{V:7} and a \texttt{V}, for example.
 
-At this point in the trajectory of music informatics, it is conceivable that most well-worn tasks could use a reassessment of common methodology.
-Diminishing returns is the result of not asking the right question and not using the right data to answer it.
+Thus, it is too easy to lose sight of the fact that research is not just iterative system development, but the entire arc of the scientific method.
+At this point in the trajectory of music informatics, it is conceivable that most well-worn tasks could use a reassessment of what constitutes standard methodology.
+This is by no means a novel realization, but one that warrants more attention by the music informatics community.
+Interestingly enough, it has been over half a decade since the following plea fell on deaf ears:
+
+\begin{quote}
+Because music is first and foremost a psychological construct, there can be no externally defined truth, and systems which aim to encode musical similarity must, by definition, do so in a human-like way.
+Therefore, technology and evaluation methodology must be imported from cognitive science to allow MIR to proceed in a meaningful scientific direction \cite{Wiggins2009}.
+\end{quote}
+
+We are doomed to struggle until this is addressed across the field.
 
 
-\subsection{The Significance of Music in AI Research}
+% \subsection{The Significance of Music in AI Research}
 
-% AI at a human level
-Artificial intelligence is a lofty goal.
-As discussed, music is fundamentally human, quintessentially intelligent.
-For all the evolutionary adaptations in nature, music is a uniquely
-human phenomena, spanning creativity, planning, memory, and meaning.
-Thus, a proposition: one cannot meaningfully make machines understand music without understanding humanity better as a result.
+% % AI at a human level
+% Artificial intelligence is nothing if not a lofty goal.
+% It inherently touches on a swath of fascinating ideas and fields of study, across philosophy and biology, computer science and neuroscience.
+% We struggle to even define intelligence, but are captivated by the idea of recreating it.
+% But how does one begin to build an artificially intelligent machine?
+% Do we teach it to play chess?
+% Or perhaps Atari?
+% Maybe the benchmark for intelligence is conversation; surely everyone has judged another's intelligence, or lack thereof, by talking with them.
 
-% AI and music at a practical research level
-Music is a different ballgame, differs from speech, vision, and natural
-language processing in key ways.
-The only real study of ``art'' in machine learning disciplines.
-Closest things are sentiment analysis and humor, which are small subsets of NLP.
-Presents opportunities unique to the domain.
+% % Music is good
+% However, for all the evolutionary adaptations in nature, and all the amazing things organisms can do, music is a uniquely human phenomenon.
+% A quintessentially intelligent behavior, it spans creativity, planning, memory, and meaning, and can be traced back to the origins of man.
+% What's more, leveraging the eloquence of Geraint Wiggins, ``the fundamental source of Music --—that without which Music cannot exist—-- is in the mind: if no mind is involved, there is no Music, but only sound'' \cite{Wiggins2009}.
+% If this is so, it begs a logical hypothesis: one cannot meaningfully make machines understand music without understanding humanity better as a result.
 
-% Some near-field opportunities
-That said, one of the more enticing challenges facing music informatics is that time-frequency representations, though two-dimensional, are fundamentally \emph{not} images.
-When considering the application of deep learning to MIR problems, it is prudent to recognize that the majority of progress has occurred in computer vision.
-While this gives our community an excellent starting point, there are many assumptions inherent to image processing that start to break down when working with audio signals.
-One such instance is the use of local receptive fields in deep learning, common in CNNs and, more recently, tiled networks \cite{Le2010}.
-In these architectures, it is known that the strongest correlations in an image occur within local neighborhoods, and this knowledge is reflected in the architectural design.
-Local neighborhoods in frequency do not share the same relationship, so the natural question becomes, ``what architectures \emph{do} make sense for time-frequency representations?''
-As we saw previously, CNNs yield encouraging results on time-frequency representations of audio, but there are certainly better models to be discovered.
+% % Music is different
+% In addition to the intrinsic qualities of music, it differs from speech, vision, and natural language processing in significant ways.
+% For natural images, the psychological construct of ``a face'' and the physical form of ``a face'' are quite closely related.
+% To date, the majority of effort and advances in the realm of deep learning have occurred in the field of computer vision, typically in the form of classification, recognition, and scene-labeling systems.
+% The same can be said of speech and common forms of natural language processing, which tend to be rather literal in nature.
+% One notable exception in NLP is the domain of sentiment analysis, which must cope with high-level concepts like humor or sarcasm.
+% However, music as a domain of information offers several advantages, posing a particularly unique opportunity.
+% % First, it is, or at least can be, art, and to some degree inherently abstract.
+% Practically speaking, audio signals can be captured at a much lower bandwidth than video, making them far easier to process and manipulate.
+% Symbolically, text typically only occurs as a single stream of information, whereas music often consists of multiple voices in parallel.
+% Furthermore, music inherently has no absolute nor intrinsic ``meaning'' to speak of, and therefore its understanding can be derived only from relative context.
 
-% Some longer term ones
-Recursive networks for memory and expectation
-Agency and self-awareness
-Computational creativity
+% % Some longer term ones
+% Therefore, music is especially fertile territory for expanding deep learning methods into stronger areas of artificial intelligence.
+% Recursive networks, for example, have shown great promise for sequence modeling and generation of text over the span of phrases \cite{Sutskever2012}.
+% By stacking levels of recursive models, it is conceivable a machine could be used to learn structure and form over progressively longer time scales.
+% In a similar vein, musical sequences pose an interesting challenge for models of memory and expectation, key elements in the basic notions of agency and self-awareness.
+% Finally, computational creativity
 
-As offered by Wiggins in \cite{Wiggins2009}, ``the fundamental source of Music --—that without which Music cannot exist—-- is in the mind: if no mind is involved, there is no Music, but only sound.''
-You can model the sound without modeling the mind.
+
