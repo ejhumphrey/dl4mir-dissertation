@@ -176,7 +176,7 @@ Before attempting to formally define deep learning, though, it is useful to brea
 \label{subsec:deep_architectures}
 
 It was previously shown that deeper processing structures are better suited to characterize complex data.
-Such systems can be difficult to design, however, as it can be challenging to decompose an abstract music intelligence task into a cascade of logical operations.
+Such systems can be difficult to design, however, as it can be challenging to decompose an abstract music intelligence task into a logical cascade of operations.
 That said, the evolution of tempo estimation systems is a perfect example of a deep signal processing structure that developed naturally in the due course of research.
 
 The high-level design intuition behind a tempo tracking system is relatively straightforward and, as evidenced by various approaches, widely agreed upon.
@@ -209,7 +209,7 @@ Multi-level wavelet filterbanks, referred to as scattering transforms, have also
 Recognizing MFCCs as a first-order statistic, this second-order system yielded better classification results over the same observation length while also achieving convincing reconstruction of the original signals.
 The authors demonstrate their approach to be a multi-layer generalization of MFCCs, and exhibit strong parallels to certain deep network architectures, although the parameterization here is not learned but defined.
 Perhaps a more intriguing observation to draw from this work though is the influence a fresh perspective can have on designing deep architectures.
-Rather than simply propagating all information upwards through the structure, the system keeps summary statistics at each timescale, demonstrating better performance in the applications considered.
+Rather than propagating all information upwards through the structure, the system keeps summary statistics at each timescale, demonstrating better performance in the applications considered.
 
 
 \subsection{Feature Learning}
@@ -218,13 +218,13 @@ Rather than simply propagating all information upwards through the structure, th
 In traditional music informatics systems, features are tuned manually, leveraging human insight and intuition, and classifiers are tuned automatically, leveraging an objective criterion and numerical optimization.
 For this reason, the quality of hand-crafted features is a crucial aspect of system design, as numerical optimzation occurs downstream of manual feature design.
 Many are well aware of the value inherent to good representations, and feature tuning has become a common, if tedious, component in music informatics research.
-This is perhaps no better expemlified than in the instance of chroma features.
+One such instance where this has occurred is in the tuning of chroma features.
 Developed by Fujishima around the turn of the century \cite{Fujishima1999}, the last decade and a half has seen consistent iteration and improvement on the same basic concept; estimate the contribution of each pitch class over a short-time observation of audio.
 Though initially devised for chord estimation, chroma features have been used in a variety of applications, such as structural segmentation \cite{Levy2007} or music classification \cite{Mandel2005}.
 
-The first and most basic way to compute chroma is to average the energy of each pitch class according to a particular magnitude frequency representation.
-Visually, this is given in Figure \ref{fig:all_weights}-(a) for a constant-Q filterbank, e.g. frequencies are spaced like the keys of a piano.
-Over time, it was found that weighting the contributions of each frequency with a Gaussian window led to better performance, as shown in Figure \ref{fig:all_weights}-(b) \cite{Cho2014}.
+The fundamental goal in computing chroma features is to consolidate the energies of each pitch class according to a particular magnitude frequency representation.
+One of the simplest ways to do so, given in Figure \ref{fig:all_weights}-(a), shows the averaging of pitch classes in a constant-Q filterbank, e.g. frequencies are spaced like the keys of a piano.
+Later developments found that weighting the contributions of each frequency with a Gaussian window led to better performance, as shown in Figure \ref{fig:all_weights}-(b) \cite{Cho2014}.
 This improvement still required years to realize, further motivating the notion that other simple modifications remain undiscovered.
 That said, this knowledge is attained by maximizing a known objective measure, such as classification accuracy in a chord estimation task.
 Reflecting, this begs an obvious question: perhaps the parameters of a chroma estimation function could instead be \emph{learned} via numerical optimization?
