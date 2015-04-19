@@ -756,7 +756,7 @@ Z = f(Z | p) = \frac{1}{(1 - p)} Z \mathcal{B}(1, p)^M
 \end{align*}
 
 \noindent Here, the activations of an affine transformation, $Z$, a column vector of length $M$, are masked by a binomial distribution, $\mathcal{B}$, with probability $p$.
-To offset the effect of smaller magnitudes resulting from fewer units being active during training, these outputs are scaled by one minus the probability parameter, such that, in expectation over \mathcal{B}, the use of dropout matches the original function.
+To offset the effect of smaller magnitudes resulting from fewer units being active during training, these outputs are scaled by one minus the probability parameter, such that, in expectation over $\mathcal{B}$, the use of dropout matches the original function.
 Applied in this manner, this prevents rows, or bases, in the matrix projection from contributing to the final output, inhibiting the co-adaptation of parameters.
 Thus dropout is effective because the parameters are unable to depend on one another for effectiveness, and tend to learn independently good features.
 
