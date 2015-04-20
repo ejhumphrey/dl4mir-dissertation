@@ -15,7 +15,7 @@ First, sharing code and data allows others to reproduce previous results, a fund
 Open source implementations are invaluable for sufficiently complex systems.
 It may be near impossible to describe every minute detail in a publication necessary for someone else to replicate the obtained results;
 for some works, in fact, the only artifact that can do this unambiguously is the source code itself.
-Second, and in a related vein, open research makes is both easier and faster to build upon and extend the previous work of others.
+Second, and in a related vein, open research makes it both easier and faster to build upon and extend the previous work of others.
 Even in the instance a researcher is able to recreate a published system, the time and effort necessary to get to this point is significant and arguably unnecessary.
 Granted, while there is an educational component inherent to the re-implementation of previous work, the situation is akin to long division:
 it is certainly valuable to learn \emph{how} to divide by hand, but no one shuns the use of a calculator on a day to day basis.
@@ -37,7 +37,7 @@ and finally, Section \ref{sec:dl4mir} outlines \texttt{dl4mir}, the framework us
 
 Music annotations ---the collection of observations made by one or more agents about an acoustic music signal--- are an integral component of content-based music informatics methodology, and are necessary for designing, evaluating, and comparing computational systems.
 For clarity, the scope of an annotation is constrained to time scales at or below the level of a complete song, such as semantic descriptors (tags) or time-aligned chords labels.
-Traditionally, the community has relied on plain text and custom conventions to serialize this data to a file for the purposes of storage and dissemination, collectively referred to as ``lab-files''.
+Traditionally, the community has relied on plain text and custom conventions to serialize this data to a file for the purposes of storage and dissemination, collectively referred to as ``lab-files.''
 Despite a lack of formal standards, lab-files have been, and continue to be, the preferred file format for a variety of music description tasks, such as beat or onset estimation, chord estimation, or segmentation.
 
 Meanwhile, the interests and requirements of the community are continually evolving, thus testing the practical limitations of lab-files.
@@ -57,9 +57,9 @@ This has already yielded measurable benefits for the joint estimation of chords 
 \end{itemize}
 
 
-\noindent It has long been acknowledged that lab-files cannot be used to these ends, and various formats and technologies have been previously proposed to alleviate these issues, such as RDF \cite{cannam2006sonic}, HDF5\cite{bertin2011million}, or XML \cite{mckay2005ace}.
+\noindent It has long been acknowledged that lab-files cannot be used to these ends, and various formats and technologies have been previously proposed to alleviate these issues, such as RDF \cite{cannam2006sonic}, HDF5 \cite{bertin2011million}, or XML \cite{mckay2005ace}.
 However, none of these formats have been widely embraced by the community.
-Considering this options, the weak adoption of alternative formats is likely due to the combination of multiple factors.
+Considering these options, the weak adoption of alternative formats is likely due to the combination of multiple factors.
 For example, new tools can be difficult, if not impossible, to integrate into a research workflow because of compatibility issues with a preferred development platform or programming environment.
 Additionally, it is a common criticism that the syntax or data model of these alternative formats is non-obvious, verbose, or otherwise confusing.
 This is especially problematic when researchers must handle format conversions.
@@ -71,6 +71,7 @@ Therefore, a JSON Annotated Music Specification (JAMS) was developed to address 
 
 In order to craft an annotation format that might serve the community into the foreseeable future, it is worthwhile to consolidate the lessons learned from both the relative success of lab-files and the challenges faced by alternative formats into a set of principles that might guide the design of a new format.
 With this in mind, it is argued that usability, and thus the likelihood of adoption, is a function of three criteria:
+simplicity, structure, and sustainability.
 
 \subsubsection{Simplicity}
 \label{subsubsec:simplicity}
@@ -125,7 +126,7 @@ This is done in the hope that sandboxes might identify information that could be
 To faciliate the use and integration of JAMS in software projects, a Python library is publicly available and under active development\footnote{\url{http://github.com/marl/jams}}.
 This application programming interface (API) provides a simple interface for reading, writing, and manipulating the information in a JAMS object.
 Many common datasets are also provided in this format to further encourage adoption.
-Complementing the creation and use of human annotations, JAMS makes it easier to operate on this information, such as augmenting audio and annotations in parallel \footnote{\url{http://github.com/bmcfee/muda}}.
+Complementing the creation and use of human annotations, JAMS makes it easier to operate on this information, such as augmenting audio and annotations in parallel\footnote{\url{http://github.com/bmcfee/muda}}.
 
 
 \section{\texttt{biggie}}
@@ -143,10 +144,11 @@ To achieve these ends, \texttt{biggie}\footnote{\url{http://github.com/ejhumphre
 An \emph{entity} is a struct-like object designed to keep various numerical representations together, regardless of samplerate.
 These objects are then freely written to and read from a \emph{stash}, a persistent, i.e. on-disk, key-value store.
 Here, each entity is given a unique key, making it easy to align a dictionary of signals with a dictionary of annotations.
-Leveraging the h5py\footnote{\url{http://www.hdfgroup.org/HDF5/}} library under the hood and based on HDF5\footnote{\url{http://www.hdfgroup.org/HDF5/}}, biggie scales to arbitrarily large datasets;
-however, as it shares a common interface with common dictionaries, the memory footprint scales gracefully with available computational resources.
+Leveraging the h5py\footnote{\url{http://www.h5py.org/}} library under the hood and based on HDF5\footnote{\url{http://www.hdfgroup.org/HDF5/}}, biggie scales to arbitrarily large datasets;
+however, though it shares a common interface with in-memory dictionaries, the footprint of a stash scales gracefully with available computational resources by lazily loading data into memory.
 Biggie also allows random access and data caching, greatly facilitating stochastic sampling for on-line learning\footnote{\url{https://github.com/bmcfee/pescador}}.
 Perhaps most practically though, biggie serves as \emph{the} data interchange format between processing stages in the larger framework, eliminating the need for filename parsing or content-specific naming conventions; operations are written to consume and return stashes with data under the same keys.
+While biggie helps address similar pain points as other libraries, like \texttt{pandas}\footnote{\url{http://pandas.pydata.org/}}, the HDF5 backend is crucial for serializing a large collection numerical tensors in a simple, Pythonic manner.
 
 
 \section{\texttt{optimus}}
@@ -184,7 +186,7 @@ As addressed at the outset of this work, the conventional formulation of many mu
 Framing the problem as a mapping between inputs and outputs allows for objective quantitative evaluation, thus providing common dimensions on which to compare algorithms and systems against each other.
 The particular dimensions on which an algorithm is evaluated is almost by definition specific to the application, and different metrics have evolved over time to provide musically meaningful assessment.
 Many such scoring functions are nontrivial to implement, however, and small details can give rise to variability in resulting metrics.
-The Music Information Retrieval Evaluation Exchange (MIREX), the community's annual algorithm evaluation event, has helped provide common ground on which to compare different systems.
+The Music Information Retrieval Evaluation eXchange (MIREX), the community's annual algorithm evaluation event, has helped provide common ground on which to compare different systems.
 This implementation is seldom used outside MIREX due to a variety of practical difficulties, however, and instead, researchers often resort to reimplementing the same evaluation metrics.
 Unfortunately these personal implementations are not standardized, and may differ in important details, or even contain bugs, confounding comparisons.
 Therefore, the \texttt{mir\_eval} project aims to address these challenges for a variety of well-established tasks \cite{Raffel2014}.
