@@ -987,7 +987,7 @@ Referred to as \emph{scaled likelihood estimation}, this strategy has proven eff
 Notably, scaled likelihood estimation is particularly attractive here because it scales well with the number of estimated classes.
 
 As a final comment, a possible pitfall when applying likelihood scaling is a matter of numerical stability arising from the least represented classes, or classes that might not even occur in the training set.
-Whereas this can be mitigated with pseudo-counting \cite{?} --setting an heuristically determined, non-zero lower bound-- the class prior here is computed by counting each observation toward the same quality in all roots.
+Whereas this can be mitigated with pseudo-counting \cite{?} ---setting a heuristically determined, non-zero lower bound--- the class prior here is computed by counting each observation toward the same quality in all roots.
 Though this prior could be seen as a coefficient vector to optimize in a more direct way, this approach works reasonably well in practice.
 
 
@@ -995,7 +995,7 @@ Though this prior could be seen as a coefficient vector to optimize in a more di
 \label{subsubsec:early_stopping}
 
 In contrast to the previous study, which converged to a stable result in a few thousand iterations, it takes considerably more effort to train models for this task, on the order of hundreds of thousands of iterations.
-Given the lengthy run time, parameters are checkpointed every 1k iterations during training, and frame the problem of early stopping as a brute-force search over a finite set of parameter configurations.
+Given the lengthy run time, parameters are saved every 1k iterations during training, and frame the problem of early stopping as a brute-force search over a finite set of parameter configurations.
 Due to the application of Viterbi and the coupling with the self transition penalty, validation is non-trivial and computationally expensive.
 Therefore, exhaustive validation is performed every 10k iterations, starting at 5k.
 The best model and self-transition penalty are chosen by finding the configuration with the highest harmonic mean over all evaluation metrics given in Section \ref{subsec:eval_methodology}.
