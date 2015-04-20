@@ -63,7 +63,7 @@ Considering this options, the weak adoption of alternative formats is likely due
 For example, new tools can be difficult, if not impossible, to integrate into a research workflow because of compatibility issues with a preferred development platform or programming environment.
 Additionally, it is a common criticism that the syntax or data model of these alternative formats is non-obvious, verbose, or otherwise confusing.
 This is especially problematic when researchers must handle format conversions.
-Taken together, the apparent benefits to conversion are outweighed by the tangible costs.
+Therefore, a JSON Annotated Music Specification (JAMS) was developed to address these various needs.
 
 
 \subsection{Core Design Principles}
@@ -139,7 +139,7 @@ Doing so limits the flexibility of the researcher considering different tile siz
 More difficult, this practice increases the footprint of the dataset linearly with the size of each observation.
 Lastly, it is helpful to keep the entire feature sequence in tact, as it facilitates the application of any additional time-dependent processing, e.g. Viterbi decoding.
 
-To achieve these ends, \emph{biggie}\url{http://github.com/ejhumphrey/biggie} is the high-dimensional, signal-level equivalent to JAMS, built on two basic objects.
+To achieve these ends, \texttt{biggie}\footnote{\url{http://github.com/ejhumphrey/biggie}} is the high-dimensional, signal-level equivalent to JAMS, built on two basic objects.
 An \emph{entity} is a struct-like object designed to keep various numerical representations together, regardless of samplerate.
 These objects are then freely written to and read from a \emph{stash}, a persistent, i.e. on-disk, key-value store.
 Here, each entity is given a unique key, making it easy to align a dictionary of signals with a dictionary of annotations.
@@ -163,15 +163,14 @@ Additionally, designing neural networks in Theano can be rather time-consuming, 
 This is especially true when constructing non-standard architectures, such as guitar fretboard models or pairwise training strategies.
 
 % How does optimus solve these problems
-Optimus \url{http://github.com/ejhumphrey/optimus} is therefore an effort to address both of these problems in a maximally versatile and intuitive manner.
+Optimus\footnote{\url{http://github.com/ejhumphrey/optimus}} is therefore an effort to address both of these problems in a maximally versatile and intuitive manner.
 To simplify the creation, training, and application of neural networks, common building blocks are provided as natively serializable objects that can be wired together in a graphical manner.
-The
 % Nodes and math
-From a large collection of \emph{nodes}, including inputs, functions like ``Affine'' or ``Conv3D'', and outputs, arbitrary acyclic, i.e. no loops, graphs can be architected.
+Arbitrary acyclic, i.e. no loops, directed processing graphs can be architected from a large collection of \emph{nodes}, including inputs, functions, like ``Affine'' or ``Conv3D'', and outputs.
 % Losses
-While nearly any loss function can be realized from these basic building blocks, a handful of standard \emph{losses} are provided, simplifying design further.
-The topology between these parts is given by a routing table, and passed off to a \emph{graph}, which connects the dots and returns an optionally trainable function.
-Furthermore, given the flexibility to define topologies in a processing graph, it is simple to explore a variety of modifications, such as layerwise hyperparameters or tapping various intermediary representations as outputs.
+While a large space of loss functions can be realized from these basic building blocks, a handful of standard \emph{losses} are provided, simplifying design further.
+The topology between these parts is given by a routing table, and passed off to a \emph{graph}, which connects the dots and returns a callable function.
+Furthermore, given the flexibility to define topologies in a processing graph, it is simple to explore a variety of modifications, such as layerwise hyperparameters, tapping various intermediary representations as outputs, or ``cloning'' a processing node to create a deep copy of its parameters.
 
 In addition to the user-facing advantages, robust serialization is achieved by expressing processing graph definitions as JSON and archives of multidimensional arrays.
 This offers the additional benefit that it would be straightforward to port optimus models, as graph definitions and parameter bundles, across languages in the future.
@@ -187,9 +186,11 @@ The particular dimensions on which an algorithm is evaluated is almost by defini
 Many such scoring functions are nontrivial to implement, however, and small details can give rise to variability in resulting metrics.
 The Music Information Retrieval Evaluation Exchange (MIREX), the community's annual algorithm evaluation event, has helped provide common ground on which to compare different systems.
 This implementation is seldom used outside MIREX due to a variety of practical difficulties, however, and instead, researchers often resort to reimplementing the same evaluation metrics.
-Unfortunately these personal implementations are not standardized, and may differ sufficiently in important details, or even contain bugs, confounding comparisons.
-Therefore, the \texttt{mir\_eval} project sought to address these challenges for a variety of well-established tasks \cite{Raffel2014}.
+Unfortunately these personal implementations are not standardized, and may differ in important details, or even contain bugs, confounding comparisons.
+Therefore, the \texttt{mir\_eval} project aims to address these challenges for a variety of well-established tasks \cite{Raffel2014}.
 
+
+Though larger in scope, the contributions to the chord estimation evaluation are particularly relevant to this work.
 Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord estimation is an ongoing topic of discussion, due to issues with vocabularies, comparison semantics, and other lexicographical challenges unique to the task~\cite{pauwels2013evaluating}.
 One source of difficulty stems from an inherent subjectivity in ``spelling'' a chord name and the level of detail a human observer can provide in a reference annotation~\cite{ni2013understanding}.
 As a result, a consensus has yet to be reached regarding the single best approach to comparing two sequences of chord labels, and instead are often compared over a set of rules, i.e Root, Major-Minor, and Sevenths, with or without inversions.
@@ -207,10 +208,10 @@ The cumulative score, referred to as \emph{weighted chord symbol recall}, is tal
 \section{\texttt{dl4mir}}
 \label{sec:dl4mir}
 
-Leveraging these various software components, an aggregate framework representing all work presented herein is also made available, referred to as \emph{dl4mir}\url{http://github.com/ejhumphrey/dl4mir}.
+Leveraging these various software components, an aggregate framework representing all work presented herein is also made available, referred to as \texttt{dl4mir}\footnote{\url{http://github.com/ejhumphrey/dl4mir}}.
 At a high level, this resource contains the additional functionality necessary to reproduce this work.
 For convenience, the majority of processes can be executed via a series of shell scripts to perform feature extraction, training, and evaluation.
-All reported results and figures provided in this document are survived in iPython notebooks for both reference and repeatability.
+All reported results and figures provided in this document are survived in IPython notebooks for both reference and repeatability.
 Furthermore, dependencies have been minimized to make this framework sufficiently independent.
 % Goals
 In addition to the immediate goal of reproducing experimental results, this is done in the hope that it may facilitate future extensions of this work.
