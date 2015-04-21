@@ -84,7 +84,7 @@ Therefore, the three feature sequences shown ---a real excerpt, a shuffled versi
 The audio that actually corresponds to these respective representations, however, will certainly not \emph{sound} similar to a human listener.
 
 This bears a significant consequence: any ambiguity introduced or irrelevant variance left behind in the process of computing features must instead be resolved by the pattern recognition machine.
-Previous research in chord estimation has explicitly shown that better features allow for simpler classifiers \cite{Cho2011Exploring}, and intuitively many have spent years steadily improving their respective feature extraction implementations \cite{Lyon2010Sound,Mueller2011Chroma}.
+Previous research in chord estimation has explicitly shown that better features allow for simpler classifiers \cite{Cho2010Exploring}, and intuitively many have spent years steadily improving their respective feature extraction implementations \cite{Lyon2010Sound,Mueller2011Chroma}.
 Moreover, there is ample evidence these various classification strategies work quite well on myriad problems and datasets \cite{Bishop2006Pattern}.
 The logical conclusion to draw from this observation is that underperforming automatic music description systems are more likely the result of deficiencies in the feature representation than the classifier applied to it.
 
@@ -181,7 +181,7 @@ That said, the evolution of tempo estimation systems is a perfect example of a d
 
 The high-level design intuition behind a tempo tracking system is relatively straightforward and, as evidenced by various approaches, widely agreed upon.
 First, the occurrence of musical events, or onsets, are identified, and then the underlying periodicity is estimated.
-The earliest efforts in tempo analysis tracked symbolic events \cite{Dannenberg1984Online}, but it was soon shown that a time-frequency representation of sound was useful in encoding rhythmic information \cite{Scheirer1998}.
+The earliest efforts in tempo analysis tracked symbolic events \cite{Dannenberg1984Online}, but it was soon shown that a time-frequency representation of sound was useful in encoding rhythmic information \cite{Scheirer1998Tempo}.
 This led to in-depth studies of onset detection \cite{Bello2005Tutorial}, based on the idea that ``good'' impulse-like signals, referred to as \emph{novelty functions}, would greatly simplify periodicity analysis.
 Along the way, it was also discovered that applying non-linear compression to a novelty function produced noticeably better results \cite{Klapuri2006Analysis}.
 Various periodicity tracking methods were simultaneously explored, including oscillators \cite{Large1994Resonance}, multiple agents \cite{Goto1995Realtime}, inter-onset interval histograms \cite{Dixon2007Evaluation}, and tuned filterbanks \cite{Grosche2011Extracting}.
@@ -205,7 +205,7 @@ At the output of the system, these two acoustically different inputs have been t
 Therefore, the most important lesson demonstrated by this example is how invariance can be achieved by distributing complexity over multiple processing layers.
 
 As mentioned, not all tasks share the same capacity for intuition.
-Multi-level wavelet filterbanks, referred to as scattering transforms, have also shown promise as a general deep architecture for audio classification by capturing information over not only longer, but also multiple, time-scales \cite{Anden2011}.
+Multi-level wavelet filterbanks, referred to as scattering transforms, have also shown promise as a general deep architecture for audio classification by capturing information over not only longer, but also multiple, time-scales \cite{Anden2011Multiscale}.
 Recognizing MFCCs as a first-order statistic, this second-order system yielded better classification results over the same observation length while also achieving convincing reconstruction of the original signals.
 The authors demonstrate their approach to be a multi-layer generalization of MFCCs, and exhibit strong parallels to certain deep network architectures, although the parameterization here is not learned but defined.
 Perhaps a more intriguing observation to draw from this work though is the influence a fresh perspective can have on designing deep architectures.
