@@ -34,27 +34,28 @@ To answer this question, any system, computational or otherwise, must solve two 
 first, it is necessary to describe the intrinsic qualities of the item of interest, e.g. a needle is metal, sharp, thin, etc;
 and second, it is necessary to evaluate the extrinsic relationships between items to determine relevance.
 A piece of hay is certainly not a needle, for example, but is a pin close enough?
-Along what criteria might we gauge similarity, or group objects into distinct classes?
+Along what criteria might we gauge similarity, or classify objects into groups?
 Emphasizing the distinction, \emph{description} focuses on absolute representation, whereas \emph{comparison} is concerned with relative associations.
 
 % Human provided descriptions and relationships
 To date, the most successful approaches to large-scale information systems leverage human-provided signals to achieve rich content descriptions.
 Building on top of robust representations simplifies the problem greatly, and good progress has been made toward the development of useful applications.
 % Human signals about the content
-For example, the Netflix Challenge\footnote{netflix link} ---an open contest to find the best system for automatically predicting a user's enjoyment of a movie--- was built exclusively on movie ratings contributed by a large collection of other users.
+For example, the Netflix Prize challenge\footnote{\url{http://www.netflixprize.com/}} ---an open contest to find the best system for automatically predicting a user's enjoyment of a movie--- was built exclusively on movie ratings contributed by a large collection of other users.
 % Links between content
-Similarly, Google's \emph{PageRank} algorithm\footnote{pagerank link} associates websites based on how users have linked different pages together, thus facilitating the process of traversing the Internet.
+Similarly, Google's \emph{PageRank} algorithm associates websites based on how users have linked different pages together, thus facilitating the process of traversing the Internet \cite{Page1999}.
 
 % Music is a different ballgame, y'all; document description is wicked hard.
-While this strategy of leveraging manual content description has proven successful in large-scale music recommendation, such as Pandora Radio\footnote{pandora website}, its application to more general music information problems is fundamentally limited, manifesting in three related ways.
-First, human-provided information commonly used in such systems ---clicks, likes, listens or shares--- are easily captured as a natural by-product of the typical user interaction paradigm of a media player.
+While this strategy of leveraging manual content description has proven successful in large-scale music recommendation, such as Pandora Radio\footnote{\url{http://www.pandora.com/}}, its application to more general music information problems is fundamentally limited, manifesting in three related ways.
+First, human-provided information commonly used in such systems ---clicks, likes, listens or shares--- are easily captured from, or as a natural by-product of, a user's listening to music.
 It is one thing to obtain a ``thumbs up'' for a song; it is quite another to ask that same user to provide a chord transcription of it.
 Second, manual music description may require a high degree of expertise or effort to perform.
 The average music listener is not truly capable of transcribing chords from a sound recording, whether or not she possesses the time or willingness to attempt it.
 Finally, even given the skill, motivation, and infrastructure to manually describe music, this approach cannot scale to \emph{all} music content, now or in the future.
-The Music Genome Project, for example, has managed to manually annotate some 1M commercial recordings, at a pace of 20-30 minutes per track; the iTunes Music Store, however, now offers over 28M tracks for purchase.
-To illustrate how vast this discrepancy is, consider the following: even assuming the lower bound of 20 minutes, it would still take one sad individual \emph{1,000 years} of non-stop annotation to close that gap.
-More importantly, this only considers commercial music recordings, neglecting amateur or unpublished content, the addition of which makes this goal even more insurmountable.
+The Music Genome Project\footnote{\url{https://www.pandora.com/about/mgp}}, for example, has resulted in the manual annotation of some 1M commercial recordings, at a pace of 20-30 minutes per track;
+the iTunes Music Store, however, now offers over 43M tracks worldwide\footnote{According to \url{http://www.apple.com/itunes/music/}, accessed 20 April, 2015.}.
+To illustrate how vast this discrepancy is, consider the following: even assuming the lower bound of 20 minutes, it would still take one sad individual \emph{1,600 years} of non-stop annotation to close that gap.
+More importantly, this only considers commercial music recordings, neglecting amateur or unpublished content from websites like YouTube\footnote{https://www.youtube.com/} or Soundcloud\footnote{\url{https://soundcloud.com/}}, the addition of which makes this goal even more insurmountable.
 Given the sheer impossibility for humans to meaningfully describe all recorded music, now and in the future, truly scalable music information systems will require good automatic systems to perform this task.
 
 % Music description is good, state of the art is bad
@@ -66,7 +67,7 @@ Simultaneously, in the related fields of computer vision and automatic speech re
 On closer inspection, one recognizes considerable conceptual overlap between deep learning and conventional music signal processing systems, further encouraging this promising union.
 
 % Research goal
-Synthesizing these observations, this study explores deep learning as a general approach to the design of computer audition systems for music applications.
+Synthesizing these observations, this study explores deep learning as a general approach to the design of computer audition systems for music description applications.
 More specifically, the proposed research method proceeds thusly:
 first, methods and trends in content-based music informatics are reviewed in an effort to understand why progress in this domain may be decellerating, and, in doing so, identify possible deficiencies in this methodology;
 standard approaches to music signal processing are then reformulated in the language and concepts of deep learning, and subsequently applied to classic music informatics problems;
@@ -101,16 +102,16 @@ a rational agent has made the observation, and thus it is in some sense valid.
 Assessing the quality of a computational model at a subjective task must therefore take one of two slightly different formulations.
 The first transforms a subjective problem to an objective one by considering the perspective of single agent as truth, and thus the quality of a model is a function of how well it can mimic the behavior of that \emph{one} agent.
 Alternatively, the other approach attempts to determine whether or not a model makes observations on par with other competent agents. % e.g. does a system \emph{behave} like other intelligent agents.
-In this view, a computational system's capacity to perform some intelligent task is measured by its ability to convince humans that it is competent (or not) in human ways.
+In this view, a computational system's capacity to perform some intelligent task is measured by its ability to convince humans that it is competent (or not) in human ways, e.g. the Turing test \cite{Turing1950}.
 
 The notions of, and inherent conflict between, objectivity and subjectivity in audition and music perception are central to the challenge posed by the computational modeling of it.
 Arguably most facets of music perception are subjective and vary in degree from task to task.
 However, while subjective evaluation might be better suited toward measuring the quality or usability of some computational system, the human involvement required by such assessments make them prohibitively costly in both time and money to conduct with any regularity.
 As a result, conventional research methodolgy in engineering and computer science greatly prefers \emph{quantitative} evaluation as a proxy to \emph{qualitative} responses collected from human subjects.
 Typically quantitative methods proceed by collecting some number of input-output pairs from one or more human subjects beforehand, and treating this data sample as objective truth.
-Thus, regardless of whether or not a given task is actually objective, it is a significant simplification in methodology to treat it as one.
+Thus, regardless of whether or not a given task is indeed objective, it is a significant simplification in methodology to treat it as one.
 
-This is all to say that the validity and quality of a music description is ultimately determined by an objective fitness measure, not necessarily out of correctness but rather tractability.
+This is all to say that the validity and quality of a music description is often determined by an objective fitness measure, not necessarily out of correctness but rather tractability.
 Therefore, any quantitative measure is only valid insofar as the assumption of objectivity is as well.
 
 
@@ -127,16 +128,18 @@ This will at least serve to explore an alternative approach to conventional prob
 Based on preliminary results, there is good reason to believe that deep learning may in fact push the state of the art in some, if not most, applications in automatic music description.
 Sufficiently advanced systems could be deployed in end-user applications, such as navigating music libraries or computer-aided composition and performance.
 
-A thorough exploration and successful extension of deep learning to music signal processing has the significant potential to encourage others in the community to also conduct research in this area.
+A thorough exploration and successful extension of deep learning to music signal processing has the potential to encourage a broader study of these methods.
 The impacts of such a development could be far reaching, but there are two of particular note.
 First and foremost, drawing attention to a promising, but otherwise uncharted, research area opens new opportunities for fresh ideas and perspectives.
 Additionally, deep learning automatically optimizes a system to the data on hand, accelerating research and simplifying the overall design problem.
-Therefore these methods yield flexible systems that can easily adapt to new data as well as new \emph{problems}, allowing researchers to seek out novel, exciting applications.
+Therefore these methods yield flexible systems that can easily adapt to new data as well as new problems, allowing researchers to seek out novel, exciting applications.
 
 Beyond the scope of music informatics, deep learning research in the context of a different domain, with its own unique challenges, is likely to produce discoveries beneficial to the broad audience of computer science and information processing.
 One such area where this is likely to occur is in the handling of time-domain signals and sequences.
-Computer vision, the field in which most breakthroughs in deep learning have occurred, mostly ignores the temporal aspect of images.
-Some effort has explored this in motion capture and natural language processing, as will be discussed later, but the tradition of music signal processing draws heavily from digital signal theory, a field of study focused almost entirely on an analytical understanding of time.
+Computer vision, the field in which most breakthroughs in deep learning have occurred, has invested considerable effort in the study of static, 2D images.
+Certainly some have extended these techniques to image sequences and video, but this is far more the exception than the rule.
+Other sequential data, such as natural language, in the form of text, speech signals, and motion capture data have also seen a deal of study in deep learning circles.
+The tradition of music signal processing draws heavily from digital signal theory, a field of study with a considerable focus on an analytical understanding of time.
 
 Therefore, this work offers several potential contributions, both theoretical and practical, to a diverse audience, spanning users of technology, music informatics, and the deep learning community on the whole.
 
@@ -157,8 +160,8 @@ Therefore, this work offers several potential contributions, both theoretical an
 
 \item Chapter \ref{chp:reproducibility} documents the software contributions resulting from this study, contributing to the greater cause of reproducible research efforts.
 
-\item Chapter \ref{chp:conclusion} concludes this thesis.
-There will be tables and chairs, there'll be pony rides and dancing bears, there'll even be a band.
+\item Chapter \ref{chp:conclusion} concludes this thesis, summarizing the work presented and offering perspectives for future work and outstanding challenges.
+% There will be tables and chairs, there'll be pony rides and dancing bears, there'll even be a band.
 
 \end{description}
 
@@ -167,11 +170,12 @@ The primary contributions of this dissertation are listed below:
 
 \begin{itemize}
   \onehalfspacing
-\item Demonstrates an objective approach to the development of timbre similarity embeddings.
-\item Advances the state of the art in large vocabulary automatic chord estimation, while illustrating methodological limitations in the current formulation of the task.
-\item Leveraged traditional chord transcriptions to develop an automatic guitar chord estimation system, which directly maps music audio to fingerings on a fretboard.
-\item Contributes, in whole or part, to several open source projects to facilitate future efforts; this includes a framework to reproduce the experimental results contained herein.
+\item \textbf{Demonstrates an objective approach to the development of timbre similarity embeddings.} The proposed approach extends previous efforts in using pairwise training of deep architectures by relaxing constraints on the output space and generalizing the use of margins as a ratio, rather than an absolute parameter; in addition to realizing a far more discriminative instrument embedding than a shallow comparison system overall, the margin ratio improves performance slightly over the original pairwise training approach.
+\item \textbf{Advances the state of the art in large vocabulary automatic chord estimation, while illustrating methodological limitations in the current formulation of the task.} Comprehensive error analysis is performed both by comparing two state of the systems against the reference chord transcriptions, as well as the proposed system against another dataset with multiple annotators. The insight gleaned from this study is used to offer perspective on future directions for the task at large.
+\item \textbf{Leveraged traditional chord transcriptions to develop an automatic guitar chord estimation system, which directly maps music audio to fingerings on a fretboard.} Not only does this approach improve some measures over the other large-vocabulary chord estimation system presented here, but it provides a user-friendly interface for both learning and soliciting feedback on system errors.
+\item \textbf{Contributes, in whole or part, to several open source projects to facilitate future efforts.} In addition to a suite of tools that may help serve the larger research community, this includes a framework to reproduce the experimental results and analysis contained herein.
 \end{itemize}
+
 
 \section{Associated Publications by the Author}
 
