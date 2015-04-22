@@ -41,18 +41,18 @@ Experimental results show that the model achieves the goal of faithfully mapping
 
 % Rise of the guitarists
 To date, the majority of research in automatic chord estimation is based on the two-fold premise that (a) it is fundamentally a classification problem, and (b) the ideal output is a time-aligned sequence of singular chord names.
-That said, it is worthwhile to reconsider how the development of such systems is motivated by the goal of helping the amibitious musician learn to play a particular song.
-Notably, today guitarists comprise one of the largest groups of musicans attempting to do just that.
-Over the last century, the guitar, in all of its forms, has drastically risen in popularity and prevalance, both in professional and amateur settings.
-Given the low start-up cost, portability, favorable learning curve, and ---courtesy of musicans like Jimi Hendrix or \emph{The Beatles}--- an undisputed ``cool factor'' in Western popular culture, it is unsurprising that guitars dwarf music instrument sales in the United States.
-Based on the 2014 annual report of the National Association of Music Merchants (NAMM), a whopping 2.47M guitars were sold in 2013 in the United States, accounting for a retail value of \$1.07 \emph{billion} USD \cite{NAMM2014}; as a point of comparison, all wind instruments \emph{combined} ---the next largest instrument category--- totaled just over half that figure, at \$521M USD.
+That said, it is worthwhile to reconsider how the development of such systems is motivated by the goal of helping the ambitious musician learn to play a particular song.
+Notably, today guitarists comprise one of the largest groups of musicians attempting to do just that.
+Over the last century, the guitar, in all of its forms, has drastically risen in popularity and prevalence, both in professional and amateur settings.
+Given the low start-up cost, portability, favorable learning curve, and ---courtesy of musicians like Jimi Hendrix or \emph{The Beatles}--- an undisputed ``cool factor'' in Western popular culture, it is unsurprising that guitars dwarf music instrument sales in the United States.
+Based on the 2014 annual report of the National Association of Music Merchants (NAMM), a whopping 2.47M guitars were sold in 2013 in the United States, accounting for a retail value of \$1.07 \emph{billion} USD \cite{NAMM2014Global}; as a point of comparison, all wind instruments \emph{combined} ---the next largest instrument category--- totaled just over half that figure, at \$521M USD.
 
 % Tablature notation
 The fact that guitarists comprise such a large portion of the musician community is important, as it affects how they might prefer to interact with a chord estimation system.
 While most instruments make use of traditional staff notation, fretted instruments, like lute or guitar, have a long history of using \emph{tablature} to notate music.
 Illustrated in Figure \ref{fig:chord_notation}, tablature requires minimal musical knowledge to interpret, and thus offers the advantage that is easier to read, particularly for beginners.
 Whereas staff notation explicitly encodes pitch information, leaving the performer to translate notes to a given instrument, tablature explicitly encodes performance instructions for a given instrument.
-Though it can be difficult to accurately depict rhytmic information with tablature, this is seldom an obstacle for guitarists.
+Though it can be difficult to accurately depict rhythmic information with tablature, this is seldom an obstacle for guitarists.
 Chords-centric guitar parts typically place less emphasis on rhythm, and changes are usually aligned with lyrics or metrical position.
 
 \begin{figure}[t!]
@@ -66,7 +66,7 @@ Chords-centric guitar parts typically place less emphasis on rhythm, and changes
 % Digitization and the internet
 From the earliest days of personal computing, contemporary guitarists have embraced technology en masse for the creation and dissemination of ``tabs.''
 Initial bandwidth and memory limitations, however, prevented the curation of high resolution images of sheet music, and symbolic representations, like MIDI, required specialized programs to render the music visually.
-With small filesizes and compatibility with common text editors, ASCII ``tabs'' made it comparatively trivial to create, share, and store guitar music.
+With small file sizes and compatibility with common text editors, ASCII ``tabs'' made it comparatively trivial to create, share, and store guitar music.
 Thus, combining easy readability and a sufficient level of musical detail with technological constraints of the time period, guitar tablature spiked in popularity towards the end of the $20^{th}$ century.
 As evidenced by heavily trafficked, user-curated websites like Ultimate Guitar\footnote{http://www.ultimate-guitar.com/}, modern online guitar communities continue to place a high demand on tablature.
 Shown in Figure \ref{fig:compete}, this website alone sees, on average, over 2M unique visitors\footnote{Based on Compete.com analytics data, accessed on 15 March, 2015.} per month in the United States.
@@ -80,7 +80,7 @@ Therefore, this chapter is an effort to steer automatic chord estimation toward 
 
 \section{Proposed System}
 
-Building on previous efforts in automatic chord estiamtion, the best performing configuration presented in Chapter 5, XL-0.125, is extended here for guitar chord estimation.
+Building on previous efforts in automatic chord estimation, the best performing configuration presented in Chapter 5, XL-0.125, is extended here for guitar chord estimation.
 As such, many design decisions remain consistent with the previous description, such as the constant-Q representation, dataset, or evaluation methodology, and are omitted from the discussion.
 There are a few important differences, however, which are addressed below.
 First, the architecture is modified slightly to produce fretboard-like outputs.
@@ -88,7 +88,7 @@ A strategy is then discussed for incorporating guitar chord shapes into the mode
 The modified objective and decision functions are presented last, detailing how the model is optimized and use to estimate discrete chord classes.
 
 Finally, it is worth mentioning that, despite the desire to map notes to a guitar fretboard, this approach is much closer in principle to chord estimation than automatic transcription methods.
-Thus, while some previous work embraces this position in the realm of transcribing guitar recordings \cite{Barbancho2012} or arranging music for guitar \cite{Hori2013}, the only previous work in estimating guitar chords as tablature directly from polyphonic recordings is performed by the author, in \cite{Humphrey2014}.
+Thus, while some previous work embraces this position in the realm of transcribing guitar recordings \cite{Barbancho2012Automatic} or arranging music for guitar \cite{Hori2013Input}, the only previous work in estimating guitar chords as tablature directly from polyphonic recordings is performed by the author, in \cite{Humphrey2014Music}.
 
 
 \subsection{Designing a Fretboard Model}
@@ -155,7 +155,7 @@ The choice of one template over another likely has nontrivial implications for t
 
 While estimating frets is sufficient for human interpretation, it is necessary to design two related decision functions in order to allow the machine to operate automatically.
 First, the templates defined above must be incorporated into an objective function, such that the machine can learn to optimize this measure over the training data.
-Finding inspiration in \cite{LeCun1998}, a Radial Basis Function (RBF) layer is added to the network, given as follows:
+Finding inspiration in \cite{LeCun1998Gradient}, a Radial Basis Function (RBF) layer is added to the network, given as follows:
 
 \begin{equation}
 \small
@@ -199,7 +199,7 @@ This allows the variance of each chord quality to be evenly distributed across c
 
 Identical partitions of the dataset used in the previous chapter are employed here; the dataset is split 68:12:20, into training, validation, and test, respectively, and the partitions are rotated so that all data is used as a holdout set once.
 All models are trained with mini-batch stochastic gradient descent at a batch size of 100, learning rate of 0.02, and dropout ratio of 0.125.
-Training proceeded for several hundred iterations, ultimately bounded by a ceiling of 24 hours, and parameters were checkpointed every 10k iterations.
+Training proceeded for several hundred iterations, ultimately bounded by a ceiling of 24 hours, and parameters saved every 10k iterations.
 Model selection was performed as a brute force search over both the parameter checkpoints and self-transition penalty for Viterbi, from -20 to -40 in steps of 5.
 The best model was chosen by the maximum of the harmonic mean of the chord evaluation metrics outlined previously.
 
@@ -209,19 +209,19 @@ The best model was chosen by the maximum of the harmonic mean of the chord evalu
 
 In the absence of a thorough user study, the proposed approach is evaluated against the chord estimation task posed in Chapter 5.4.
 Applying the methodology outlined above, the three training conditions were run to completion and used to predict into the space of 157 chord classes.
-Given the intersection with the previous chapter, these three systems are compared to the system presented in \cite{Cho2014}, referred to as ``Cho, 2014'', and the model related to those explored here, ``XL-0.125'', referred to now as the ``root-invariant'' condition.
+Given the intersection with the previous chapter, these three systems are compared to the system presented in \cite{Cho2014Improved}, referred to as ``Cho'', and the model related to those explored here, ``XL-0.125'', referred to now as the ``root-invariant'' condition.
 
 \begin{table}[t]
 \begin{center}
 \scriptsize
-\caption{Micro-recall scores over the test set for two previous models, and the three conditions considered here.}
+\caption{Weighted recall scores over the test set for two previous models, and the three conditions considered here.}
 \label{tab:test_micro}
 \begin{tabular}{c|rrrrrrr}
 
 \hline
- & triads &   root &   mirex &   tetrads &   sevenths &   thirds &   majmin \\
+ & triads &   root &   MIREX &   tetrads &   sevenths &   thirds &   majmin \\
 \hline
-Cho, 2014 & 0.7970 & 0.8475 & 0.8147 & 0.6592 & 0.6704 & 0.8197 & 0.8057 \\
+Cho & 0.7970 & 0.8475 & 0.8147 & 0.6592 & 0.6704 & 0.8197 & 0.8057 \\
 \hline
 Root-invariant (Chapter 5)  & 0.7995 & 0.8493 & 0.8145 & 0.6673 & 0.6788 & 0.8227 & 0.8077 \\
 \hline
@@ -233,8 +233,8 @@ Augmented & \textbf{0.8294} & \textbf{0.8715} & \textbf{0.8420} & \textbf{0.6989
 \end{center}
 \end{table}
 
-Overall perfomance, or ``micro-recall'', across metrics is given in Table \ref{tab:test_micro}.
-These results clearly indicate that, over all the data, the three fretboard models perform considerably better than either of the two previous ones.
+Overall performance is measured as weighted recall across metrics, as per the previous chapter, and given in Table \ref{tab:test_micro}.
+These results indicate that, over all the data, the three fretboard models perform far better than either of the two previous ones.
 Additionally, the combination of weight scaling and pitch shifting leads to the best overall performance.
 As the second, weight scaled condition fares slightly worse than training the models with the data as-is, it is reasonable to assume that applying pitch shifting only during training likely would have resulted in higher overall scores.
 
@@ -270,7 +270,7 @@ As the second, weight scaled condition fares slightly worse than training the mo
 \end{center}
 \end{table}
 
-However, the quality-wise, ``macro-recall'', measures, given in Table \ref{tab:test_qualitywise}, better illustrate the true impact of these strategies.
+However, quality-wise recall, given in Table \ref{tab:test_qualitywise}, offers a more nuanced depiction of the effect of these strategies.
 Going from the ``as-is'' to ``scaled'' conditions, the slight reduction in micro-recall is traded for an increase in averaged quality-wise recall.
 This result is intuitively satisfying, as the introduction of class-dependent weights into the training process should help raise the preference for the long tail chords.
 Though this can help attenuate the model's strong preference for majority chord classes, it does nothing to help address the overall deficiency of minority classes.
@@ -294,7 +294,7 @@ This behavior alludes to the previous discussion regarding the apparent trade-of
 
 
 Another important behavior to consider here is the idea that the direct estimation of a fretboard representation affords some benefit over simply projecting the predicted labels of a standard chord classifier \emph{back} onto guitar chord templates.
-Typical chord estimation systems, and especially those that rely heavily on Viterbi, like \cite{Cho2014}, produce a sequence of discrete chord labels, and are thus effectively ``classifiers''.
+Typical chord estimation systems, and especially those that rely heavily on Viterbi, like \cite{Cho2014Improved}, produce a sequence of discrete chord labels, and are thus effectively ``classifiers''.
 Comparatively, fretboard estimation can be seen as regression, given the continuous output surface, but can be used for classification by identifying the closest known chord template, referred to as \emph{vector quantization}.
 Thus, illustrated in Figure \ref{fig:quantized}, misclassification can be understood as a type of quantization \emph{error};
 here a prediction close to, but on the wrong side of, the decision boundary is assigned to a different chord shape.
@@ -310,8 +310,8 @@ However, since the representation is human readable, it is trivial to correct th
 \end{figure}
 
 In the space of fretboard estimation, this can be quantified by comparing the distances between predictions both before and after classification, partitioned on whether or not the datapoint is correctly assigned.
-First, the distances between the continuous-valued fretboard and the corresponding target template are computed and histogrammed.
-Next, the estimated fretboard representations are assigned to the \emph{nearest} template, and distance is computed to the target; these distances, are also histogrammed, but only take a finite number of values.
+First, the distances between the continuous-valued fretboard and the corresponding target template are computed and tallied as a histogram.
+Next, the estimated fretboard representations are assigned to the \emph{nearest} template, and distance is computed to the target; these distances, are also aggregated into a histogram, but take only a finite number of values.
 Both probability density functions are integrated into continuous distribution functions to illustrate what ratio of the data lives within the radius of a bounding volume, shown in Figure \ref{fig:quant_error}.
 Here, it can be seen that classification clearly widens the gap between correct and incorrect answers.
 Alternatively, in the regression scenario, nearly 20\% of these errors are closer to their correct class, accounting for well over 80\% of the data.
@@ -329,7 +329,7 @@ Pragmatically speaking though, consistently tracking root motion, e.g. being in 
 The vast majority of music can be simplified as ``power chords'', consisting of the root and the fifth, and often more detailed chords can be realized by modifying this basic shape.
 Therefore, while many methodological challenges inherent to chord estimation persist in this study, predicting chord shapes as tablature softens the degree to which they impact usability.
 
-Setting aside the limitations of quantiative evaluation in chord estimation, the proposed system warrants a subjective, user experience study in the future.
+Setting aside the limitations of quantitative evaluation in chord estimation, the proposed system warrants a subjective, user experience study in the future.
 Many of the gains identified here can only be qualitatively assessing how such a system achieves its goals, such as the degree to which performance \emph{does} in fact degrade gracefully.
 Countless instances can be identified where system ``errors'' can be reasonably interpreted as the chord name provided, but only a study with real users will indicate how useful this is.
 

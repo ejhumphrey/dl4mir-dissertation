@@ -397,9 +397,8 @@ The partitions are circularly rotated such that each is used as the test set onc
 Though the pairwise training strategy described in Section \ref{subsec:timbre_pairwise} consists of two margin hyperparameters, it is ultimately the ratio between the two that governs how the space will be shaped.
 In isolation, the exact choice of dissimilar term's margin, $m_{d}$, is inconsequential and determines the radius of the bounding sphere.
 Going forward, this value is fixed to $\sqrt{12}$, corresponding to the radius of the sphere that intersects the coordinate $(2, 2, 2)$.
-Moving the similar term's margin, $m_{s}$, relative to this value will lead to different embeddings, and three ratios of $m_{s}:m_{d}$ are considered here: 0, $\frac{1}{4}$, and $\frac{1}{2}$.
+Moving the similar term's margin, $m_{s}$, relative to this value will lead to different embeddings, and three ratios of $r_{m} = \frac{m_{s}}{m_{d}}$ are considered here: 0, $\frac{1}{4}$, and $\frac{1}{2}$.
 The corresponding loss functions are shown in Figure \ref{fig:margins}.
-
 
 \begin{figure}[h]
 \centering
@@ -407,8 +406,6 @@ The corresponding loss functions are shown in Figure \ref{fig:margins}.
 \caption{Loss contours for different margin ratios.}
 \label{fig:margins}
 \end{figure}
-
-
 
 \subsection{Comparison Algorithm}
 
@@ -442,9 +439,9 @@ Classification accuracy is then computed across all three sets, and tallied acro
 \begin{tabular}{lllll}
  config  & c5    & c8   & c12  & c24  \\
 \hline
- NLSE : 0.0  & $93.81\pm0.53$ & $89.97\pm0.40$ & $86.70\pm0.39$ & $74.17\pm0.79$ \\
- NLSE : 0.25 & $94.21\pm0.18$ & $90.25\pm0.54$ & $87.17\pm0.35$ & $73.91\pm0.61$ \\
- NLSE : 0.5  & $93.04\pm0.29$ & $89.16\pm0.27$ & $86.08\pm0.26$ & $71.59\pm0.88$ \\
+ NLSE, $r_{m}=0.0$ & $93.81\pm0.53$ & $89.97\pm0.40$ & $86.70\pm0.39$ & $74.17\pm0.79$ \\
+ NLSE, $r_{m}=0.25$ & $94.21\pm0.18$ & $90.25\pm0.54$ & $87.17\pm0.35$ & $73.91\pm0.61$ \\
+ NLSE, $r_{m}=0.5$  & $93.04\pm0.29$ & $89.16\pm0.27$ & $86.08\pm0.26$ & $71.59\pm0.88$ \\
  \hline
  PCA-LDA & $64.44\pm0.47$ & $56.58\pm0.60$ & $47.22\pm0.45$ & $35.81\pm0.28$ \\
 
@@ -462,9 +459,9 @@ Classification accuracy is then computed across all three sets, and tallied acro
 \hline
 config & c5  & c8 & c12   & c24     \\
 \hline
- NLSE, $\frac{m_s}{m_d}=0.0$  & $92.37\pm0.64$ & $87.94\pm0.45$ & $84.52\pm0.97$ & $70.86\pm1.51$ \\
- NLSE, $\frac{m_s}{m_d}=0.25$ & $93.75\pm0.53$ & $88.62\pm0.58$ & $85.65\pm0.26$ & $71.46\pm0.63$ \\
- NLSE, $\frac{m_s}{m_d}=0.5$  & $91.75\pm0.67$ & $87.78\pm0.85$ & $83.78\pm0.53$ & $66.37\pm1.69$ \\
+ NLSE, $r_{m}=0.0$  & $92.37\pm0.64$ & $87.94\pm0.45$ & $84.52\pm0.97$ & $70.86\pm1.51$ \\
+ NLSE, $r_{m}=0.25$ & $93.75\pm0.53$ & $88.62\pm0.58$ & $85.65\pm0.26$ & $71.46\pm0.63$ \\
+ NLSE, $r_{m}=0.5$  & $91.75\pm0.67$ & $87.78\pm0.85$ & $83.78\pm0.53$ & $66.37\pm1.69$ \\
  \hline
  PCA-LDA & $59.97\pm0.96$ & $52.49\pm2.68$ & $39.25\pm2.01$ & $24.32\pm0.97$ \\
 \hline
@@ -481,9 +478,9 @@ config & c5  & c8 & c12   & c24     \\
 \hline
 config & c5  & c8  & c12   & c24   \\
 \hline
- NLSE, $\frac{m_s}{m_d}=0.0$  & $92.49\pm0.41$ & $88.26\pm0.74$ & $84.35\pm0.41$ & $70.67\pm0.55$ \\
- NLSE, $\frac{m_s}{m_d}=0.25$ & $92.97\pm0.41$ & $88.67\pm0.79$ & $85.16\pm0.24$ & $70.28\pm0.86$ \\
- NLSE, $\frac{m_s}{m_d}=0.5$  & $91.96\pm0.35$ & $87.83\pm0.25$ & $84.04\pm0.57$ & $66.91\pm0.57$ \\
+ NLSE, $r_{m}=0.0$  & $92.49\pm0.41$ & $88.26\pm0.74$ & $84.35\pm0.41$ & $70.67\pm0.55$ \\
+ NLSE, $r_{m}=0.25$ & $92.97\pm0.41$ & $88.67\pm0.79$ & $85.16\pm0.24$ & $70.28\pm0.86$ \\
+ NLSE, $r_{m}=0.5$  & $91.96\pm0.35$ & $87.83\pm0.25$ & $84.04\pm0.57$ & $66.91\pm0.57$ \\
  \hline
  PCA-LDA  & $59.91\pm0.77$ & $50.24\pm1.52$ & $39.32\pm0.86$ & $24.77\pm0.51$ \\
 \hline
@@ -501,36 +498,19 @@ It is interesting to note that a non-zero similarity margin, $m_s$, leads to sli
 One explanation for such behavior is that introducing a small region of zero-loss within a class may allow the network to emphasize dissimilar relationships more as training proceeds.
 It would appear too much freedom, on the other hand, leads to fuzzy boundaries between classes and begins to compromise local structure.
 
-
 The outcome of the classification experiment can also be used to inform how smooth or intuitive this space might be.
 To do so, confusion matrices are shown for the c12 configuration for the best NLSE, with a margin ratio of 0.25, and the PCA-LDA model, in Tables \ref{tab:confmat_nlse} and \ref{tab:confmat_pcalda}, respectively.
 
+Though more confusions are to be expected in the PCA-LDA model, given the classification accuracy, it is important to note that these errors are distributed somewhat uniformly across classes, rather than correlated with instrument similarity.
+This higher noise-floor indicates that the instruments' distribution exhibit a good deal of overlap in space.
+Some logical confusions seem unavoidable, such as French horn (ho) and trombone (tp), or flute (fl) and oboe (ob), occurring in both models.
+The former makes sense given common instrument families, i.e. brass, while the latter likely arises from the upper range of the instruments, which has fewer harmonics.
 
-% \begin{table*}[h]
-% \begin{center}
-% \caption{Confusion Matrix -- (c12, ratio=0.0).}
-% \scriptsize
-% \begin{tabular}{ccccccccccccc}
-% \hline
-%    & eh &    fa &   fl &    ho &   klb &    ob &   sxt &    tp &   trc &    tu &    vc &    vi \\
-% \hline
-% eh &  \textbf{84.96} &  0.65 &  0.76 &  1.41 &  1.43 &  5.73 &  1.52 &  0.33 &  2.60 &  0.22 &  0.47 &  1.09 \\
-% fa &   1.65 & \textbf{84.30} &  0.08 &  3.98 &  0.25 &  0.37 &  1.19 &  0.90 &  0.95 &  4.04 &  2.31 &  0.54 \\
-% fl &   0.88 &  0.17 & \textbf{85.42} &  0.71 &  2.56 &  3.65 &  3.24 &  0.13 &  1.57 &  0.23 &  0.51 &  0.75 \\
-% ho &   0.93 &  2.21 &  0.10 & \textbf{80.74} &  0.20 &  0.30 &  0.79 &  9.28 &  2.59 &  3.57 &  0.53 &  0.65 \\
-% klb &   1.02 &  0.12 &  1.52 &  0.64 & \textbf{85.38} &  4.93 &  3.46 &  0.12 &  1.01 &  0.31 &  2.30 &  0.54 \\
-% ob &   2.67 &  0.16 &  2.92 &  0.87 &  1.74 & \textbf{83.02} &  0.63 &  0.12 &  4.06 &  0.16 &  0.16 &  1.33 \\
-% sxt &   0.29 &  0.36 &  0.80 &  0.37 &  1.56 &  0.34 & \textbf{85.60} &  0.10 &  0.94 &  1.37 &  4.70 &  2.27 \\
-% tp &   0.51 &  0.45 &  0.06 & 10.97 &  0.06 &  0.34 &  0.46 & \textbf{78.47} &  2.73 &  2.79 &  0.54 &  0.45 \\
-% trc &   1.54 &  0.07 &  1.11 &  2.63 &  0.51 &  4.60 &  1.37 &  3.33 & \textbf{83.58} &  0.43 &  0.33 &  1.57 \\
-% tu &   0.19 &  2.31 &  0.05 &  4.02 &  0.13 &  0.11 &  1.51 &  2.36 &  0.56 & \textbf{84.69} &  3.27 &  0.32 \\
-% vc &   0.44 &  0.50 &  0.19 &  0.50 &  0.84 &  0.29 &  3.46 &  0.17 &  0.43 &  2.23 & \textbf{90.56} &  0.70 \\
-% vi &   0.81 &  0.31 &  0.65 &  1.48 &  0.43 &  1.59 &  5.06 &  0.56 &  2.17 &  0.51 &  1.97 & \textbf{85.23} \\
-% \hline
-% \end{tabular}
-% \label{tab:things}
-% \end{center}
-% \end{table*}
+Other instrument relationships also appear to confound some element of pitch height in similarity, particularly for the PCA-LDA model.
+This is observed in the confusions between tuba, bassoon, and French horn.
+In the NLSE model, tuba is confused with French horn more often than bassoon; for the PCA-LDA model, however, the inverse is true.
+Intuitively, the two brass instruments should share the higher confusion rate, and thus pitch is being used by the LDA model as a feature with which to distinguish between classes.
+The convolutional model, on the other hand, is forced to embrace a considerable amount of pitch invariance, and is prevented from making the same error.
 
 % TODO: Label rows and columns as reference vs estimated.
 \begin{landscape}
@@ -561,31 +541,6 @@ vi &   0.49 &  0.23 &  0.61 &  2.44 &  0.46 &  1.20 &  2.46 &  0.48 &  2.05 &  0
 \end{table*}
 \end{landscape}
 
-% \begin{table*}[h]
-% \begin{center}
-% \caption{Confusion Matrix -- (c12, ratio=0.5).}
-% \scriptsize
-% \begin{tabular}{ccccccccccccc}
-% \hline
-%   &  eh &    fa &   fl &    ho &   klb &    ob &   sxt &    tp &   trc &    tu &    vc &    vi \\
-% \hline
-%  eh & \textbf{83.85} &  1.13 &  0.56 &  2.70 &  2.05 &  3.89 &  0.67 &  0.27 &  2.35 &  0.20 &  0.78 &  1.55 \\
-%  fa &  1.59 & \textbf{83.41} &  0.03 &  5.87 &  0.36 &  0.07 &  0.51 &  0.50 &  0.69 &  3.26 &  2.86 &  0.40 \\
-%  fl & 1.15 &  0.04 & \textbf{85.36} &  0.80 &  2.29 &  3.56 &  2.60 &  0.07 &  2.79 &  0.05 &  0.69 &  1.47 \\
-%  ho &  0.72 &  1.87 &  0.05 & \textbf{82.06} &  0.26 &  0.24 &  0.25 &  6.52 &  1.17 &  3.54 &  0.85 &  1.42 \\
-%  klb &  1.91 &  0.45 &  2.53 &  1.30 & \textbf{84.78} &  3.35 &  2.15 &  0.13 &  1.15 &  0.15 &  1.97 &  1.16 \\
-%  ob &  2.88 &  0.05 &  3.38 &  1.05 &  2.73 & \textbf{80.34} &  0.87 &  0.23 &  5.53 &  0.07 &  0.05 &  2.04 \\
-%  sxt &  0.21 &  0.42 &  1.45 &  0.34 &  1.18 &  0.53 & \textbf{86.67} &  0.09 &  0.41 &  0.28 &  4.68 &  2.96 \\
-%  tp &  0.20 &  0.82 &  0.04 & 14.09 &  0.03 &  0.04 &  0.37 & \textbf{78.79} &  3.38 &  3.30 &  0.66 &  0.96 \\
-%  trc &  1.50 &  0.10 &  1.49 &  3.31 &  0.54 &  5.81 &  0.77 &  2.25 & \textbf{82.08} &  0.18 &  0.13 &  2.39 \\
-%  tu &  0.13 &  1.97 &  0.01 &  6.18 &  0.04 &  0.00 &  0.45 &  2.31 &  0.22 & \textbf{85.96} &  2.52 &  0.34 \\
-%  vc &  0.37 &  0.81 &  0.14 &  1.65 &  0.62 &  0.07 &  2.53 &  0.27 &  0.23 &  1.59 & \textbf{90.40} &  1.61 \\
-%  vi &  0.59 &  0.33 &  0.86 &  2.21 &  0.83 &  0.81 &  3.28 &  0.37 &  2.09 &  0.48 &  1.92 & \textbf{85.40} \\
-% \hline
-% \end{tabular}
-% \label{tab:things}
-% \end{center}
-% \end{table*}
 
 \begin{landscape}
 \begin{table*} %[h]
@@ -615,17 +570,6 @@ vi &   0.49 &  0.23 &  0.61 &  2.44 &  0.46 &  1.20 &  2.46 &  0.48 &  2.05 &  0
 \end{table*}
 \end{landscape}
 
-Though more confusions are to be expected in the PCA-LDA model, given the classification accuracy, it is important to note that these errors are distributed somewhat uniformly across classes, rather than correlated with instrument similarity.
-This higher noise-floor indicates that the instruments' distribution exhibit a good deal of overlap in space.
-Some logical confusions seem unavoidable, such as French horn (ho) and trombone (tp), or flute (fl) and oboe (ob), occurring in both models.
-The former makes sense given common instrument families, i.e. brass, while the latter likely arises from the upper range of the instruments, which has fewer harmonics.
-
-
-Other instrument relationships also appear to confound some element of pitch height in similarity, particularly for the PCA-LDA model.
-This is observed in the confusions between tuba, bassoon, and French horn.
-In the NLSE model, tuba is confused with French horn more often than bassoon; for the PCA-LDA model, however, the inverse is true.
-Intuitively, the two brass instruments should share the higher confusion rate, and thus pitch is being used by the LDA model as a feature with which to distinguish between classes.
-The convolutional model, on the other hand, is forced to embrace a considerable amount of pitch invariance, and is prevented from making the same error.
 
 \begin{figure}[h]
 \centering

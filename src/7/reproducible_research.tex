@@ -45,19 +45,19 @@ Reflecting on this tradition, there are three unfolding research trends that are
 
 \begin{itemize}
 \item \textbf{Comprehensive annotation data}:
-Rich annotations, like the Billboard dataset\cite{Burgoyne2011expert}, require new, content-specific conventions, increasing the complexity of the software necessary to decode it and the burden on the researcher to use it; such annotations can be so complex, in fact, it becomes necessary to document how to understand and parse the format\cite{De2012parsing}.
+Rich annotations, like the Billboard dataset\cite{Burgoyne2011Expert}, require new, content-specific conventions, increasing the complexity of the software necessary to decode it and the burden on the researcher to use it; such annotations can be so complex, in fact, it becomes necessary to document how to understand and parse the format\cite{De2012Parsing}.
 
 \item \textbf{Multiple annotations for a given task}:
 The experience of music can be highly subjective, at which point the notion of ``ground truth'' becomes tenuous.
-Recent work in automatic chord estimation, both here and in \cite{ni2013understanding}, has shown that multiple reference annotations should be embraced, as they can provide important insight into both system evaluation and the problem formulation itself.
+Recent work in automatic chord estimation, both here and in \cite{Ni2013Understanding}, has shown that multiple reference annotations should be embraced, as they can provide important insight into both system evaluation and the problem formulation itself.
 
 \item \textbf{Multiple concepts for a given signal}:
-Although systems are classically developed to describe observations in a single namespace, e.g. chords, there is ongoing discussion toward integrating information across various musical concepts \cite{vincent2010roadmap}.
-This has already yielded measurable benefits for the joint estimation of chords and downbeats \cite{papadopoulos2011joint} or chords and segments \cite{mauch2009using}, where leveraging multiple information sources for the same input signal can lead to improved performance.
+Although systems are classically developed to describe observations in a single namespace, e.g. chords, there is ongoing discussion toward integrating information across various musical concepts \cite{Vincent2010Roadmap}.
+This has already yielded measurable benefits for the joint estimation of chords and downbeats \cite{Papadopoulos2011Joint} or chords and segments \cite{Mauch2009Using}, where leveraging multiple information sources for the same input signal can lead to improved performance.
 \end{itemize}
 
 
-\noindent It has long been acknowledged that lab-files cannot be used to these ends, and various formats and technologies have been previously proposed to alleviate these issues, such as RDF \cite{cannam2006sonic}, HDF5 \cite{bertin2011million}, or XML \cite{mckay2005ace}.
+\noindent It has long been acknowledged that lab-files cannot be used to these ends, and various formats and technologies have been previously proposed to alleviate these issues, such as RDF \cite{Cannam2006Sonic}, HDF5 \cite{Bertin2011Million}, or XML \cite{McKay2005Ace}.
 However, none of these formats have been widely embraced by the community.
 Considering these options, the weak adoption of alternative formats is likely due to the combination of multiple factors.
 For example, new tools can be difficult, if not impossible, to integrate into a research workflow because of compatibility issues with a preferred development platform or programming environment.
@@ -112,7 +112,7 @@ Not only does this information make it easier to develop and evaluate systems wi
 This could be achieved by considering the observations made by annotators with different musical backgrounds or degrees of formal training, for example.
 
 In addition to an array of annotations, JAMS objects also maintain a top-level file metadata object.
-While annotation metadata sponges information about observer, file metadata tracks global information about the corresponding audio signal, with properties like \emph{title}, \emph{artist}, \emph{duration}, or \emph{indentifiers}.
+While annotation metadata sponges information about observer, file metadata tracks global information about the corresponding audio signal, with properties like \emph{title}, \emph{artist}, \emph{duration}, or \emph{identifiers}.
 As there is currently no standard convention for uniquely specifying audio recordings in a global manner, file metadata exists to help link the JAMS object with the appropriate signal.
 
 Finally, \emph{sandboxes} exist in both the top-level and annotation objects to facilitate the growth and extensibility of the format.
@@ -123,7 +123,7 @@ This is done in the hope that sandboxes might identify information that could be
 \subsection{Python API}
 \label{subsec:jams_tools}
 
-To faciliate the use and integration of JAMS in software projects, a Python library is publicly available and under active development\footnote{\url{http://github.com/marl/jams}}.
+To facilitate the use and integration of JAMS in software projects, a Python library is publicly available and under active development\footnote{\url{http://github.com/marl/jams}}.
 This application programming interface (API) provides a simple interface for reading, writing, and manipulating the information in a JAMS object.
 Many common datasets are also provided in this format to further encourage adoption.
 Complementing the creation and use of human annotations, JAMS makes it easier to operate on this information, such as augmenting audio and annotations in parallel\footnote{\url{http://github.com/bmcfee/muda}}.
@@ -148,7 +148,7 @@ Leveraging the h5py\footnote{\url{http://www.h5py.org/}} library under the hood 
 however, though it shares a common interface with in-memory dictionaries, the footprint of a stash scales gracefully with available computational resources by lazily loading data into memory.
 Biggie also allows random access and data caching, greatly facilitating stochastic sampling for on-line learning\footnote{\url{https://github.com/bmcfee/pescador}}.
 Perhaps most practically though, biggie serves as \emph{the} data interchange format between processing stages in the larger framework, eliminating the need for filename parsing or content-specific naming conventions; operations are written to consume and return stashes with data under the same keys.
-While biggie helps address similar pain points as other libraries, like \texttt{pandas}\footnote{\url{http://pandas.pydata.org/}}, the HDF5 backend is crucial for serializing a large collection numerical tensors in a simple, Pythonic manner.
+While biggie helps address similar pain points as other libraries, like \texttt{pandas}\footnote{\url{http://pandas.pydata.org/}}, the HDF5 back-end is crucial for serializing a large collection numerical tensors in a simple, Pythonic manner.
 
 
 \section{\texttt{optimus}}
@@ -172,7 +172,7 @@ Arbitrary acyclic, i.e. no loops, directed processing graphs can be architected 
 % Losses
 While a large space of loss functions can be realized from these basic building blocks, a handful of standard \emph{losses} are provided, simplifying design further.
 The topology between these parts is given by a routing table, and passed off to a \emph{graph}, which connects the dots and returns a callable function.
-Furthermore, given the flexibility to define topologies in a processing graph, it is simple to explore a variety of modifications, such as layerwise hyperparameters, tapping various intermediary representations as outputs, or ``cloning'' a processing node to create a deep copy of its parameters.
+Furthermore, given the flexibility to define topologies in a processing graph, it is simple to explore a variety of modifications, such as layer-wise hyperparameters, tapping various intermediary representations as outputs, or ``cloning'' a processing node to create a deep copy of its parameters.
 
 In addition to the user-facing advantages, robust serialization is achieved by expressing processing graph definitions as JSON and archives of multidimensional arrays.
 This offers the additional benefit that it would be straightforward to port optimus models, as graph definitions and parameter bundles, across languages in the future.
@@ -189,22 +189,22 @@ Many such scoring functions are nontrivial to implement, however, and small deta
 The Music Information Retrieval Evaluation eXchange (MIREX), the community's annual algorithm evaluation event, has helped provide common ground on which to compare different systems.
 This implementation is seldom used outside MIREX due to a variety of practical difficulties, however, and instead, researchers often resort to reimplementing the same evaluation metrics.
 Unfortunately these personal implementations are not standardized, and may differ in important details, or even contain bugs, confounding comparisons.
-Therefore, the \texttt{mir\_eval} project aims to address these challenges for a variety of well-established tasks \cite{Raffel2014}.
+Therefore, the \texttt{mir\_eval} project aims to address these challenges for a variety of well-established tasks \cite{Raffel2014Eval}.
 
 
 Though larger in scope, the contributions to the chord estimation evaluation are particularly relevant to this work.
-Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord estimation is an ongoing topic of discussion, due to issues with vocabularies, comparison semantics, and other lexicographical challenges unique to the task~\cite{pauwels2013evaluating}.
-One source of difficulty stems from an inherent subjectivity in ``spelling'' a chord name and the level of detail a human observer can provide in a reference annotation~\cite{ni2013understanding}.
+Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord estimation is an ongoing topic of discussion, due to issues with vocabularies, comparison semantics, and other lexicographical challenges unique to the task~\cite{Pauwels2013Evaluating}.
+One source of difficulty stems from an inherent subjectivity in ``spelling'' a chord name and the level of detail a human observer can provide in a reference annotation~\cite{Ni2013Understanding}.
 As a result, a consensus has yet to be reached regarding the single best approach to comparing two sequences of chord labels, and instead are often compared over a set of rules, i.e Root, Major-Minor, and Sevenths, with or without inversions.
 
 To efficiently compare chords, a given chord label is first separated into its
-constituent parts, based on the syntax of~\cite{harte2010towards}.
+constituent parts, based on the syntax of~\cite{Harte2010Towards}.
 For example, the chord label \texttt{G:maj(6)/5} is mapped to three pieces of information: the root (``G''), the root-invariant active semitones as determined by the quality shorthand (``maj'') and scale degrees (``6''), and the bass interval (``5'').
 Based on this representation, an estimated chord label can be compare with a reference by defining a comparison function between these invariant representations.
 Any encoded chords that are deemed to be ``out of gamut'' return a negative score to be easily filtered.
 Track-wise scores are computed by weighting each comparison by the duration of its interval, over all intervals in an audio file.
 This is achieved by forming the union of the boundaries in each sequence, sampling the labels, and summing the time intervals of the ``correct'' ranges.
-The cumulative score, referred to as \emph{weighted chord symbol recall}, is tallied over a set audio files by discrete summation, where the importance of each score is weighted by the duration of each annotation~\cite{cho2013mirex}.
+The cumulative score, referred to as \emph{weighted chord symbol recall}, is tallied over a set audio files by discrete summation, where the importance of each score is weighted by the duration of each annotation~\cite{Mauch2010Automatic}.
 
 
 \section{\texttt{dl4mir}}
