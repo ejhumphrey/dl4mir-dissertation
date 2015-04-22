@@ -619,7 +619,7 @@ Following the discussion of evaluation in \ref{subsec:eval_methodology}, the onl
 % Some packages, such as MDW tools, offer better commands for making tables
 % than the plain LaTeX2e tabular which is used here.
 \begin{tabular}{c || c c c || c c c |}
- & & Arch L-1 & & & Arch S-1 & \\
+ & \multicolumn{3}{| c ||}{L-1} & \multicolumn{3}{c|}{S-1} \\
  \hline
 Fold & Train & Valid & Test & Train & Valid & Test \\
 \hline
@@ -659,7 +659,7 @@ Transposing the data results in an effect similar to that of weight tying, but b
 \label{tab:exp2res}
 \centering
 \begin{tabular}{ c || c c c || c c c |}
-& & As-Is & & & Transposed & \\
+& \multicolumn{3}{c||}{As-Is} & \multicolumn{3}{|c|}{Transposed}\\
  \hline
 Arch & Train & Valid & Test & Train & Valid & Test \\
 \hline
