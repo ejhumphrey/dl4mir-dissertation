@@ -188,7 +188,7 @@ For example, \cite{McVicar2013Machine} collects three possible definitions, rest
 \end{enumerate}
 
 % Pitch and notes
-Additionally, \cite{Harte2Harte2010Towards} expands the scope of (2) in order to describe all tonal music, ``allow[ing] a chord to comprise zero or more notes.''
+Additionally, \cite{Harte2010Towards} expands the scope of (2) in order to describe all tonal music, ``allow[ing] a chord to comprise zero or more notes.''
 The various flavors of definitions begs an obvious question: what makes the concept of a chord so hard to pin down?
 
 % Chord composition
@@ -422,7 +422,7 @@ Finally, \emph{post-filtering} is applied to the output of the pattern matching 
 Though the implementation details have continued to evolve over the last decade, the brunt of chord estimation research has concentrated not on the fundamental system per se, but rather the tuning of its components.
 In particular, much time and energy has been invested in developing not just better features, but specifically better \emph{chroma} features \cite{Mueller2010Towards}.
 Complementing chroma features, others have explored the use of multi-band chroma to model bass frequencies separately \cite{Mauch2010Simultaneous} or a Tonnetz representation in an effort to better encode harmonic relationships between chords \cite{Lee2007Unified}.
-Acknowledging the challenges inherent to designing good features, Pachet et al pioneered work in automatic feature optimization \cite{Pachet2006Recognizing}, and more recently deep learning methods have been employed to learn robust Tonnetz features \cite{Humphrey2011Learning}.
+Acknowledging the challenges inherent to designing good features, Pachet et al pioneered work in automatic feature optimization \cite{Pachet2006Recognizing}, and more recently deep learning methods have been employed to learn robust Tonnetz features \cite{Humphrey2012Learning}.
 Early methods focused on local smoothing, such as low-pass or median filtering as a form of pre-filtering \cite{Cho2010Exploring}, but more recently some methods have attempted to leverage the repeated nature of music to yield more stable estimates of the harmonic composition at a given point in time \cite{Cho2011Feature}.
 Various classification strategies have been investigated such as binary templates \cite{Oudre2009Template}, Dirichlet distribution models \cite{Burgoyne2005Learning}, or Support Vector Machines (SVMs) \cite{Weller2009Structured}, but Gaussian Mixture Models (GMM) are by and large the most common feature modeling approach \cite{Cho2014Improved}.
 The choice of post-filtering methods has been shown to significantly impact system performance, and much research has focused on properly tuning Hidden Markov Models (HMMs) \cite{Cho2010Exploring}, first introduced by \cite{Sheh2003Chord}.
@@ -430,7 +430,7 @@ Recently, in an effort to continue to advance the state of the art, researchers 
 
 It is worth noting that in this lineage, the systems that do make use of data-driven learning typically only do so in disjoint stages.
 More often than not, machine learning is only performed at the pattern matching stage, where increasingly powerful models are fit to hand-crafted features.
-A few works do attempt to learn features, such as \cite{Mauch2010Approximate, Humphrey2011Learning}, but the different stages are optimized independently.
+A few works do attempt to learn features, such as \cite{Mauch2010Approximate, Humphrey2012Learning}, but the different stages are optimized independently.
 Though it is standard practice to train a GMM/HMM jointly, some have observed that learning the parameters of the HMM, i.e. the transition probabilities, yields no significant benefit over a uniform probabilities with a strong self-transition affinity \cite{Cho2014Improved}.
 One notable work that attempts to jointly optimize multiple stages is that of \cite{Cho2012Minimum}, which optimizes the GMM to a minimum frame classification error, rather than a conventional maximum likelihood formulation.
 
@@ -1230,7 +1230,7 @@ Additionally, combining the systems' estimations shows that there are some insta
 \begin{figure}[t!]
 \centering
 \includegraphics[width=\textwidth]{trackwise_test_agreement}
-\caption{Trackwise agreement between algorithms versus the best match between either algorithm and the ground truth data.}
+\caption{Track-wise agreement between algorithms versus the best match between either algorithm and the ground truth data.}
 \label{fig:trackwise_test_agreement}
 \end{figure}
 
@@ -1357,7 +1357,6 @@ This dataset provides a previously uncapitalized opportunity to explore the beha
 %
 
 As an initial step, the two annotators, referred to here as DT and TdC, are each used as a reference and estimation perspective in order to quantify the agreement between them.
-% Importantly, the chord vocabulary used by the RockCorpus transcriptions is a subset of all chords considered in this work, and no ef
 The results, given in Table \ref{tab:rc_agreement}, indicate a high, but imperfect level of consistency between the two human perspectives.
 Following earlier trends, this is also a function of the chord spelling complexity, whereby equivalence at the ``root'' is much higher than for ``tetrads''.
 Additionally, it is worth noting the asymmetry in chord comparisons.
