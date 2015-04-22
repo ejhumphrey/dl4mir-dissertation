@@ -34,11 +34,11 @@ Whereas timbre similarity served as a relatively constrained problem, Chapter \r
 Competitive performance is achieved with a deep convolutional neural network, evaluated in both a conventional and large-vocabulary variant of the task.
 Somewhat more interestingly, rigorous error analysis reveals that efforts in automatic chord estimation are converging to a glass ceiling, due in large part to the objective formulation of an often subjective experience.
 The problems caused by the tenuous nature of ``ground truth'' annotations are exacerbated by efforts to treat chord estimation as a flat, rather than hierarchical, classification task.
-Therefore, the singlemost critical advancement facing the topic of automatic chord estimation is a re-evaluation of the task the community is attempting to solve and the data used to do so.
+Therefore, the single most critical advancement facing the topic of automatic chord estimation is a re-evaluation of the task the community is attempting to solve and the data used to do so.
 
 Despite these difficulties, the chord estimation data is leveraged to ask a slightly different question: can a model be built to automatically predict chords as guitar tablature?
 Therefore, in Chapter \ref{chp:guitar}, again using a deep convolutional architecture, global performance statistics are improved over the general chord estimation system, while offering significant practical benefits.
-In addition to being a high-performing system, the fretboard estiamtions are immediately human-readable and thus attractive from a user experience perspective.
+In addition to being a high-performing system, the fretboard estimations are immediately human-readable and thus attractive from a user experience perspective.
 Such a representation is also advantageous from a data collection, correction, and validation standpoints, significantly reducing the degree of prerequisite skill necessary to contribute annotations.
 
 Finally, the various open source software artifacts developed in the course of this research are introduced and detailed in Chapter \ref{chp:reproducibility}:
@@ -62,7 +62,7 @@ Among the most common questions currently facing the application of deep learnin
 Should I use convolutions, or matrix products, or something else altogether?
 And furthermore, if and when it does actually work, what on earth is it doing?''
 Admittedly, the combination of numerical optimization and extremely versatile functions often results in systems with opaque mid-level representations, earning deep networks the reputation as ``black boxes'' and the study of them a ``dark art''.
-However, while these enigmatic functions might cause understandable confusion, the design of deep architectures is not necessarily devoid of intution.
+However, while these enigmatic functions might cause understandable confusion, the design of deep architectures is not necessarily devoid of intuition.
 
 % Simply train the systems we've already got
 But where to start?
@@ -70,15 +70,15 @@ The simplest way one might begin to explore deep learning for some problem of ch
 There are countless MIR systems could be reformulated in the deep learning framework, such as onset detection, instrument identification, or pitch estimation.
 Most importantly, doing so eliminates the need to compare minor implementation details, like specific hyperparameters or window coefficients;
 just learn it and let it all come out in the wash.
-Addtionally, introducing the process of learning to classic music informatics systems makes it easier to \emph{combine} multiple systems to reap the benefits of model averaging.
+Additionally, introducing the process of learning to classic music informatics systems makes it easier to \emph{combine} multiple systems to reap the benefits of model averaging.
 The key takeaway here is the notion that good architectures already exist for some problems, and that better performance can be obtained by using numerical optimization to expand the space of parameters considered.
 
 % Or explore new ones
 Critically, these lessons and practices transcend known problems to new ones.
-As demonstrated with the fretboard achitecture of Chapter \ref{chp:tabbing}, systems can be quickly constructed by appropriately constraining the behavior.
+As demonstrated with the fretboard architecture of Chapter \ref{chp:guitar}, systems can be quickly constructed by appropriately constraining the behavior.
 Since a guitar has six strings, and each can only be active in one place, it makes sense to model each as a probability surface.
 That said, there is much more could be done here.
-Perhaps transition constraints could be imposed, such that the model would prefer common chord shapes, or positional constraints, whereby nearby frets are perferred to large jumps.
+Perhaps transition constraints could be imposed, such that the model would prefer common chord shapes, or positional constraints, whereby nearby frets are preferred to large jumps.
 In this manner, end-to-end systems can be designed and developed at a high level, and numerical optimization can be leveraged to work out the fine details.
 Furthermore, while learning can discover useful features that were previously overlooked or not considered, this advantage is amplified for new challenges and applications that do not offer much guiding intuition.
 For tasks like artist identification or automatic mixing, it is difficult to comprehend, much less articulate, exactly what signal attributes are informative to the task and how an implementation might robustly capture this information.
