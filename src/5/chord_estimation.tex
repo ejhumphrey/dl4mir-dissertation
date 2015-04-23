@@ -407,13 +407,13 @@ Returning to chords, \texttt{C:dim7} and \texttt{C:maj} are clearly mutually exc
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.8\textwidth]{TODO}
+\includegraphics[height=4in]{basic_ace}
 \caption{Block-diagram of the common building blocks in modern automatic chord estimation systems.}
 \label{fig:basic_ace}
 \end{figure}
 
 % Previous work
-Considering the space of ACE research, nearly all approaches to the task adopt the same basic architecture, diagrammed in Figure \ref{fig:basic_ace}.
+Considering the space of ACE research, it is observed by \cite{Cho2014Improved} all approaches to the task adopt the same basic architecture, diagrammed in Figure \ref{fig:basic_ace}.
 First, harmonic features, referred to as pitch class profiles (PCP) or \emph{chroma}, are extracted from short-time observations of the audio signal.
 Initially proposed for use in chord estimation systems by Fujishima \cite{Fujishima1999Realtime}, chroma features attempt to measure the amount of energy in the signal corresponding to the 12 pitch classes named in Eq. \ref{eq:pitch_classes}.
 These features may then be processed by any number of means, referred to in the literature as \emph{pre-filtering}.
