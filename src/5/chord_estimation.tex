@@ -1248,7 +1248,6 @@ Quadrant II contains tracks where the algorithms disagree significantly ($x < 0.
 Tracks in Quadrant III correspond to the condition that no transcription agrees with another, ($x < 0.5$, $y < 0.5$), and are particularly curious.
 Finally, Quadrant IV contains tracks where the algorithms estimate the same chords ($x > 0.5$), but the reference disagrees with them both ($y < 0.5$).
 
-
 With this in mind, three-part annotations can be examined for a point in each quadrant, consisting of a reference (Ref), an estimation from the best deep neural network (XL-0.25), and an estimation from the baseline system (Cho).
 In all following examples, chords are shown as color bars changing over time, from left to right;
 as a convention, the pitch class of the chord's root is mapped to color hue, and the darkness is a function of chord quality, e.g. all \texttt{E:*} chords are a shade of green.
@@ -1312,6 +1311,10 @@ Taken together, this example serves to illustrate how fragile the notion of ``gr
 \label{fig:test_quadIII}
 \end{figure}
 
+As a final example from this analysis of two-part estimations, a track is considered from Quadrant IV, shown in Figure \ref{fig:test_quadIV}, corresponding to ``Some Like It Hot'' by The Power Station.
+Evidenced by the large regions of estimated no-chord, both automatic systems struggle on this particular track.
+Listening through, there are likely two contributing factors.
+First, the song is very percussive, and heavily compressed wideband noise probably disrupts the harmonic estimates made by the models.
 \begin{figure}[t!]
 \centering
 \includegraphics[width=\textwidth]{test_TRNFEEU149E38D3E18_annotations}
@@ -1319,11 +1322,6 @@ Taken together, this example serves to illustrate how fragile the notion of ``gr
 \caption{Reference and estimated chord sequences for a track in Quadrant IV, the condition where both algorithms agree with each other, but neither agrees with the reference.}
 \label{fig:test_quadIV}
 \end{figure}
-
-As a final example from this analysis of two-part estimations, a track is considered from Quadrant IV, shown in Figure \ref{fig:test_quadIV}, corresponding to ``Some Like It Hot'' by The Power Station.
-Evidenced by the large regions of estimated no-chord, both automatic systems struggle on this particular track.
-Listening through, there are likely two contributing factors.
-First, the song is very percussive, and heavily compressed wideband noise probably disrupts the harmonic estimates made by the models.
 Second, the song makes very little use of true pitch simultaneities, and much of the harmony in this song is implied.
 The song is also sparsely populated from an instrumental perspective, resulting in erroneous estimations.
 While both systems appear to fall victim to this kind of content, the example speaks to the limitations of the task as it is currently defined, as well as the importance of ensuring that the content included in a dataset is relevant to the task at hand.
@@ -1441,6 +1439,9 @@ the majority of the verse is arguably \texttt{C\#:maj}, but a cello sustains the
 These regions that this occurs are clearly captured in the XL-0.25 annotation, corresponding to its \texttt{C\#:7} predictions.
 This proves to be an interesting discrepancy, because one annotator (DT) is using long-term structural information about the song to apply a single chord to the entire verse.
 
+Another of these select few, this time from Quadrant III, is ``Papa's Got a Brand New Bag'' by James Brown, shown in Figure \ref{fig:rc_quadIII}.
+In this instance, all perspectives involved disagree substantially, not only at the level of sevenths but also the quality of the third.
+Exploring why this might be the case, one finds the song consists of unison riffs and syncopated rhythms with liberal use of rests.
 \begin{figure}[t!]
 \centering
 \includegraphics[width=\textwidth]{rc_TRUVQBD14A081682DB_annotations}
@@ -1448,10 +1449,6 @@ This proves to be an interesting discrepancy, because one annotator (DT) is usin
 \caption{Reference and estimated chord sequences for a track in Quadrant III, the condition where neither annotator agrees with the algorithm, nor each other.}
 \label{fig:rc_quadIII}
 \end{figure}
-
-Another of these select few, this time from Quadrant III, is ``Papa's Got a Brand New Bag'' by James Brown, shown in Figure \ref{fig:rc_quadIII}.
-In this instance, all perspectives involved disagree substantially, not only at the level of sevenths but also the quality of the third.
-Exploring why this might be the case, one finds the song consists of unison riffs and syncopated rhythms with liberal use of rests.
 In the absence of sustained simultaneities, most of the harmony in the song is implied, creating even more room for subjectivity on behalf of the annotators.
 The automatic system, alternatively, flips back and forth between the various perspectives of the two reference annotations.
 Again, the chord estimation machine has little choice but to be literal in its interpretation of solo vocal phrases, and labels such regions ``no-chord'' in the middle of the song.
@@ -1459,6 +1456,10 @@ This kind of repeat behavior calls attention to what is fundamentally an issue o
 Chord \emph{transcription} is a more abstract and ultimately different task than chord \emph{recognition}, taking into consideration high-level concepts long term musical structure, repetition, segmentation or key, but conventional methodology conflates these two to some unknown degree.
 
 
+Finally, a track from Quadrant IV ---``Every Breath You Take'' by The Police--- is given in Figure \ref{fig:rc_quadIV}.
+Similar to the track considered from the same region before, the estimation is consistently a half-step flat from the references.
+This pattern is indicative of a similar tuning discrepancy as before, and tuning a pure sinusoid to the track finds the tonic at approximately 426Hz, putting the song just over a quartertone flat.
+Though functionally equivalent to the previous example of tuning being an issue, this instance is interesting because two annotators independently arrived at the same decision.
 \begin{figure}[t!]
 \centering
 \includegraphics[width=\textwidth]{rc_TRXVZFX14A0816D7D2_annotations}
@@ -1466,11 +1467,6 @@ Chord \emph{transcription} is a more abstract and ultimately different task than
 \caption{Reference and estimated chord sequences for a track in Quadrant IV, the condition where both annotators agree with each other, but neither agrees with the algorithm.}
 \label{fig:rc_quadIV}
 \end{figure}
-
-Finally, a track from Quadrant IV ---``Every Breath You Take'' by The Police--- is given in Figure \ref{fig:rc_quadIV}.
-Similar to the track considered from the same region before, the estimation is consistently a half-step flat from the references.
-This pattern is indicative of a similar tuning discrepancy as before, and tuning a pure sinusoid to the track finds the tonic at approximately 426Hz, putting the song just over a quartertone flat.
-Though functionally equivalent to the previous example of tuning being an issue, this instance is interesting because two annotators independently arrived at the same decision.
 % Why would they both make the same mistake? Maybe it's not a mistake!
 One reason this might have occurred is that, as a rock song, it makes far more sense to play in \texttt{A:maj} on guitar than \texttt{Ab:maj}.
 The chord shapes involved are much easier to form in \texttt{A:maj}, and therefore more likely.
