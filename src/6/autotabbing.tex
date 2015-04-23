@@ -69,7 +69,7 @@ Initial bandwidth and memory limitations, however, prevented the curation of hig
 With small file sizes and compatibility with common text editors, ASCII ``tabs'' made it comparatively trivial to create, share, and store guitar music.
 Thus, combining easy readability and a sufficient level of musical detail with technological constraints of the time period, guitar tablature spiked in popularity towards the end of the $20^{th}$ century.
 As evidenced by heavily trafficked, user-curated websites like Ultimate Guitar\footnote{http://www.ultimate-guitar.com/}, modern online guitar communities continue to place a high demand on tablature.
-Shown in Figure \ref{fig:compete}, this website alone sees, on average, over 2M unique visitors\footnote{Based on Compete.com analytics data, accessed on 15 March, 2015.} per month in the United States.
+Shown in Figure \ref{fig:ug_compete}, this website alone sees, on average, over 2M unique visitors\footnote{Based on Compete.com analytics data, accessed on 15 March, 2015.} per month in the United States.
 
 % Put it together
 Taken together, these observations motivate an obvious conclusion.
@@ -108,7 +108,7 @@ Most real guitars have upwards of 20 frets, but, as a simplification, all chords
 therefore, in this model, each string will take one of nine mutually exclusive states.
 
 Framed as such, the strings of a guitar can modeled as six correlated, but ultimately independent, probability mass functions.
-This is achieved by passing the output of an affine projection through a softmax function, as described in Chapter \ref{chp:method}, yielding a non-negative representation with unity magnitude.
+This is achieved by passing the output of an affine projection through a softmax function, as described in Chapter \ref{chp:deep_learning}, yielding a non-negative representation with unity magnitude.
 Starting with the first three layers of the ``XL'' model defined previously, six independent softmax layers are used to model each string independently, and concatenated to form a 2-dimensional heatmap of the fretboard:
 
 \begin{align*}
@@ -137,7 +137,7 @@ Having designed a convolutional network to estimate the active states of a fretb
 As the annotations available were curated for generic chord estimation, they  do not offer insight into how a given chord might best be voiced on a guitar.
 Therefore, using the same vocabulary of 157 chords as before, a canonical chord shape ``template'' is chosen for each.
 This is done in such a way so as to prefer voicings where all quality variations over a given root are maximally similar, i.e. chords of the same root are near-neighbors in fretboard space.
-To illustrate, tablature representations for all templates are given in Figure \ref{fig:templates}.
+%To illustrate, tablature representations for all templates are given in Figure \ref{fig:templates}.
 
 It is worthwhile at this point to acknowledge the natural multiplicity of chord voicings on the guitar.
 In addition to the normal variation that may occur in stacking the notes of a chord, e.g. ``open'' or ``closed'' position, there are other factors that influence the actual pitches that are played.

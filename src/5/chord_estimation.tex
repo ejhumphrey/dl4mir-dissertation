@@ -849,7 +849,7 @@ There are a handful of important distinctions to make between the two, however, 
 \label{subsubsec:data_considerations}
 A comparable constant-Q transform is applied to the audio at a framerate of 20Hz, without subsequent low-pass filtering or decimation, and time-frequency patches are formed from 20 frames, corresponding to 1 second.
 Whereas the previous study aimed to learn context directly, there is the inherent concern that a low input framerate will reduce the amount of data available for training beyond what is required by the model.
-In lieu of learning this context, standard post-filtering will be applied in the form of a uniform-transition HMM with a tunable self-transition penalty, consistent with \cite{Cho2014Improved}; this is introduced in greater detail shortly, in \ref{subsubsec:viterbi}.
+In lieu of learning this context, standard post-filtering will be applied in the form of a uniform-transition HMM with a tunable self-transition penalty, consistent with \cite{Cho2014Improved}. %; this is introduced in greater detail shortly, in \ref{subsubsec:viterbi}.
 
 Additionally, local contrast normalization is included as a standard preprocessing stage, with minor modifications.
 In previous work, a threshold is placed on the scaling term given by the average standard deviation over the entire input.

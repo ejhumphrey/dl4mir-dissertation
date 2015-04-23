@@ -55,7 +55,9 @@ By coarse analogy to a biology, an artificial neuron ``fires'' when a weighted c
 \label{eq:perceptron}
 \end{align*}
 
-\noindent Importantly, as shown in Figure \ref{fig:neuron_logic}, it was demonstrated that such a model could be used to reproduce Boolean operations, such as AND or OR.
+\noindent Importantly,
+%as shown in Figure \ref{fig:neuron_logic},
+it was demonstrated that such a model could be used to reproduce Boolean operations, such as AND or OR.
 Given the clear application to the field of computational logic, artificial neurons only further encouraged the pursuit of artificially ``intelligent'' machines.
 
 % Perceptron!
@@ -90,7 +92,9 @@ a vector of binary class assignments, $\mathbf{y}$, in the set $\{0, 1\}$;
 an learning rate parameter, $\eta$;
 and an iteration limit, $n_{max}$.
 Initializing the algorithm, the weights, $\mathbf{w}$, are set to a matrix of zeros, shaped $(D + 1, 2)$, an error, $\mathbf{e}$, is set to a vector of ones, and the iteration counter, $n$, starts from 1.
-Then, in an iterative manner, binary outputs, $\mathbf{z}$, are computed from the perceptron function, $f()$, given in Eq. \ref{eq:perceptron}, the error is computed as the difference between class predictions and targets, and the weights are updated with a scaled version of the incorrectly classified inputs.
+Then, in an iterative manner, binary outputs, $\mathbf{z}$, are computed from the perceptron function, $f()$,
+% given in Eq. \ref{eq:perceptron},
+the error is computed as the difference between class predictions and targets, and the weights are updated with a scaled version of the incorrectly classified inputs.
 Note that the error vector, $\mathbf{e}$ is only non-zero where the predicted values are wrong, and thus the algorithm naturally terminates when all datapoints are classified correctly.
 Alternatively, execution is halted once a fixed number iterations is reached.
 An example of a perceptron's stopping condition is given in Figure \ref{fig:linsep}.
@@ -431,7 +435,8 @@ The two basic nonlinear functions in deep networks are the logistic, or sigmoid,
 % \label{eq:basic_nonlinearities}
 \end{align*}
 
-Shown in Figure \ref{fig:nonlinearities}, both functions have inflection points at zero, saturate toward infinity in both directions, and are everywhere differentiable.
+% Shown in Figure \ref{fig:nonlinearities}, b
+Both functions have inflection points at zero, saturate toward infinity in both directions, and are everywhere differentiable.
 While the logistic initially came into practice as a smooth approximation to the unit step function, the hyperbolic tangent has gained favor for being centered about the origin.
 The saturating behavior of these functions is significant, because training a poorly initialized network may be painfully slow, if even possible, due to small gradients at the limits.
 
@@ -554,11 +559,11 @@ In the most general sense, this evaluative component is known as a \emph{loss} f
 
 \begin{equation}
 \label{eq:genloss}
-\mathcal{L}(D | \Theta) =  \frac{1}{M}\sum_{m=0}^{1\leq~M\leq~N}L(Y_m | X_m, \mathcal{f}, \Theta))
+\mathcal{L}(D | \Theta) =  \frac{1}{M}\sum_{m=0}^{1\leq~M\leq~N}L(Y_m | X_m, \mathcal{F}, \Theta))
 \end{equation}
 
 \noindent Here, the scalar loss, $\mathcal{L}$, is computed by averaging the per-sample loss over some number of observations, $M$, referred to as the batch size.
-Thus, having designed or constrained the network, $\mathcal{f}$, the optimal parameters, $\hat{\Theta}$, are those that minimize the loss over the data:
+Thus, having designed or constrained the network, $\mathcal{F}$, the optimal parameters, $\hat{\Theta}$, are those that minimize the loss over the data:
 
 \begin{equation}
 \label{eq:genloss}
@@ -572,7 +577,7 @@ Perhaps the most common loss function is the \emph{mean squared error}, which me
 
 \begin{equation}
 \label{eq:mse}
-L_{mse}(Y | X, \mathcal{f}, \Theta)) = || Y - \mathcal{f}(X | \Theta) ||_2^2
+L_{mse}(Y | X, \mathcal{F}, \Theta)) = || Y - \mathcal{F}(X | \Theta) ||_2^2
 \end{equation}
 
 \noindent A versatile function, the squared error loss is a common choice for regression problems where domain knowledge does not immediately offer a better intution for computing distance between representations.
@@ -730,7 +735,7 @@ The details of how exactly this is done vary slightly from sub-function to sub-f
 Z = f(Z | p) = \frac{1}{(1 - p)} Z \mathcal{B}(1, p)^M
 \end{align*}
 
-\noindent Here, the activations of an affine transformation, $Z$, a column vector of length $M$, are masked by a binomial distribution, $\mathcal{B}$, with probability $p$.
+\noindent Here, the activations of an affine transformation, $Z$, a column vector of length $M$, are masked by a Bernoulli distribution, $\mathcal{B}$, with probability $p$.
 To offset the effect of smaller magnitudes resulting from fewer units being active during training, these outputs are scaled by one minus the probability parameter, such that, in expectation over $\mathcal{B}$, the use of dropout matches the original function.
 Applied in this manner, this prevents rows, or bases, in the matrix projection from contributing to the final output, inhibiting the co-adaptation of parameters.
 Thus dropout is effective because the parameters are unable to depend on one another for effectiveness, and tend to learn independently good features.
