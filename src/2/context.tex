@@ -18,19 +18,21 @@
 %   Deep architectures
 %   Feature learning
 
-From its inception, many fundamental challenges in music informatics, and in particular those that focus on music audio signals, have received a considerable and sustained research effort from the community.
-Referred to here as automatic music description, this area of study is based on the premise that if a human expert can experience or observe some musical event from an audio signal, it should be possible to make a machine respond similarly.
+From its inception, the research community has devoted considerable effort to the research of many fundamental challenges in music informatics, and in particular those that focus on music audio signals.
+Referred to here as content-based music informatics, this area of study is based on the premise that if a human expert can experience or observe some musical event from an audio signal, it should be possible to make a machine respond similarly.
 As the field of music informatics continues into its second decade, there are a growing number of resources that comprehensively review the state of the art in music signal processing across a variety of different application areas \cite{Klapuri2006Signal,Casey2008Content,Mueller2011Signal}, including melody extraction, chord estimation, beat tracking, tempo estimation, instrument identification, music similarity, genre classification, and mood prediction, to name only a handful of the most prominent topics.
 
 % Things aren't solved; why?
-After years of diligent effort however, many well-worn problems in content-based music informatics lack satisfactory solutions and remain unsolved.
-Observing this larger research trajectory at a distance, it would seem progress is decelerating, if not altogether stalled.
-For example, a review of recent MIREX\footnote{Music Information Retrieval Evaluation eXchange (MIREX): {http://www.music-ir.org/mirex/}} results motivates the conclusion quantitatively, as shown in Figure \ref{fig:mirex}.
+After years of diligent research however, many well-worn problems in content-based music informatics lack satisfactory solutions and remain unsolved.
+Observing this larger research trajectory at a distance, it would seem our collective efforts are yielding diminishing returns.
+For example, a review of recent MIREX\footnote{Music Information Retrieval Evaluation eXchange (MIREX): {http://www.music-ir.org/mirex/}} results encourages the conclusion quantitatively, as shown in Figure \ref{fig:mirex}.
 The three most consistently evaluated tasks for more than the past half decade ---chord estimation, genre recognition, and mood prediction--- are each converging to performance plateaus below satisfactory levels.
-Fitting an intentionally generous logarithmic model to the progress in chord estimation, for example, estimates that continued performance at this rate would eclipse 90\% in a little over a decade, and 95\% some twenty years after that; note that even this trajectory is quite unlikely, and for only this one specific problem (and dataset).
+Fitting an intentionally generous logarithmic model to the progress in chord estimation, for example, estimates that continued performance at this rate would eclipse 90\% in a little over a decade, and 95\% some twenty years after that; note that even this trajectory is a coarse approximation, and for only this one specific problem and dataset.
 Attempts to extrapolate similar projections for the other two tasks are even less encouraging.
 Furthermore, these ceilings are pervasive across many open problems in the discipline.
 Though single-best accuracy over time is shown for these three specific tasks, a wider space of MIREX tasks exhibit similar, albeit more sparsely sampled, trends.
+It is necessary to note, however, that results between iterations of MIREX are only weakly comparable, as the problem forumlation and data used for the different tasks is constantly evolving.
+The key takeaway is therefore that as we continue to improve our research methodology, we are hopefully developing a more accurate estimate of the state of the art.
 
 \begin{figure}
 \begin{centering}
@@ -49,7 +51,10 @@ Do applications in content-based music informatics lack adequate formalization a
 Is the community considering all possible approaches to solve these problems \cite{Humphrey2012Moving}?
 
 Building on the premise that automatic music description is indeed valuable, this chapter is an attempt to answer the remainder of these questions.
-Section \ref{sec:common} critically reviews conventional approaches to content-based analysis and identifies three major deficiencies of current systems: the sub-optimality of hand-designing features, the limitations of shallow architectures, and the short temporal scope of conventional signal processing.
+Section \ref{sec:common} critically reviews conventional approaches to content-based analysis and identifies three major deficiencies of current systems:
+one, the sub-optimality of hand-designing features;
+two, the limitations of shallow architectures;
+and three, the short temporal scope of conventional music signal processing.
 Section \ref{sec:deep_learning} then introduces the ideas of deep architectures and feature learning in terms of music signal processing, two complementary approaches to system design that may alleviate these issues, and surveys the application of these methods in this domain.
 Finally, Section \ref{sec:discussion} summarizes the concepts covered herein, and discusses why it is critical point in time for the music informatics community to consider alternative approaches.
 
@@ -60,9 +65,10 @@ Finally, Section \ref{sec:discussion} summarizes the concepts covered herein, an
 Despite a broad spectrum of application-specific problems, the vast majority of music signal processing systems adopt a common two-stage paradigm of feature extraction and semantic interpretation.
 Leveraging substantial domain knowledge and a deep understanding of digital signal theory, researchers carefully architect signal processing systems to capture useful signal-level attributes, referred to as \emph{features}.
 These signal features are then provided to a pattern recognition machine for the purposes of assigning semantic meaning to observations.
+% TODO: Fill in URLs.
 Crafting good features is a particularly challenging subproblem, and it is becoming standard practice amongst researchers to use precomputed features\footnote{Million Song Dataset} or off-the-shelf implementations\footnote{MIR Toolbox, Chroma Toolbox, MARSYAS, Echonest API}, focusing instead on increasingly more powerful pattern recognition machines to improve upon prior work.
 While early research mainly employed simple classification strategies, such as nearest-neighbors or peak-picking, recent work makes extensive use of sophisticated and versatile techniques, e.g. Support Vector Machines \cite{Mandel2005Song}, Bayesian Networks \cite{Mauch2010Approximate}, Conditional Random Fields \cite{Sumi2012Music}, and Variable-Length Markov Models \cite{Chordia2011Predictive}.
-
+% TODO: Fix this figure.
 \begin{figure}
 \begin{centering}
 \includegraphics[width=\textwidth]{mtb_mfccs}
@@ -74,12 +80,12 @@ While early research mainly employed simple classification strategies, such as n
 This trend of squeezing every bit of information from a stock feature representation is suspect because the two-tier perspective hinges on the premise that \emph{features are fundamental}.
 Such representations must be realized in such a way that the degrees of freedom are informative for a particular task; features are said to be \emph{robust} when this is achieved, and \emph{noisy} when variance is misleading or uninformative.
 The more robust a feature representation is, the simpler a pattern recognition machine needs to be, and vice versa.
-It can be said that robust features \emph{generalize} by yielding accurate predictions of new data, while noisy features can lead to the opposite behavior, known as \emph{over-fitting} \cite{Bishop2006Pattern}.
+It can be said that robust features \emph{generalize} by yielding accurate predictions of new data, while noisy features can lead to the opposite behavior.
 
-The substantial emphasis traditionally placed on feature design demonstrates that the community tacitly agrees, but it is a point worth illustrating.
-Consider the scenario presented in Figure \ref{fig:mfccs}.
+% Traditionally, the community has placed a high value on the development of ``good'' features, supported by the sizeable body of literature on feature design and the convergence to a handful of common representations.
+To illustrate the notion of quality in acoustic features, consider the scenario presented in Figure \ref{fig:mfccs}.
 Conceptually, the generic approach toward determining acoustic similarity between two music signals proceeds in three stages: short-time statistics are computed to characterize acoustic texture, e.g. Mel-Frequency Cepstral Coefficients (MFCCs); the likelihood that a feature sequence was drawn from one or more probability distributions is measured, e.g. a Gaussian Mixture Model (GMM); and finally, a distance is computed between these representations, e.g. KL-divergence, Earth mover's distance, etc. \cite{Berenzweig2004Large}.
-Importantly, representing time-series features as a probability distribution discards temporal structure.
+Importantly, representing time-series features with summary statistics discards temporal structure.
 Therefore, the three feature sequences shown ---a real excerpt, a shuffled version of it, and a randomly generated one with the same statistics--- are identical in the eyes of such a model.
 The audio that actually corresponds to these respective representations, however, will certainly not \emph{sound} similar to a human listener.
 
@@ -92,7 +98,7 @@ It is particularly prudent then, to examine the assumptions and design decisions
 In music signal processing, audio feature extraction typically consists of a recombination of a small set of operations, as depicted in Figure \ref{fig:simplearch}: splitting the signal into independent short-time segments, referred to as blocks or frames; applying an affine transformation, generally interpreted as either a projection or filterbank; applying a point-wise nonlinear function; and pooling across frequency or time.
 These operations can be, and often are, repeated in the process.
 For example, MFCCs are computed by filtering a signal segment at multiple frequencies on a Mel-scale (affine transform), taking the logarithm (a nonlinearity), and applying the Discrete Cosine Transform (another affine transformation).
-Similarly, chroma features are produced by applying a constant-Q filterbank (affine transformation), taking the complex modulus of the coefficients (non-linearity), and summing across octaves (pooling).
+Similarly, chroma features are produced by applying a constant-Q filterbank (affine transformation), taking the complex modulus of the coefficients (nonlinearity), and summing across octaves (pooling).
 
 \begin{figure}[t]
 \begin{centering}
@@ -104,19 +110,19 @@ Similarly, chroma features are produced by applying a constant-Q filterbank (aff
 
 
 Considering this formulation, there are three specific reasons why this approach might be problematic.
-First, though the data-driven training of classifiers and other pattern recognition machines has been standard for over a decade in music informatics, the parametrization of feature extractors ---e.g. choice of filters, non-linearities and pooling strategies, and the order in which they are applied--- remains, by and large, a manual process.
+First, though the data-driven training of classifiers and other pattern recognition machines has been standard for over a decade in music informatics, the parametrization of feature extractors ---e.g. choice of filters, nonlinearities and pooling strategies, and the order in which they are applied--- remains, by and large, a manual process.
 Both feature extraction and classifier training present the same basic problem: there exists a large space of possible signal processing systems and, somewhere in it, a configuration that optimizes an objective function over a dataset.
 Though the music informatics community is privileged with a handful of talented researchers who are particularly adept at exploring this daunting space, crafting good features can be a time consuming and non-trivial task.
 Additionally, carefully tuning features for one specific application offers no guarantees about relevance or versatility in another scenario.
 As a result, features developed for one task are used in others for which they were not specifically designed.
 The caveat of repurposing features designed for other applications is that, despite potentially encouraging results, they have yet to be optimized for this new use case.
 Good features for chord estimation may blur out melodic contours, for example, and this information might be particularly useful for structural analysis.
-In fact, recent research has demonstrated that better features than MFCCs exist for \emph{speech recognition} \cite{Mohamed2011Deep}, the very task for which they were designed, so it is reasonable to assume that there are better musical features as well.
+In fact, recent research has demonstrated that better features than MFCCs exist for speech recognition \cite{Mohamed2011Deep}, the very task for which they were designed, so it is reasonable to assume that there are better musical features as well.
 The conclusions to draw from this are twofold: continuing to manually optimize a feature representation is not scalable to every problem, and the space of solutions considered may be unnecessarily constrained.
 
 
-Second, these information processing architectures can be said to be \emph{shallow}, i.e. incorporating only a few non-linear transformations in their processing chain.
-Sound is a complex phenomena, and shallow processing structures are placed under a great deal of pressure to accurately characterize the latent complexity of this data.
+Second, these information processing architectures can be said to be \emph{shallow}, i.e. incorporating only a few nonlinear transformations in their processing chain.
+Sound is a complex phenomenon, and shallow processing structures are placed under a great deal of pressure to accurately characterize the latent complexity of this data.
 Feature extraction can thusly be conceptualized as a function that maps inputs to outputs with an order determined by its \emph{depth}; for a comprehensive discussion on the merits and mathematics of depth, we refer the curious reader to \cite{Bengio2009Learning}.
 Consider the example in Figure \ref{fig:curvefit}, where the goal is to compute a low-dimensional feature vector (16 coefficients) that describes the log-magnitude spectrum of a windowed violin signal.
 One possible solution to this problem is to use a \emph{channel vocoder} which, simply put, low-pass filters and decimates the spectrum, producing a piece-wise linear approximation of the envelope.
@@ -129,7 +135,7 @@ However, shallow, low-order functions are fundamentally limited in the kinds of 
 \begin{figure}[t]
 \begin{centering}
 \includegraphics[height=1.5 in]{specfit}
-\caption{\emph{Low-order approximations of highly non-linear data}: The log-magnitude spectra of a violin signal (black) is characterized by a channel vocoder (blue) and cepstrum coefficients (green). The latter, being a higher-order function, is able to more accurately describe the contour with the same number of coefficients.}
+\caption{\emph{Low-order approximations of highly nonlinear data}: The log-magnitude spectra of a violin signal (black) is characterized by a channel vocoder (blue) and cepstrum coefficients (green). The latter, being a higher-order function, is able to more accurately describe the contour with the same number of coefficients, i.e. smaller mean-squared error.}
 \label{fig:curvefit}
 \end{centering}
 \end{figure}
@@ -140,12 +146,12 @@ As a result, if some musical event does not occur within the span of an observat
 This is clearly an obstacle to capturing high-level information that unfolds over longer durations, noting that time is extremely, if not fundamentally, important to how music is perceived.
 Admittedly, it is not immediately obvious how to incorporate longer, or even multiple, time scales into a feature representation, with previous efforts often taking one of a few simple forms.
 \emph{Shingling} is one such approach, where a consecutive series of features is concatenated into a single, high-dimensional vector \cite{Casey2008Analysis}.
-In practice, shingling can be fragile to even slight translations that may arise from tempo or pitch modulations.
-Alternatively, \emph{bag-of-frames (BoF)} models consider patches of features, fitting the observations to a probability distribution.
-As addressed earlier with Figure \ref{fig:mfccs}, bagging features discards temporal structure, such that any permutation of the feature sequence yields the same distribution.
+Also known as tiles, patches, or windows, shingled representations show promise by incorporating longer-term information, but incur a linear increase in dimensionality which can pose a number of challenges in practice.
+Alternatively, \emph{bag-of-frames (BoF)} models produce summary statistics over feature shingles, fitting the observations to a probability distribution.
+As addressed earlier with Figure \ref{fig:mfccs} though, bagging features discards temporal structure, such that any permutation of the feature sequence yields the same distribution.
 The most straightforward technique is to ignore longer time scales at the feature level altogether, relying on post-filtering \emph{after} classification to produce more musically plausible results.
 For this to be effective though, the musical object of interest must live at the time-scale of the feature vector or it cannot truly be encoded.
-Ultimately, none of these approaches are well suited to characterizing structure over musically meaningful time-scales.
+Ultimately, the question of how to process music signals over longer time-scales remains an open research topic.
 
 
 
@@ -158,7 +164,7 @@ So that each may be addressed in turn, it is useful to succinctly restate the ma
 \begin{itemize}
 
 \item \textbf{Hand-crafted feature design is neither scalable nor sustainable}: Framing feature design as a search in a solution space, the goal is to discover the configuration that optimizes an objective function. Even conceding that some gifted researchers might be able to achieve this on their own, they are too few and the process too time-consuming to realistically solve every feature design challenge that will arise. \\
-\item \textbf{Shallow processing architectures struggle to describe the latent complexity of real-world phenomena}: Feature extraction is similar in principle to compactly approximating functions. Real data, however, lives on a highly non-linear manifold and shallow, low-order functions have difficulty describing this information accurately. \\
+\item \textbf{Shallow processing architectures struggle to describe the latent complexity of real-world phenomena}: Feature extraction is similar in principle to compactly approximating functions. Real data, however, lives on a highly nonlinear manifold and shallow, low-order functions have difficulty describing this information accurately. \\
 \item \textbf{Short-time analysis cannot naturally capture higher level information}: Despite the importance of long-term structure in music, features are predominantly derived from short-time segments. These statistics cannot capture information beyond the scope of its observation, and common approaches to characterizing longer time scales are ill-suited to music.\\
 
 \end{itemize}
@@ -167,7 +173,7 @@ So that each may be addressed in turn, it is useful to succinctly restate the ma
 \label{sec:deep_learning}
 
 Looking toward how the research community might begin to address these specific shortcomings in modern music signal processing, there is an important development currently underway in computer science.
-\emph{Deep learning} is riding a wave of promise and excitement in multiple domains, toppling a variety of long-standing benchmarks \cite{Krizhevsky2012Imagenet,Hinton2012Deep}, while slowly permeating the public lexicon\cite{Brumfiel2014Deep,Markoff2012Scientists}.
+\emph{Deep learning} is riding a wave of promise and excitement in multiple domains, toppling a variety of long-standing benchmarks \cite{Krizhevsky2012Imagenet,Hinton2012Deep}, while slowly permeating the public lexicon \cite{Brumfiel2014Deep,Markoff2012Scientists}.
 Despite all the attention, however, this approach to solving machine perception problems has yet to gain significant traction in content-based music informatics.
 Before attempting to formally define deep learning, though, it is useful to break down the ideas behind the very name itself and develop an intuition as to why this area is of particular interest.
 
@@ -183,9 +189,10 @@ The high-level design intuition behind a tempo tracking system is relatively str
 First, the occurrence of musical events, or onsets, are identified, and then the underlying periodicity is estimated.
 The earliest efforts in tempo analysis tracked symbolic events \cite{Dannenberg1984Online}, but it was soon shown that a time-frequency representation of sound was useful in encoding rhythmic information \cite{Scheirer1998Tempo}.
 This led to in-depth studies of onset detection \cite{Bello2005Tutorial}, based on the idea that ``good'' impulse-like signals, referred to as \emph{novelty functions}, would greatly simplify periodicity analysis.
-Along the way, it was also discovered that applying non-linear compression to a novelty function produced noticeably better results \cite{Klapuri2006Analysis}.
+Along the way, it was also discovered that applying nonlinear compression to a novelty function produced noticeably better results \cite{Klapuri2006Analysis}.
 Various periodicity tracking methods were simultaneously explored, including oscillators \cite{Large1994Resonance}, multiple agents \cite{Goto1995Realtime}, inter-onset interval histograms \cite{Dixon2007Evaluation}, and tuned filterbanks \cite{Grosche2011Extracting}.
 
+% TODO: Redo this fig!
 \begin{figure}
 \begin{centering}
 \includegraphics[width=\textwidth]{hierarchicaltecture}
@@ -194,7 +201,7 @@ Various periodicity tracking methods were simultaneously explored, including osc
 \end{centering}
 \end{figure}
 
-Reflecting on this lineage, system design has, over time, converged to a deep learning architecture, minus the learning, where the same processing elements ---filtering and transforms, non-linearities, and pooling--- are replicated over multiple processing layers.
+Reflecting on this lineage, system design has, over time, converged to a deep learning architecture, minus the learning, where the same processing elements ---filtering and transforms, nonlinearities, and pooling--- are replicated over multiple processing layers.
 Interestingly, as shown in Figure \ref{fig:hierarchicaltecture}, visual inspection demonstrates why it is particularly well suited to the task of tempo estimation.
 Consider two input waveforms with little in common but tempo; one, an ascending D Major scale played on a trumpet, and the other, a delayed series of bass drum hits.
 It can be seen that, at each layer, a different kind of variance in the signal is removed.
@@ -207,7 +214,7 @@ Therefore, the most important lesson demonstrated by this example is how invaria
 As mentioned, not all tasks share the same capacity for intuition.
 Multi-level wavelet filterbanks, referred to as scattering transforms, have also shown promise as a general deep architecture for audio classification by capturing information over not only longer, but also multiple, time-scales \cite{Anden2011Multiscale}.
 Recognizing MFCCs as a first-order statistic, this second-order system yielded better classification results over the same observation length while also achieving convincing reconstruction of the original signals.
-The authors demonstrate their approach to be a multi-layer generalization of MFCCs, and exhibit strong parallels to certain deep network architectures, although the parameterization here is not learned but defined.
+The authors demonstrate their approach to have conceptual parallels with MFCCs, and exhibit strong parallels to certain deep network architectures, although the parameterization here is not learned but defined.
 Perhaps a more intriguing observation to draw from this work though is the influence a fresh perspective can have on designing deep architectures.
 Rather than propagating all information upwards through the structure, the system keeps summary statistics at each timescale, demonstrating better performance in the applications considered.
 
@@ -215,7 +222,7 @@ Rather than propagating all information upwards through the structure, the syste
 \subsection{Feature Learning}
 \label{subsec:feature_learning}
 
-In traditional music informatics systems, features are tuned manually, leveraging human insight and intuition, and classifiers are tuned automatically, leveraging an objective criterion and numerical optimization.
+In traditional music informatics systems, features are tuned manually, leveraging human insight and intuition, and classifiers are often tuned automatically, leveraging an objective criterion and numerical optimization.
 For this reason, the quality of hand-crafted features is a crucial aspect of system design, as numerical optimization occurs downstream of manual feature design.
 Many are well aware of the value inherent to good representations, and feature tuning has become a common, if tedious, component in music informatics research.
 One such instance where this has occurred is in the tuning of chroma features.
@@ -243,7 +250,7 @@ The resulting weight matrix is illustrated in Figure \ref{fig:all_weights}-(c), 
 First, the positive contributions to each pitch class are clearly seen at the octaves, as to be expected.
 Second, the learned features corroborate the idea that the octave contributions should be weighted by a windowing function, and the one here looks vaguely Gaussian.
 Third, and most importantly, the learned weights exhibit a small amount of suppression around each octave, shown in blue.
-Similar to a Ricker wavelet \cite{Vaidyanathan1993Multirate}, negative sidebands serve to diminish wideband regions of energy, like those that found in percussion.
+Similar to a Ricker wavelet \cite{Vaidyanathan1993Multirate}, negative sidebands serve to diminish wideband regions of energy, like those that are found in percussion.
 
 
 \begin{figure}
@@ -255,14 +262,14 @@ Similar to a Ricker wavelet \cite{Vaidyanathan1993Multirate}, negative sidebands
 \end{figure}
 
 The chroma features obtained by these last two methods, (b) and (c), are shown in Figure \ref{fig:learned_chroma}.
-The noise floor on the learned chroma features is much higher than the hand-crafted ones, as a direct result of the negative suppression in the learned weights.
+The dynamic range of the learned chroma features is greater than that of the hand-crafted variant, as a direct result of the negative suppression in the learned weights.
 While the idea of adjacent pitch energy suppression is novel, it is important to recognize a few things about this example.
 Most importantly, it is curious to consider what other design aspects ``learning'' might help tease out from data.
 The function considered here, a linear dot product, is very constrained, and ``better'' features are likely possible through more complex models.
 Additionally, it is possible to directly inspect the learned weights because the system is straightforward; more complex models, however, will make this process far more difficult.
 
 
-\subsection{Previous Deep Learning Efforts in Music Informatics}
+\subsection{Previous Feature Learning Efforts in Music Informatics}
 
 While far from widespread, an increasing number of researchers have begun investigating deep learning to challenges in content-based music informatics.
 % MLPs, DBNs
@@ -270,9 +277,11 @@ The most common form of deep learning explored for music applications focuses on
 % Convolutional networks
 Meanwhile, the earliest instance of modern deep learning methods applied to music signals is found in the use of convolutional networks for the detection of onsets \cite{Lacoste2007Supervised}.
 More recently, convolutional networks have also been explored for genre recognition \cite{Li2010Automatic}, instrument similarity \cite{Humphrey2011Nonlinear}, chord estimation \cite{Humphrey2012Learning, Humphrey2012Rethinking}, onset detection \cite{Schluter2014Improved}, and structural segmentation \cite{Ullrich2014Boundary}.
+% TODO: Battenberg.
 % Recursive models
 Recursive neural networks, a powerful, if troublesome, model for sequential data, have also found success in chord transcription \cite{Boulanger2013Audio} and polyphonic pitch analysis \cite{Sigtia2014RNN}.
 Additionally, predictive sparse decomposition (PSD) and other methods inspired by sparse coding have also seen a spike in interest \cite{Henaff2011Unsupervised, Nam2012Learning}, but while they make use of learning, neither of these systems are particularly deep.
+% TODO: Discuss Independent components analysis (who?), non-negative matrix factorization (Paris, Emmanulle et al), sparse coding (Gael, Smith / Lewicki / Nam).
 Regardless, it is worthwhile to note that many, if not all, of these works have attained state of the art performance on their respective tasks, often in the first application of the method to the area.
 
 % Symbolic?
@@ -285,13 +294,13 @@ Regardless, it is worthwhile to note that many, if not all, of these works have 
 \section{Discussion}
 \label{sec:discussion}
 
-Recognizing slowing progress across various application areas in content-based music informatics, this chapter has attempted to develop an understanding as to why this might be the case.
+Recognizing the potential for performance plateaus across various application areas in content-based music informatics, this chapter has attempted to develop an understanding as to why this might be the case.
 Revisiting common approaches to the design of music signal processing systems revealed three possible shortcomings:
 manual feature design cannot scale to every problem the field will need to solve;
 many architectures are too shallow to adequately model the complexity of the data;
-and there currently are not many good answers for handling longer time-scales.
+and the challenge of incorporating longer time-scales remains an open question.
 
-In looking to other related disciplines, it seems deep learning may help address some, if not all, of these challenges.
+In looking to other related disciplines, it seems deep learning may help address some, if not all, of these issues.
 Deep architectures are able to distribute complexity across multiple processing layers, thus being able to model more complex data.
 Feature learning, on the other hand, allows for the automatic optimization of known objective functions, making it easier to discover signal-level characteristics relevant to a given task faster.
 In fact, a handful of previous deep learning efforts within music informatics have already begun to demonstrate the promise of such methods.
@@ -301,3 +310,10 @@ From a practical standpoint, many in the research community are investing consid
 While some, like \cite{Bittner2014Medleydb}, have gone to great lengths to clear licenses for the source audio signals, most use commercial recordings and thus sharing the original content is problematic.
 As a result, it is becoming standard practice to apply a respected, but non-invertible, feature extraction algorithm over the original audio content and share the extracted statistics with the community, e.g. the Million Song Dataset \cite{Bertin2011Million}.
 While these efforts are commendable, such datasets are ultimately limited by the feature extraction algorithm employed.
+
+As a final comment, this is not to imply that feature design is intrinsically deficient, but rather an acknowledgment of the reality that feature extraction is somewhat by definition a lossy process;
+thus, essential information to solve some task may be inadvertenly discarded as a result.
+It is only fair to recognize that some degree of representation engineering can be adventageous in the application of deep learning to music signal processing.
+The goal of representation design in these two scenarios, however, is quite different:
+whereas conventional feature design attempts to ultimately solve the problem, representation design for deep learning, as we will see, strives to make the problem easier to solve.
+While this does not preclude the latter from being non-trivial, there is a larger margin for error as uncertainty can be deferred to the learning stage.
