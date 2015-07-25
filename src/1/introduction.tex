@@ -16,7 +16,7 @@ As a society, we buy, sell, consume and produce information in unprecedented qua
 Given the accelerating rate at which information is created, one of the fundamental challenges facing the modern world is simply making sense of all this data.
 % Google bitches
 The quintessential response to this obstacle is embodied by Google, whose collective \emph{raison d'\^etre} is the organization and indexing of the world's information.
-To appreciate the value and reach of this technology, one only needs to imagine how difficult it would be to browse the Internet without a search engine.
+To appreciate the value and reach of this technology, one only needs to imagine how impossible it would be to browse the Internet without a search engine.
 
  % is a significant research effort behind the development of computational methods and algorithms to help make information universally accessible and useful. %, and this is particularly evident in the realm of music.
 
@@ -24,9 +24,9 @@ To appreciate the value and reach of this technology, one only needs to imagine 
 
 % This domain is broadly referred to as \emph{information retrieval} (IR), and has grown rapidly in recent years, with various subdomains coalescing around application-specific topics.
 
-Understandably, a variety of specialized disciplines have formed under the auspices of developing systems to help people navigate and understand massive amounts of information.
-Coalescing around the turn of the century, music informatics is one such instance, drawing from several diverse fields including electrical engineering, music psychology, computer science, machine learning, and music theory, among others.
-Now encompassing a wide spectrum of application areas and the kinds of data considered---from audio and text to album covers and online social interactions---music informatics can be broadly defined as the study of information related to, or is a result of, musical activity.
+Understandably, a variety of specialized disciplines have formed under the auspices of developing systems to help humans navigate and understand massive amounts of information.
+Coalescing around the turn of the century, music informatics is one such instance, drawing from several diverse fields, including electrical engineering, music psychology, computer science, machine learning, and music theory, among others.
+Now encompassing a wide spectrum of application areas and the kinds of data considered---from audio signals and music blogs to album covers and online social interactions---music informatics can be broadly defined as the study of information related to, or is a result of, musical activity.
 
 % IR Formulation
 At a high level, tackling this problem of ``information overload'' in music is captured by a simple, general analogy: how exactly \emph{does} one find a needle in a haystack?
@@ -41,21 +41,21 @@ Emphasizing the distinction, \emph{description} focuses on absolute representati
 To date, the most successful approaches to large-scale information systems leverage human-provided signals to achieve rich content descriptions.
 Building on top of robust representations simplifies the problem greatly, and good progress has been made toward the development of useful applications.
 % Human signals about the content
-For example, the Netflix Prize challenge\footnote{\url{http://www.netflixprize.com/}} ---an open contest to find the best system for automatically predicting a user's enjoyment of a movie--- was built exclusively on movie ratings contributed by a large collection of other users.
+For example, the Netflix Prize challenge\footnote{\url{http://www.netflixprize.com/}} ---a contest to find the best system for automatically predicting a user's enjoyment of a movie--- was built exclusively on movie ratings contributed by a large collection of other users.
 % Links between content
 Similarly, Google's \emph{PageRank} algorithm associates websites based on how users have linked different pages together, thus facilitating the process of traversing the Internet \cite{Page1999Pagerank}.
 
 % Music is a different ballgame, y'all; document description is wicked hard.
 While this strategy of leveraging manual content description has proven successful in large-scale music recommendation, such as Pandora Radio\footnote{\url{http://www.pandora.com/}}, its application to more general music information problems is fundamentally limited, manifesting in three related ways.
-First, human-provided information commonly used in such systems ---clicks, likes, listens or shares--- are easily captured from, or as a natural by-product of, a user's listening to music.
+First, human-provided information commonly used in such systems ---clicks, likes, listens or shares--- are a naturally occurring by-product of music consumption.
 It is one thing to obtain a ``thumbs up'' for a song; it is quite another to ask that same user to provide a chord transcription of it.
 Second, manual music description may require a high degree of expertise or effort to perform.
 The average music listener is not truly capable of transcribing chords from a sound recording, whether or not she possesses the time or willingness to attempt it.
 Finally, even given the skill, motivation, and infrastructure to manually describe music, this approach cannot scale to \emph{all} music content, now or in the future.
 The Music Genome Project\footnote{\url{https://www.pandora.com/about/mgp}}, for example, has resulted in the manual annotation of some 1M commercial recordings, at a pace of 20-30 minutes per track;
 the iTunes Music Store, however, now offers over 43M tracks worldwide\footnote{According to \url{http://www.apple.com/itunes/music/}, accessed 20 April, 2015.}.
-To illustrate how vast this discrepancy is, consider the following: even assuming the lower bound of 20 minutes, it would still take one sad individual \emph{1,600 years} of non-stop annotation to close that gap.
-More importantly, this only considers commercial music recordings, neglecting amateur or unpublished content from websites like YouTube\footnote{https://www.youtube.com/} or Soundcloud\footnote{\url{https://soundcloud.com/}}, the addition of which makes this goal even more insurmountable.
+To illustrate how vast this discrepancy is, consider the following: even assuming the lower bound of 20 minutes, it would still take one poor individual \emph{1,600 years} of non-stop annotation to close that gap.
+More importantly, this only considers commercial music recordings, neglecting amateur or user-generated content from websites like YouTube\footnote{https://www.youtube.com/} or Soundcloud\footnote{\url{https://soundcloud.com/}}, the addition of which makes this goal even more insurmountable.
 Given the sheer impossibility for humans to meaningfully describe all recorded music, now and in the future, truly scalable music information systems will require good automatic systems to perform this task.
 
 % Music description is good, state of the art is bad
@@ -87,15 +87,15 @@ Consistent with the larger body of machine perception research, the work present
 In this case, ``stimuli'' are digital signals representing acoustic waves, e.g. sound, ``observations'' are semantic descriptions in a particular namespace, e.g. timbre or harmony, and the agent being modeled is an intelligent human, e.g. an expert music listener.
 In practice, the namespace of descriptions considered is constrained to a particular task or application, such as instrument recognition or chord estimation.
 
-Furthermore, if the relationship between stimuli and observation is not a function of the agent, this mapping is said to be ``objective''.
+Furthermore, if the relationship between stimuli and observation is not a function of the agent, this mapping is said to be \emph{objective}.
 Objective relationships are those that are true absolutely by definition, such as the statement ``A C Major triad consists of the pitches C, E, and G.''
 Elaborating, all sufficiently capable agents should always produce the same output given the same input.
 Discrepancies between observations of the same stimuli are understood as one or more of these perspectives being erroneous, resulting from either simple error, bias, or a deficiency of knowledge.
 For objective relationships, the \emph{quality} of a model is determined by how often it is able to produce ``right'' answers, often referred to as ``ground truth'', to the questions being asked.
 
-Conversely, input-output relationships that \emph{are} a meaningful function of the agent are said to be ``subjective''.
-In contrast to the objective case, which is fundamentally concerned with \emph{facts}, a subjective observation is ultimately an \emph{opinion}.
-As such, an opinion can only be true or false insofar as it is held by a competent agent.
+Conversely, input-output relationships that \emph{are} a meaningful function of the agent are said to be \emph{subjective}.
+In contrast to the objective case, which is fundamentally concerned with \emph{facts}, a subjective observation is ultimately a \emph{perspective}.
+As such, a perspective can only be true or false insofar as it is held by a competent agent.
 This is embodied, for example, in the statement ``That sounds like a saxophone.''
 Whether or not the stimuli originated from a saxophone is actually irrelevant;
 a rational agent has made the observation, and thus it is in some sense valid.
@@ -108,7 +108,7 @@ The notions of, and inherent conflict between, objectivity and subjectivity in a
 Arguably most facets of music perception are subjective and vary in degree from task to task.
 However, while subjective evaluation might be better suited toward measuring the quality or usability of some computational system, the human involvement required by such assessments make them prohibitively costly in both time and money to conduct with any regularity.
 As a result, conventional research methodology in engineering and computer science greatly prefers \emph{quantitative} evaluation as a proxy to \emph{qualitative} responses collected from human subjects.
-Typically quantitative methods proceed by collecting some number of input-output pairs from one or more human subjects beforehand, and treating this data sample as objective truth.
+Quantitative methods typically proceed by collecting some number of input-output pairs from one or more human subjects beforehand, and treating this data sample as objective truth.
 Thus, regardless of whether or not a given task is indeed objective, it is a significant simplification in methodology to treat it as one.
 
 This is all to say that the validity and quality of a music description is often determined by an objective fitness measure, not necessarily out of correctness but rather tractability.
@@ -121,7 +121,7 @@ Therefore, any quantitative measure is only valid insofar as the assumption of o
 
 The proposed research is primarily motivated by two complementary observations:
 one, large scale music signal processing systems are becoming necessary to help humans navigate and make sense of an ever-increasing volume of music information;
-two ---and, more notably, the specific problem this work seeks to address--- the conventional research tradition in content-based music information retrieval is yielding diminishing returns, despite many research areas remaining unsolved.
+and two ---the specific problem this work seeks to address--- the conventional research tradition in content-based music information retrieval is yielding diminishing returns, despite many research areas remaining unsolved.
 
 In the most immediate sense, the proposed research will develop systems to tackle various applications in music informatics.
 This will at least serve to explore an alternative approach to conventional problems in the field.
@@ -154,9 +154,9 @@ Therefore, this work offers several potential contributions, both theoretical an
 
 \item Chapter \ref{chp:timbre} explores the application of deep learning toward the development of objective timbre similarity spaces.
 
-\item Chapter \ref{chp:chord_estimation} considers the application of deep learning toward automatic chord estimation, as a means to both improve the state of the art and better understand the task at hand.
+\item Chapter \ref{chp:chord_estimation} considers the application of deep learning to the task of automatic chord estimation, as a means to both improve the state of the art and better understand the task at hand.
 
-\item Chapter \ref{chp:guitar} extends this chord estimation efforts to directly estimate human-readable representations in the form of guitar tablature.
+\item Chapter \ref{chp:guitar} extends the chord estimation efforts presented here to directly estimate human-readable representations in the form of guitar tablature.
 
 \item Chapter \ref{chp:reproducibility} documents the software contributions resulting from this study, contributing to the greater cause of reproducible research efforts.
 
@@ -186,7 +186,10 @@ This thesis covers much of the work presented in the publications listed below:
 \vspace{1em}
 \begin{itemize}
 \onehalfspacing
-\item Humphrey, E. J., Bello, J. P., and LeCun, Y. (2013) ``Feature learning and deep architectures: new directions for music informatics.''{\it Journal of Intelligent Information Systems}. 41 (3), 461--481.
+\item Humphrey, E. J., Bello, J. P., and LeCun, Y. (2013) ``Feature learning and deep architectures: new directions for music informatics.''~{\it Journal of Intelligent Information Systems}. 41 (3), 461--481.
+
+\item Esparza, T., Bello, J. P., and Humphrey, E. J. (2014) ``From Genre Classification to Rhythm Similarity.''~{\it Journal of New Music Research}. 666 (123), 461--481.
+\begin{document}
 
 \end{itemize}
 
@@ -195,25 +198,23 @@ This thesis covers much of the work presented in the publications listed below:
 \begin{itemize}
 \onehalfspacing
 
-\item Humphrey, E. J., Salamon, J. Nieto, O., Forsyth, J., Bittner, R. M., and Bello, J. P. ``JAMS: A JSON Annotated Music Specification for Reproducible MIR Research.''{\it Proceedings of the 15th International Society of Music Information Retrieval (ISMIR)}, Taipei, Taiwan, October 2014.
+\item Humphrey, E. J., Salamon, J. Nieto, O., Forsyth, J., Bittner, R. M., and Bello, J. P. ``JAMS: A JSON Annotated Music Specification for Reproducible MIR Research.''~{\it Proceedings of the 15th International Society for Music Information Retrieval (ISMIR)}, Taipei, Taiwan, October 2014.
 
-\item Raffel, C., McFee, B., Humphrey, E. J., Salamon, J. Nieto, O., Liang, D., and Ellis, D. P. W. ``mir eval: A Transparent Implementation of Common MIR Metrics''{\it Proceedings of the 15th International Society of Music Information Retrieval (ISMIR)}, Taipei, Taiwan, October 2014.
+\item Raffel, C., McFee, B., Humphrey, E. J., Salamon, J. Nieto, O., Liang, D., and Ellis, D. P. W. ``mir eval: A Transparent Implementation of Common MIR Metrics''~{\it Proceedings of the 15th International Society of Music Information Retrieval (ISMIR)}, Taipei, Taiwan, October 2014.
 
-\item Humphrey, E. J. and Bello, J.P. ``From Music Audio to Guitar Tablature: Teaching Deep Convolutional Networks to Play Guitar.'' {\it Proceedings of the International Conference on Acoustic Signals and Speech Processing (ICASSP)}, Florence, Italy, May 2014.
+\item Humphrey, E. J. and Bello, J.P. ``From Music Audio to Guitar Tablature: Teaching Deep Convolutional Networks to Play Guitar.''~{\it Proceedings of the International Conference on Acoustic Signals and Speech Processing (ICASSP)}, Florence, Italy, May 2014.
 
-\item Humphrey, E. J., Nieto, O., and Bello, J. P. ``Data Driven and Discriminative Projections for Large Scale Cover Song Identification.''{to appear in \it Proceedings of the 14th International Society of Music Information Retrieval (ISMIR)}, Curitiba, Brazil, November 2013.
+\item Humphrey, E. J., Nieto, O., and Bello, J. P. ``Data Driven and Discriminative Projections for Large Scale Cover Song Identification.''~{\it Proceedings of the 14th International Society for Music Information Retrieval (ISMIR)}, Curitiba, Brazil, November 2013.
 
-\item Humphrey, E. J., Nieto, O., and Bello, J. P. ``Data Driven and Discriminative Projections for Large Scale Cover Song Identification.''{to appear in \it Proceedings of the International Society of Music Information Retrieval (ISMIR)}, Curitiba, Brazil, November 2013.
+\item Humphrey, E. J. and Bello, J.P., ``Rethinking Automatic Chord Recognition with Convolutional Neural Networks.''~{\it Proceedings of the International Conference on Machine Learning and Applications (ICMLA)}, Boca Raton, FL, December 2012.
 
-\item Humphrey, E. J. and Bello, J.P., ``Rethinking Automatic Chord Recognition with Convolutional Neural Networks.'' {\it Proceedings of the International Conference on Machine Learning and Applications (ICMLA)}, Boca Raton, FL, December 2012.
+\item Humphrey, E. J., Bello, J. P., and LeCun, Y. ``Moving Beyond Feature Design: Deep Architectures and Automatic Feature Learning in Music Informatics.''~{\it Proceedings of the International Society for Music Information Retrieval (ISMIR)}, Porto, Portugal, October 2012.
 
-\item Humphrey, E. J., Bello, J. P., and LeCun, Y. ``Moving Beyond Feature Design: Deep Architectures and Automatic Feature Learning in Music Informatics.'' {\it Proceedings of the International Society of Music Information Retrieval (ISMIR)}, Porto, Portugal, October 2012.
+\item Nieto, O.,  Humphrey, E. J., and Bello, J. P. ``Compressing Music Recordings into Audio Summaries.''~{\it Proceedings of the International Society for Music Information Retrieval (ISMIR)}, Porto, Portugal, October 2012.
 
-\item Nieto, O.,  Humphrey, E. J., and Bello, J. P. ``Compressing Music Recordings into Audio Summaries.''{in \it Proceedings of the International Society of Music Information Retrieval (ISMIR)}, Porto, Portugal, October 2012.
+\item Humphrey, E. J., Cho, T. and Bello, J.P. ``Learning a Robust Tonnetz-space Transform for Automatic Chord Recognition.''~{\it Proceedings of the International Conference on Acoustic Signals and Speech Processing (ICASSP)}, Kyoto, Japan, March 2012.
 
-\item Humphrey, E. J., Cho, T. and Bello, J.P. ``Learning a Robust Tonnetz-space Transform for Automatic Chord Recognition.'' {\it Proceedings of the International Conference on Acoustic Signals and Speech Processing (ICASSP)}, Kyoto, Japan, March 2012.
-
-\item Humphrey, E. J., Glennon, A. and Bello, J.P., ``Non-Linear Semantic Embedding for Organizing Large Instrument Sample Libraries.'' {\it Proceedings of the International Conference on Machine Learning and Applications (ICMLA)}, Honolulu, HI, December 2011.
+\item Humphrey, E. J., Glennon, A. and Bello, J.P., ``Non-Linear Semantic Embedding for Organizing Large Instrument Sample Libraries.''~{\it Proceedings of the International Conference on Machine Learning and Applications (ICMLA)}, Honolulu, HI, December 2011.
 
 \end{itemize}
 
