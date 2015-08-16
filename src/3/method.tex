@@ -12,7 +12,7 @@
 
 Deep learning descends from a long and, at times, rocky history of artificial intelligence, information theory, and computer science.
 % TODO: There is a sentence / thought missing here.
-The goals of the this chapter are two-fold:
+The goals of this chapter are two-fold:
 Section \ref{sec:background} first offers a concise summary of the history of deep learning in three parts, detailing the origins, critical advances, and current state of the art of neural networks.
 Afterwards, a formal treatment of deep learning is addressed in three parts:
 Section \ref{subsec:architectures} introduces the architectural components of deep networks;
@@ -42,7 +42,7 @@ While the space of relevant contributions is too great to enumerate here, there 
 In 1936, Alan Turing devised the concept of a ``universal machine'', which would lead to the proof that a system of binary states, e.g. true and false, could be used to perform \emph{any} mathematical operation \cite{Turing1936Computable}.
 Only shortly thereafter, Claude Shannon demonstrated in his \emph{master's} thesis that Boolean logic could be implemented in electrical circuits via switches and relays, forming the basis of the modern computer \cite{Shannon1938Symbolic}.
 Shortly thereafter, in 1943, McCulloch and Pitts constructed the first artificial neuron, a simple computational model inspired by discoveries in neuroscience \cite{Mcculloch1943Logical}.
-By coarse analogy to a biology, an artificial neuron ``fires'' when a weighted combination of its inputs eclipse a given threshold:
+By coarse analogy to biology, an artificial neuron ``fires'' when a weighted combination of its inputs eclipse a given threshold:
 
 \begin{align*}
   f(\mathbf{x}~|~\mathbf{w}) = h(\mathbf{w}^T~\cdot~\mathbf{x})\\
@@ -64,7 +64,7 @@ Given the clear application to the field of computational logic, artificial neur
 On its own, an artificial neuron is only a general processing structure, and the parameters it takes will specify the precise behavior of the model.
 Arriving at these parameters, however, was nontrivial and required manual derivation.
 Thus, in 1958, Frank Rosenblatt's invention of the \emph{Perceptron} algorithm significantly altered how artificial neurons were conceived \cite{Rosenblatt1958Perceptron}.
-Building upon the work of McCulloch and Pitts, the algorithm, given in \ref{alg:perceptron}, offered an automated method of ``learning'' the parameters necessary to achieve binary classification over a collection of data:
+Building upon the work of McCulloch and Pitts, the algorithm, given in \Cref{alg:perceptron}, offered an automated method of ``learning'' the parameters necessary to achieve binary classification over a collection of data:
 
 \begin{algorithm}[H]
 \caption{Find the optimal parameters for a Perceptron over a collection of data.}
@@ -89,14 +89,14 @@ Building upon the work of McCulloch and Pitts, the algorithm, given in \ref{alg:
 \noindent The perceptron algorithm requires four inputs:
 a matrix of observations, $\mathbf{x} \in \mathcal{R}^{N\times D}$, corresponding to $N$ samples with $D$ dimensions;
 a vector of binary class assignments, $\mathbf{y}$, in the set $\{0, 1\}$;
-an learning rate parameter, $\eta$;
+a learning rate parameter, $\eta$;
 and an iteration limit, $n_{max}$.
 Initializing the algorithm, the weights, $\mathbf{w}$, are set to a matrix of zeros, shaped $(D + 1, 2)$, an error, $\mathbf{e}$, is set to a vector of ones, and the iteration counter, $n$, starts from 1.
 Then, in an iterative manner, binary outputs, $\mathbf{z}$, are computed from the perceptron function, $f()$,
 % given in Eq. \ref{eq:perceptron},
 the error is computed as the difference between class predictions and targets, and the weights are updated with a scaled version of the incorrectly classified inputs.
 Note that the error vector, $\mathbf{e}$ is only non-zero where the predicted values are wrong, and thus the algorithm naturally terminates when all datapoints are classified correctly.
-Alternatively, execution is halted once a fixed number iterations is reached.
+Alternatively, execution is halted once a fixed number of iterations is reached.
 An example of a perceptron's stopping condition is given in Figure \ref{fig:linsep}.
 Here, a perceptron has separated two classes of data, drawn from different Gaussian distributions.
 As the algorithm proceeds, the total error decreases until a decision boundary is found that correctly classifies the observed data.
@@ -197,12 +197,12 @@ By presenting visual stimuli while probing the brain with electrodes, they disco
 Experimental results indicated that the former is responsible for local feature extraction, while the latter combines the inputs of simple cells to absorb small amounts of variation in the observed stimuli.
 
 % ConvNets, LeNet5, handwritten digits
-These ideas were first incorporated in the Neocognitron of \cite{Fukushima1988Neocognitron}, and later realized successfully as a convolutional neural network for shape recognition and handwritten digit classification \cite{LeCun1998Gradient}, offering three key design features.
-\emph{Local receptive fields}, where compute features from a small neighborhood of pixels, exploiting the observation that nearby pixel values tend to be highly correlated.
-Smaller receptive fields require fewer parameters, thus reducing the overall size of the model and the amount of data needed to train it.
+These ideas were first incorporated in the Neocognitron \cite{Fukushima1988Neocognitron}, and later realized successfully as a convolutional neural network for shape recognition and handwritten digit classification \cite{LeCun1998Gradient}, offering three key design features.
+\emph{Local receptive fields} produce outputs over a small neighborhood of input features, exploiting the observation that nearby pixel values tend to be highly correlated.
+Smaller receptive fields result in models that require a fewer number of parameters, thus reducing the overall size of the model and the amount of data needed to train it.
 Applying local receptive fields as a convolution results in effectively sharing the weights over all positions in an image.
 Thus \emph{weight sharing} reduces the number of parameters even further, while allowing the network to identify features regardless of position in an image.
-Finally, \emph{max-pooling} reduces small neighborhoods to the largest value within it, introducing not only shift but a small amount of scale and rotation invariance.
+Finally, \emph{pooling} reduces small number of inputs to a single value by a given function, such as the mean or max, introducing not only shift but a small amount of scale and rotation invariance.
 Taken together, these advantageous attributes directly resolved many of the issues plaguing multilayer perceptrons, and proved to be the most successful instance of neural computing for nearly two decades.
 
 
@@ -213,16 +213,16 @@ Taken together, these advantageous attributes directly resolved many of the issu
 % Early data
 Given the ubiquity of digital information in the modern era, it is easy to forget that neural networks were first developed in a considerably different day and age.
 The very existence of digital audio and images, for example, did not become commonplace until the end of the 20th century.
-Even then, these signals were costly to create, cumbersome to work with, and generally difficult to share.
+Even then, these signals were costly to create, cumbersome to process, and generally difficult to distribute.
 Furthermore, once obtained, the process of annotating this information for use in supervised learning requires a great deal of time and effort.
 Thus, in the vein of speech recognition or computer vision for example, machine perception research was forced to work with small datasets as a result.
 Given the versatility of neural networks to model complex data, it was typically trivial to over-fit these small training, while failing to generalize to new data.
 Neural networks developed the reputation of being ``data hungry'', requiring a large amount of training data in order to do anything useful in practice.
 
 % Labeled datasets grew, intentionally or otherwise
-While this was, and in some cases still is, a valid consideration for neural networks, the problem of data scarcity is far less of an issue now.
+While this was, and in some cases still is, a valid concern for neural networks, the problem of data scarcity is far less of an issue now.
 For many well worn tasks, researchers have had ample time to curate massive labeled datasets.
-In the late 1980s, LeCun et al oversaw the development of a handwritten digit dataset, comprised of 60k 28x28 pixel images \cite{LeCun1998MNIST};
+In the late 1980s, LeCun et al. oversaw the development of a handwritten digit dataset, comprised of 60k 28x28 pixel images \cite{LeCun1998MNIST};
 for comparison, the ImageNet dataset consists of millions of tagged, high resolution images \cite{Deng2009Imagenet}.
 Similar efforts have been undertaken in the fields of speech recognition \cite{Fisher1986TIMIT}, face recognition \cite{Huang2007Labeled}, or natural language processing \cite{Lewis2004RCV1}, to name only a few.
 Additionally, given the rise of the Internet, it became possible to leverage a variety of information sources to obtain labeled data, such as user-generated content, via Last.fm\footnote{\url{http://www.last.fm/}} or Twitter\footnote{\url{http://www.twitter.com/}}, weak feedback signals, e.g. Pandora Radio\footnote{\url{http://www.pandora.com/}}, or even as a means of distributing the annotation effort \cite{Von2003Captcha}.
@@ -232,7 +232,7 @@ Combined, the range of information available for large-scale supervised learning
 As a by-product of the global transition to the digital realm though, an even larger portion of \emph{unlabeled} data was at the disposal of machine learning researchers.
 Coupling the easy availability of digital information with the idea that ``the human brain isn't \emph{really} supervised'', much effort was invested in the space of \emph{unsupervised} learning algorithms. %, i.e. learning from unlabeled data.
 Finally, in 2006, one such method, referred as \emph{contrastive divergence}, was able to successfully exploit unlabeled data to improve the performance of a neural network \cite{Hinton2006Fast}.
-Using a cascade of of undirected models, known as a Restricted Boltzmann machine (RBM), a neural network was trained in a greedy, layer-wise manner to reproduce realistic data.
+Using a cascade of undirected models, known as a Restricted Boltzmann machine (RBM), a neural network was trained in a greedy, layer-wise manner to reproduce realistic data.
 After this process of learning how real data behaves, the model could be ``fine-tuned'' with a smaller amount of labeled data to realize impressive, state of the art performance.
 Referred to as ``pre-training'', learning on unsupervised data allowed the model to discover parameters closer to a good final solution.
 Though later discoveries would demonstrate pre-training to be unnecessary under certain conditions \cite{Zeiler2013Rectified}, this breakthrough was perhaps the first to forcefully recapture the attention of the machine learning community.
@@ -287,7 +287,7 @@ Reflecting on the historical lineage of neural networks, it becomes apparent tha
 Thus, to help define the scope and limits of this work, this section introduces the fundamental components that contribute to a modern definition of the topic.
 Here, ``deep learning'' is defined as an approach to designing complex information processing systems, exhibiting two key traits;
 one, discussed in Subsection \ref{subsec:architectures}, the system architecture can be expressed as a composite nonlinear function, composed of many simpler operations;
-and two, presented in Subsection \ref{subsec:learning}, the parameters of this function can be ``learned'' by combining an objective function with numerical optimzation methods.
+and two, presented in Subsection \ref{subsec:learning}, the parameters of this function can be ``learned'' by combining an objective function with numerical optimization methods.
 Finally, modern neural network research has produced a useful array of ``tricks of the trade'', detailed in Subection \ref{subsec:tricks}, which often help squeeze every last bit of performance from a model.
 
 
@@ -313,7 +313,8 @@ more accurately, however, processing depth as a means to representational power 
 The \emph{width} of a network, on the other hand, is determined by the dimensionality of the intermediary representations between sub-functions, and often varies within the network.
 
 It is worth noting that this sequential cascade of operations is only common practice and not a hard and fast rule.
-Some networks make use of interesting types of connectivity between layers, referred to as ``skip-layer'' connections;
+% TODO: Fill in this reference.
+Some networks make use of interesting types of connectivity between layers, referred to as ``skip-layer'' connections \cite{};
 others adopt an explicit graphical interpretation, encouraging the description of the network in terms of nodes and edges.
 Therefore the design of a network architecture must address several interrelated questions:
 what is the function being modeled?
@@ -359,7 +360,7 @@ the dimensionality of the output, $Z_l$, is $K*(N-M+1)$.
 This formulation is particularly interesting, as it illustrates the inherent difficulty posed by the universal approximation theorem.
 Technically, a local receptive field can be implemented as a significantly larger fully-connected matrix product;
 learning this behavior directly, however, can be quite difficult.
-First off, this particular sparse connectivity would need to be learned redundantly in all locations of an input.
+First, this particular sparse connectivity would need to be learned redundantly in all locations of an input.
 Additionally, such true sparsity is challenging to learn, and it is unlikely such behavior would be so well localized.
 Finally, the prospect of learning this particular topology from a fully-connected matrix demands a prohibitive number of parameters, throttling both computation and the learning process.
 
@@ -379,8 +380,8 @@ Also known as weight tying, a convolution is generically expressed by the follow
 f_l(X_l \vert \theta_l) = h(X_{l} \circledast W + b), \quad \theta_l = [W, b]
 \end{equation}
 
-\noindent In deep learning literature, there are typically two kinds of convolution operations indicated by the $\circledast$.
-The first, and perhaps original, interpretation is referred to as a ``2D'' convolution:
+\noindent In deep learning literature, there are typically two kinds of convolution operations indicated by the $\circledast$ operator.
+The first, and perhaps original, interpretation is referred to as a ``2D'' convolution \cite{LeCun1998Gradient}:
 
 \begin{equation}
 \label{eq:convolution}
@@ -392,7 +393,8 @@ The first, and perhaps original, interpretation is referred to as a ``2D'' convo
 In this formulation, $X_l$ has shape $(N, d_0, d_1)$ where $(d_0,d_1)$ is the shape of each map, $W$ has shape $(M, m_0, m_1)$, where $(m_0,m_1)$ define the size of the kernel, and the output, $Z_l$, has shape $(M, d_0-m_0+1, d_1-m_1+1)$.
 Note that in this 2D formulation, the activation of a kernel is summed equally across the separate feature maps, and thus a single kernel is shared across channels and spatial translations.
 
-Alternatively, the other common variant of the $\circledast$ operator is the 3D convolution, written as follows:
+% TODO: Fix this citation.
+Alternatively, the other common variant of the $\circledast$ operator is the 3D convolution, written as follows \cite{Bengio2011What}:
 
 \begin{equation}
 \label{eq:convolution}
@@ -449,7 +451,7 @@ More recently, the \emph{Rectified Linear Unit} (ReLU), or halfwave rectificatio
 
 % piecewise linear model. % relationship to random forests?
 \noindent Notably, it was demonstrated in \cite{Zeiler2013Rectified} that, with sufficient data, rectified linear units could achieve state of the art performance without unsupervised pretraining.
-Though the theory is still catching up to the practice, there are two widely held rationalizations of this behavior.
+Though theory is still catching up to practice, there are two widely held rationalizations of this behavior.
 Most importantly, the function does not saturate in the positive region, and thus gradients propagate freely through an arbitrarily deep network.
 Additionally, the hard threshold results in naturally sparse representations, an advantageous property for classification systems \cite{Bengio2007Scaling}.
 Noting that no information flows in the negative mode, others have extended this idea into the ``leaky ReLU'', but these have seen far less use in practice as they undermine the benefits of sparsity \cite{Maas2013Rectifier}.
@@ -528,7 +530,7 @@ Without additional constraints on the learning problem, a network may learn to d
 Recall that the overarching goal here is to model the relationship between a collection of input data and desired outputs.
 The building blocks described previously are used to construct powerful, complex functions, but this is only half the design problem;
 it is then necessary to find the parameters that enable this general function to perform some specific behavior.
-Analogously to objected oriented programming, a network's equation family defines its \emph{class}, whereas the parameters define its \emph{instance}.
+By analogy to objected oriented programming, a network's equation family defines its \emph{class}, whereas the parameters define its \emph{instance}.
 
 Importantly, assuming the desired outputs are known, it is possible to measure how well a given function approximates this relationship.
 Now consider that there exists a hypothetical space of all possible solutions and, in it, at least \emph{one} function that optimally satisfies this measure.
@@ -599,7 +601,7 @@ For example, a margin could be used to penalize a model when the distance betwee
 conversely, the opposite behavior is achieved by negating the argument.
 
 % Negative Log-likelihood
-The remaining loss function of interest here is the \emph{negative log-likelihood} loss, a common criterion for classification problems.
+The final loss function of interest here is the \emph{negative log-likelihood} loss, a common criterion for classification problems.
 For networks that produce probability mass functions over a set of $K$ classes, e.g. via the softmax operation, the parameters can be optimized by minimizing the correct class' negative log-likelihood:
 
 \begin{equation}
@@ -670,8 +672,8 @@ As with many things, the devil is truly in the details, and over time the variou
 %   -- Tricks
 \subsubsection{Penalizing Bad Behavior}
 
-The goal of architecting a deep network is adjust the representational power of the model to a given problem, incorporating known constraints where possible.
-More often than not, however, a the inherent complexity of a particular model vastly exceeds the latent complexity of the data at hand.
+The goal of architecting a deep network is to adjust the representational power of the model to a given problem, incorporating known constraints where possible.
+More often than not, however, the inherent complexity of a particular model vastly exceeds the latent complexity of the data at hand.
 As a result, the learning process will result in parameter configurations that perform well on the training data, but fail to generalize to unseen data.
 Conceptually, this can be understood as the model having too many options when achieving its goal state, and happening to pick one that is bad for reasons that do not factor into its objective function.
 It can be said that the learning problem is under-determined, and thus additional penalties can be added to the overall loss.
@@ -685,7 +687,7 @@ The first, referred to as weight decay, ridge regression, or $L_2$-regularizatio
 \mathcal{L}_{decay}=\sum_i\lambda~||\Theta_i||_2^2
 \end{equation}
 
-Here, the vector magnitude of the $i^{th}$ parameter, $\Theta_i$, is weighted by a hyperparameter, $\lambda_i$, and summed together as a scalar penalty.
+Here, the vector magnitude of the $i^{th}$ parameter, $\Theta_i$, is weighted by a hyperparameter, $\lambda_i$, summed to a scalar penalty, and added to the cumulative loss.
 Conventionally, the same weight is applied to all parameters, although differently shaped parameters will bias the cumulative term.
 During optimization, this has the effect of driving parameters toward, but not exactly, zero, providing an intuitive interpretation consistent with Occam's razor, i.e. prefer simpler solutions.
 This often prevents the network from overfitting the training data exactly, and resulting in solutions that generalize better.
@@ -696,8 +698,8 @@ Whereas weight decay is applied to the parameters of network, \emph{sparsity} pe
 \mathcal{L}_{sparsity}=\sum_i\lambda~||Z_i||_1
 \end{equation}
 
-\noindent Ideally, it would be more preferable to optimize the $L_0$ loss.
-This this problem is generally $np$-hard, however, and the $L_1$ loss, its convex envelope, serves as a differentiable approximation.
+\noindent Ideally, it would be preferable to optimize the $L_0$ loss.
+This problem is generally $np$-hard, however, and the $L_1$ loss, its convex envelope, serves as a differentiable approximation.
 While it is not guaranteed that the solutions of each may coincide, optimizing the $L_1$ generally yields good results in practice.
 As a result, this penalty will prefer sparse representations, which help \emph{disentangle} factors of variation in the data \cite{Bengio2009Learning}.
 
@@ -727,7 +729,7 @@ That said, this strategy may still prove useful for problems in which it is diff
 
 \subsubsection{Dropout}
 
-Another recent addition to canon of deep learning practicum is the training strategy known as \emph{dropout} \cite{Hinton2012Improving}.
+Another recent addition to the canon of deep learning practicum is the training strategy known as \emph{dropout} \cite{Hinton2012Improving}.
 As the name suggests, some percentage of parameters in a network are randomly ``dropped'' during training in estimating the loss and computing an update step.
 The details of how exactly this is done vary slightly from sub-function to sub-function, but a description in terms of an affine transformation is sufficiently illustrative:
 
@@ -767,7 +769,7 @@ Finding inspiration from biological processes, LCN performs a form of automatic 
 
 % L2 constraints, bounded in volume, bounded to surface.
 In addition to constraining the input space, it is also common to constrain the \emph{parameters} within a network, often taking two forms.
-In some cases, like \cite{Hinton2012Improving}, parameters are simply constrained inside the volume of the given hypersphere, such that any time parameters are updated to values that result in a magnitude larger than 1, they are rescaled.
+In some cases \cite{Hinton2012Improving}, parameters are simply constrained inside the volume of the given hypersphere, such that any time parameters are updated to values that result in a magnitude larger than 1, they are rescaled.
 This constraint gives parameters freedom to adapt to the nuances of the data without growing arbitrarily large to offset the contributions of small weights.
 Bounding parameters shares a loose connection to weight decay, in parameters are prevented from growing arbitrarily large, without the need for additional penalties or hyperparameters.
 Alternatively, there are also successful instances of weights being constrained to the surface of the $L_2$ hypersphere, a common approach in various forms of sparse coding.

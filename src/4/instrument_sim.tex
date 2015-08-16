@@ -9,11 +9,11 @@
 % Context
 Timbre has proven to be a difficult attribute to define in acoustic perception, and there is little concensus as result in its underpinnings or the efforts to model it computationally.
 % Purpose
-Psychoacoustics has long sought to better understand the space of timbre using subjective pairwise ratings between acoustic stimuli, but this information is costly to obtain and the generalizability of conclusions ultimately dependent on the palette of sounds considered.
+Psychoacoustics has long sought to better understand the space of timbre using subjective pairwise ratings between acoustic stimuli, but this information is costly to obtain and the generalizability of conclusions ultimately depend on the palette of sounds considered.
 % Goal
 This chapter explores an objective, data-driven approach to the development of relative timbre spaces as a scalable alternative to this line of research.
 % Approach / how
-Here, instrument taxonomies are used to as a proxy for timbre similarity, and a deep convolutional network is used to project time-frequency representations of audio into a low-dimensional, semantically organized space.
+Here, instrument taxonomies are used as a proxy for timbre similarity, and a deep convolutional network is used to project time-frequency representations of audio into a low-dimensional, semantically organized space.
 The quality of the resulting embeddings is demonstrated through a series of experiments, indicating that this approach shows significant promise for organizing large collections of audio samples by timbre.
 
 
@@ -29,7 +29,7 @@ Timbre is that attribute of auditory sensation in terms of which a subject can j
 
 %  More focus on what it isn't than what it is
 As evidenced by this definition, the very notion of ``timbre'' is still an open research topic in psychoacoustics.
-This reality is captured quite succinctly by Phillipe Manoury, who offered the following insight \cite{Manoury1991Limites}, as translated by \cite{Donnadieu2007Mental}:
+This reality is captured quite succinctly by Phillipe Manoury, who offered the following insight \cite{Manoury1991Limites}, as translated by Donnadieu \cite{Donnadieu2007Mental}:
 
 \begin{quote}
 One of the most striking paradoxes concerning timbre is that when we knew less about it, it didn’t pose much of a problem.
@@ -105,9 +105,12 @@ The interested reader is directed to \cite{Essid2006Musical} for a comprehensive
 % Cascaded Transforms
 From an often complementary perspective, other music researchers have utilised transform-based approaches to project signals into representations with various desirable properties.
 One of the earliest and most common approaches is the use of Mel-frequency Cepstral Coefficients (MFCCs) for timbre-oriented tasks.
-Originally designed for speech coding in the 1980s \cite{Mermelstein1980Comparison}, the first significant contribution in MIR to call attention to MFCCs as useful music features was that of Logan in 2000 \cite{Logan2000Mel}.
+Originally designed for speech recognition in the 1980s \cite{Mermelstein1980Comparison}, the first significant contribution in MIR to call attention to MFCCs as useful music features was that of Logan \cite{Logan2000Mel}.
 MFCCs have, at least in practice, become nearly synonymous with timbre-centric MIR, now being used in a wide array of systems for instrument classification \cite{Herrera2003Automatic}, tagging \cite{Barrington2008Combining}, genre prediction \cite{Tzanetakis2002Musical}, mood estimation \cite{Schmidt2010Prediction} or structural analysis \cite{Paulus2010State}, to name only a few works.
-As described in detail in Chapter \ref{chp:context}, the general process of computing MFCCs proceeds as follows: an input audio signal is divided into overlapping, short-time \emph{frames}, on the order of tens to hundreds of milliseconds; a filterbank, perceptually scaled in frequency, is then applied to each short-time frame and log-compressed; finally, a discrete cosine transform (DCT) is applied to these frequency coefficients, characterizing the shape of the spectrum (or the spectrum of the spectrum, referred to as the \emph{ceps}trum).
+As described briefly in Chapter \ref{chp:context}, the general process of computing MFCCs proceeds as follows:
+an input audio signal is divided into overlapping, short-time \emph{frames}, on the order of tens to hundreds of milliseconds;
+a filterbank, perceptually scaled in frequency, is then applied to each short-time frame and log-compressed;
+finally, a discrete cosine transform (DCT) is applied to these frequency coefficients, characterizing the shape of the spectrum (or the spectrum of the spectrum, referred to as the \emph{ceps}trum).
 Only the first dozen or so coefficients are used, based on the principle that they compactly describe the spectral contour, though this is more convention than rule.
 Some have even gone so far as to literally \emph{equate} MFCCs and timbre, concluding that specific coefficients are responsible for various perceptual dimensions \cite{Terasawa2005Thirteen}.
 
@@ -115,7 +118,7 @@ Some have even gone so far as to literally \emph{equate} MFCCs and timbre, concl
 Similar in principle, though less widely adopted, is to instead \emph{learn} the set of bases against which a time-frequency representation is projected.
 One such instance is observed in  \cite{Jehan2005Creating}, which preserves the first 12 coefficients of a trained PCA decomposition.
 In this scenario, the projection into the PCA subspace serves to decorrelate the principal axes of the data in the input space, much like the Discrete Cosine Transform.
-The primary difference here, however, is that the bases are learned from a sample of observations, rather than defined analytically.
+The two key differences here are that the bases are learned from a sample of observations, rather than defined analytically, and the input to the PCA model is a shingle of time-frequency coefficients.
 
 
 
@@ -126,7 +129,7 @@ While many computational approaches have proven useful for various classificatio
 % Search with sound; avoids the challenge of articulating queries linguistically.
 One notable instance is the difficulty faced in the search and navigation of large sound sample libraries.
 Queries are predominantly forced to take the form of text, as in the Freesound\footnote{\url{http://www.freesound.org/}} archive shown in Figure \ref{fig:freesound}, which is problematic for at least two reasons.
-On one hand, it can challenging to describe a specific query semantically, and often metaphors and figurative language are used to relate the experience of a sound; a distorted guitar might be referred to as `crunchy', or a trumpet as `bright.'
+On one hand, it can be challenging to describe a specific query semantically, and often metaphors and figurative language are used to relate the experience of a sound; a distorted guitar might be referred to as ``crunchy'', or a trumpet as ``bright.''
 Conversely, this kind of descriptive language is far from standardized and varies in meaning from one individual to the next.
 Furthermore, such descriptions are not always associated with every sound in a collection, and typically only at the granularity of the entire recording.
 As a result, the task of navigating a sound library is often reduced to that of an exhaustive, brute force search.
@@ -145,11 +148,10 @@ This concept of a metric timbre space is also particularly attractive in the rea
 Euclidean spaces are easily relatable by physical analogy, and visualization allows for acoustic information to be understood in an intuitive manner.
 % Artistic Exploration and Composition
 The ability to explore familiar ideas from an unfamiliar perspective holds considerable merit for artistic exploration and new approaches to composition.
-% TODO: Juan says weak; I don't disagree, just not sure that I care.
 
 
 \subsection{Limitations}
-
+% TODO: Finish this.
 It is valuable to note that despite the difficulty inherent to defining timbre, all computational research must adopt some working concept of it, implicitly or otherwise.
 Generally two facets to timbre; sound quality and sound source.
 They are related but not exactly equal.
