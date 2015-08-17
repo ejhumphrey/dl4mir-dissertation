@@ -11,7 +11,7 @@
 In the previous chapter, it was demonstrated that state of the art ACE systems perform at a relatively high level, often producing reasonable, if not exact, chord estimations.
 Deploying these systems in the wild for real users, however, presents two practical difficulties:
 one, performing a given chord sequence requires that the musician knows how to play each chord on their instrument of choice;
-and two, the performance of classification-minded chord estimation systems does not degrade gracefully, especially for those lacking a good music theory background.
+and two, the performance of classification-minded chord estimation systems does not degrade gracefully, especially for those lacking sufficient musical training.
 Recognizing that guitarists account for a large majority of the music community, both challenges are addressed here by designing a deep convolutional network to model the physical constraints of a guitar's fretboard, directly producing \emph{human-readable} representations of music audio, i.e. tablature.
 
 Approaching chord estimation through the lens of guitar tablature offers a variety of critical benefits.
@@ -42,7 +42,7 @@ Experimental results show that the model achieves the goal of faithfully mapping
 % Rise of the guitarists
 To date, the majority of research in automatic chord estimation is based on the two-fold premise that (a) it is fundamentally a classification problem, and (b) the ideal output is a time-aligned sequence of singular chord names.
 That said, it is worthwhile to reconsider how the development of such systems is motivated by the goal of helping the ambitious musician learn to play a particular song.
-Notably, today guitarists comprise one of the largest groups of musicians attempting to do just that.
+Notably, guitarists comprise one of the largest groups of musicians attempting to do just that.
 Over the last century, the guitar, in all of its forms, has drastically risen in popularity and prevalence, both in professional and amateur settings.
 Given the low start-up cost, portability, favorable learning curve, and ---courtesy of musicians like Jimi Hendrix or \emph{The Beatles}--- an undisputed ``cool factor'' in Western popular culture, it is unsurprising that guitars dwarf music instrument sales in the United States.
 Based on the 2014 annual report of the National Association of Music Merchants (NAMM), a whopping 2.47M guitars were sold in 2013 in the United States, accounting for a retail value of \$1.07 \emph{billion} USD \cite{NAMM2014Global}; as a point of comparison, all wind instruments \emph{combined} ---the next largest instrument category--- totaled just over half that figure, at \$521M USD.
@@ -53,7 +53,7 @@ While most instruments make use of traditional staff notation, fretted instrumen
 Illustrated in Figure \ref{fig:chord_notation}, tablature requires minimal musical knowledge to interpret, and thus offers the advantage that is easier to read, particularly for beginners.
 Whereas staff notation explicitly encodes pitch information, leaving the performer to translate notes to a given instrument, tablature explicitly encodes performance instructions for a given instrument.
 Though it can be difficult to accurately depict rhythmic information with tablature, this is seldom an obstacle for guitarists.
-Chords-centric guitar parts typically place less emphasis on rhythm, and changes are usually aligned with lyrics or metrical position.
+Chord-centric guitar parts typically place less emphasis on rhythm, and changes are usually aligned with lyrics or metrical position.
 
 \begin{figure}[t!]
   \centering
@@ -85,7 +85,7 @@ As such, many design decisions remain consistent with the previous description, 
 There are a few important differences, however, which are addressed below.
 First, the architecture is modified slightly to produce fretboard-like outputs.
 A strategy is then discussed for incorporating guitar chord shapes into the model.
-The modified objective and decision functions are presented last, detailing how the model is optimized and use to estimate discrete chord classes.
+The modified objective and decision functions are presented last, detailing how the model is optimized and used to estimate discrete chord classes.
 
 Finally, it is worth mentioning that, despite the desire to map notes to a guitar fretboard, this approach is much closer in principle to chord estimation than automatic transcription methods.
 Thus, while some previous work embraces this position in the realm of transcribing guitar recordings \cite{Barbancho2012Automatic} or arranging music for guitar \cite{Hori2013Input}, the only previous work in estimating guitar chords as tablature directly from polyphonic recordings is performed by the author, in \cite{Humphrey2014Music}.
@@ -96,7 +96,7 @@ Thus, while some previous work embraces this position in the realm of transcribi
 
 So far, this study has shown deep trainable networks to be a powerful approach to solving complex machine learning problems.
 Another particular advantage of deep learning is that it can be remarkably \emph{flexible}, whereby functionally new systems can be developed quickly by making different architectural decisions\footnote{
-Provided its ``quality'' can be expressed as a differentiable objective function, that is.}.
+Provided its ``quality'' can be expressed as a differentiable objective function, that is, and there exists adequate training data.}.
 This high-level design strategy is exploited here by modifying the convolutional neural network used in the previous chapter to produce an output representation that behaves like the fretboard of a guitar.
 
 To understand the proposed model, it is helpful to first review the physical system of interest.
@@ -107,7 +107,7 @@ Thus, it can be said that each string only takes a finite number of states: off 
 Most real guitars have upwards of 20 frets, but, as a simplification, all chords will be voiced in the first seven frets;
 therefore, in this model, each string will take one of nine mutually exclusive states.
 
-Framed as such, the strings of a guitar can modeled as six correlated, but ultimately independent, probability mass functions.
+Framed as such, the strings of a guitar can be modeled as six correlated, but functionally independent, probability mass functions.
 This is achieved by passing the output of an affine projection through a softmax function, as described in Chapter \ref{chp:deep_learning}, yielding a non-negative representation with unity magnitude.
 Starting with the first three layers of the ``XL'' model defined previously, six independent softmax layers are used to model each string independently, and concatenated to form a 2-dimensional heatmap of the fretboard:
 
@@ -147,7 +147,7 @@ Additionally, some standard chord voicings cannot be formed on the guitar, comfo
 For this reason it is quite common to play the 3rd scale degree of a chord above the octave, as the 10th, though there are a few exceptions resulting from open fingerings.
 Context may also influence how a chord is played, such as the instance in which it is easier to move from one chord shape to the next.
 Rather than attempt to address all of these issues now, the canonical template approach is chosen as a practical means to simplify overall system design.
-The choice of one template over another likely has nontrivial implications for the behavior of the model, but this is left as a variable to be explored in the future.
+The choice of one template over another likely has nontrivial implications for the behavior of the model, but this is identified as a opportunity for future inquiry.
 
 
 \subsection{Decision Functions}
@@ -194,12 +194,12 @@ As a baseline condition, the model is trained with the natural distribution of t
 Note that it is reasonable to expect these models to be deficient, as there may be chord class mismatch between training and test conditions, i.e. chord classes in the test partition do not occur in the training set.
 To address the imbalanced learning problem, the second training condition scales the loss of each training observation by a class-dependent weight (``scaled'').
 These weights are determined by computing the root-invariant prior over the training partition, taking its inverse, and standardizing the coefficients to unit mean and standard deviation.
-The third and final training condition couples loss scaling with data augmentation, such that during training each datapoint is circularly shifted in frequency on the interval $[-12, 12]$ (``augmented'').
+The third and final training condition couples loss scaling with data augmentation, such that during training each datapoint is randomly shifted in frequency on the interval $[-12, 12]$ (``augmented'').
 This allows the variance of each chord quality to be evenly distributed across classes, and helping prevent any missing class coverage in the training set.
 
 Identical partitions of the dataset used in the previous chapter are employed here; the dataset is split 68:12:20, into training, validation, and test, respectively, and the partitions are rotated so that all data is used as a holdout set once.
 All models are trained with mini-batch stochastic gradient descent at a batch size of 100, learning rate of 0.02, and dropout ratio of 0.125.
-Training proceeded for several hundred iterations, ultimately bounded by a ceiling of 24 hours, and parameters saved every 10k iterations.
+Training proceeded for several hundred iterations, ultimately bounded by a ceiling of 24 hours, and parameters checkpointed every 10k iterations.
 Model selection was performed as a brute force search over both the parameter checkpoints and self-transition penalty for Viterbi, from -20 to -40 in steps of 5.
 The best model was chosen by the maximum of the harmonic mean of the chord evaluation metrics outlined previously.
 

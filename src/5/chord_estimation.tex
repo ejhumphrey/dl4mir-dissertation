@@ -8,7 +8,7 @@
 % Context / Purpose
 The focus of this study now turns to automatic chord estimation (ACE), one of the oldest subtopics in the field of content-based MIR.
 Complementing the previous chapter, ACE presents a more challenging, well-worn problem with a long research lineage and myriad applications.
-In addition to the standard objective of advancing the state of the art in a given application domain, this chapter also aims to use deep learning to explore challenges inherent to complex music intelligence tasks.
+In addition to the standard objective of advancing the state of the art in a given application domain, this chapter also aims to use deep learning to explore challenges inherent to a complex music intelligence task.
 Adopting a similar approach as before, deep convolutional neural networks are used to estimate the likelihoods of different chord classes from time-frequency representations of audio.
 A thorough investigation serves to not only offer insight into the application of deep learning methods to future problems in content-based MIR, but also culminate in a better understanding of the chord estimation task itself.
 
@@ -33,15 +33,14 @@ Finally, known limitations are detailed to identify assumptions and subsequently
 % Acoustics and perceptions -- pitch, tones, octaves, frequency
 % -------------------------
 To understand the chord estimation task is to understand the concepts on which it is built.
-Therefore, given the significant emphasis on signal processing and machine learning in this work, it is therefore valuable to provide a basic review of chords and harmony for the benefit of the technical reader unfamiliar with music theory.
-% Here we cover musical concepts, and explain why the concept of a chord is a difficult thing.
+Therefore, given the significant emphasis on signal processing and machine learning in this work, it is valuable to provide a basic review of chords and harmony for the benefit of the technical reader unfamiliar with music theory.
 
 % To get to the top, start at the bottom.
 The most atomic unit in the acoustic realm of chords is a \emph{tone}, defined here as a pitched sound object.
 Pitch is defined as the perceptual phenomena whereby a sound stimulus can be matched to the frequency of a pure sinusoid, known as the fundamental frequency \cite{Krumhansl1979Psychological}.
 As a result, sounds can be naturally ordered by fundamental frequency on a scale from low to high.
-An \emph{octave} is defined as the doubling of a quantity, and exhibits a special relationship in human perception by which two tones, differing in fundamental frequency by an integer power of 2, are perceived as being similar; this phenomena is referred to as octave equivalence.
-% Pitch helix here?
+An \emph{octave} is defined as the doubling of a quantity, and exhibits a special relationship in human perception by which two tones, differing in fundamental frequency by an integer power of 2, are perceived as being similar;
+this phenomenon is referred to as octave equivalence.
 
 % Notes and tuning systems
 % ------------------------
@@ -92,24 +91,24 @@ It consists of seven intervals, given by the following:
 \{+2, +2, +1, +2, +2, +2, +1\}
 \end{align*}
 
-Rotating this sequence circularly results in different \emph{modes}, of which two are common in contemporary popular music: \emph{major}, with a rotation of 0; and \emph{minor}\footnote{More accurately, this is the natural minor scale, but the distinction is not terribly important here.}, with a rotation to the right of 3.
+Rotating this sequence circularly results in different \emph{modes}, of which two are common in contemporary popular music: \emph{major}, with a rotation of 0; and \emph{minor}\footnote{More accurately, this is the natural minor scale, but the distinction is not especially important here.}, with a rotation to the right of 3.
 Each scales' \emph{degrees} are expressed by the following, shown here as a semitone distance from a starting note:
 
 \begin{centering}
+\label{eq:scales}
 \begin{align*}
 \text{major} = \{0, 2, 4, 5, 7, 9, 11, 12\} \\
 \text{minor} = \{0, 2, 3, 5, 7, 8, 10, 12\} \\
 \end{align*}
-\label{eq:scales}
 \end{centering}
 
 The pitch class on which the scale starts is referred to the \emph{tonic}, and lends its name to the scale.
-The sequences in (\ref{eq:scales}) can be used to recover a scale by circularly indexing the set of pitch classes given in (\ref{eq:pitch_classes}).
+The semitone sequences given above can be used to recover a scale by circularly indexing the set of pitch classes given in (\ref{eq:pitch_classes}).
 To illustrate, a C Major and A minor scale are given by the following:
 
 \begin{align*}
-\mathcal{C}_{major} = \{C, D, E, F, G, A, B\} \\
-\mathcal{A}_{minor} = \{A, B, C, D, E, F, G\} \\
+\text{C$_{Major}$} = \{C, D, E, F, G, A, B\} \\
+\text{A$_{minor}$} = \{A, B, C, D, E, F, G\} \\
 \end{align*}
 
 \noindent It should be noted that these two scales, despite different modes and tonics, are composed of identical notes.
@@ -143,7 +142,7 @@ For example, this expansion is given for the major scale in Table \ref{tab:major
 
 \begin{table}[h!]
 \begin{center}
-\caption{Roman numeral, quality, semitones, and adjacent intervals of triads in the Major scale.}
+\caption{Roman numeral, quality, semitones, and adjacent intervals of triads in the Major scale; semitones are named within a single octave.}
 \label{tab:major_triads}
 \begin{tabular}{c | c | c | c }
 Roman Numeral & Quality & Semitones & Intervals \\
@@ -151,11 +150,10 @@ Roman Numeral & Quality & Semitones & Intervals \\
 I & Major & \{0, 4, 7\} & \{+4, +3\}\\
 ii & minor & \{2, 5, 9\} & \{+3, +4\}\\
 iii & minor & \{4, 7, 7\} & \{+3, +4\}\\
-IV & Major & \{5, 9, 12\} & \{+4, +3\}\\
+IV & Major & \{5, 9, 0\} & \{+4, +3\}\\
 V & Major & \{7, 11, 2\} & \{+4, +3\}\\
 vi & minor & \{9, 0, 4\} & \{+3, +4\}\\
 vii$^\circ$ & diminished & \{11, 2, 5\} & \{+3, +3\}\\
-I & Major & \{0, 4, 7\} & \{+4, +3\}\\
 \hline
 \end{tabular}
 \end{center}
@@ -207,14 +205,14 @@ In this instance, the degree of overlap in time is expanded until it no longer e
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.8\textwidth]{expanded_major}
+\includegraphics[width=0.8\textwidth]{expanded_major_annot}
 \caption{A stable F major chord played out over three time scales, as a true simultaneity, an arpeggiation, and four non-overlapping quarter notes.}
 \label{fig:expanded_major}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.6\textwidth]{nonchord_tones}
+\includegraphics[width=0.6\textwidth]{nonchord_tones_annot}
 \caption{A stable C major chord is embellished by passing non-chord tones.}
 \label{fig:nonchord_tones}
 \end{figure}
@@ -230,11 +228,11 @@ These embellishments do not contribute to the harmonic center of the phrase, and
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{practicekey2.jpg}
-\caption{A sample harmonic analysis of a piano piece, performed as a music theory exercise.}
+\caption{An example of harmonic analysis, a common practice in music theory.}
 \label{fig:mthomework}
 \end{figure}
 
-A last example, shown in Figure \ref{fig:mthomework}, illustrates the level of complexity and decision making that may arise in the process of describing music in the language of chords.
+A last example, shown in Figure \ref{fig:mthomework}, illustrates the level of complexity and decision making that may arise in the process of describing music in the language of chords\footnote{\url{http://www.ohio.edu/people/smithj10/theoryweb/theorymain.html}}.
 Referred to as \emph{harmonic analysis}, this exercise is performed in an effort to understand the harmonic content in a theoretical manner, such that chords are notated alongside the original score.
 There are many observations one might draw from this example, but a few are of particular interest here.
 First, even in an instance such as this, where an individual is able to operate directly on the symbolic representation, it is common to find alternate reasonable interpretations of the same musical content.
@@ -326,7 +324,7 @@ Such systems would also facilitate data collection for other tasks, aiding in vi
 
 % Theoretical merit
 From a more philosophical perspective, the identification of chords is also intriguing as an intelligent musical behavior, being a high level cognitive process that is often open to multiple interpretations between knowledgeable experts.
-Experiential bias of the annotator may manifest in the subjective decisions made by an observer, where a pianist may arrive at a different harmonic analysis than that of a guitarist due to how a collection of notes might be produced.
+Experiential bias of the annotator may manifest in the subjective decisions made by an observer, where a pianist may arrive at a different harmonic analysis than that of a guitarist due to how a collection of notes might be performed.
 Finally, the knowledge and skill of the one recognizing chords in music will affect the resulting interpretations.
 Beginners will likely prefer simple or more common descriptions, whereas experts will be more aware of complex nuances and have better command over a larger harmonic vocabulary.
 
@@ -389,8 +387,8 @@ Supervised machine learning approaches, for example, can be sensitive to the amo
 Furthermore, not all researchers have access to the same data, introducing another degree of variability.
 As a result, it can be challenging, if not impossible, to compare the performance of systems designed for different chord vocabularies.
 
-To address this challenge, one common strategy employed by the research community is that of Major-Minor chord resolution.
-Based on the common 24 Major and minor keys, this formulation proceeds by mapping all chords in a collection to either a Major or Minor chord with the same root \cite{McVicar2013Machine}.
+To address this challenge, one common strategy employed by the research community is that of major-minor chord resolution.
+Based on the common 24 major and minor keys, this formulation proceeds by mapping all chords in a collection to either a major or minor chord with the same root \cite{McVicar2013Machine}.
 While this results in some musically reasonable chord mappings, e.g. \texttt{maj7} $\to$ \texttt{maj}, others are more difficult to justify, e.g. \texttt{dim7} $\to$ \texttt{min} or \texttt{aug} $\to$ \texttt{maj}.
 
 Having framed chord estimation as a classification problem, there are two critical assumptions to note going forward.
@@ -415,7 +413,7 @@ Returning to chords, \texttt{C:dim7} and \texttt{C:maj} are clearly mutually exc
 % Previous work
 Considering the space of ACE research, it is observed by \cite{Cho2014Improved} all approaches to the task adopt the same basic architecture, diagrammed in Figure \ref{fig:basic_ace}.
 First, harmonic features, referred to as pitch class profiles (PCP) or \emph{chroma}, are extracted from short-time observations of the audio signal.
-Initially proposed for use in chord estimation systems by Fujishima \cite{Fujishima1999Realtime}, chroma features attempt to measure the amount of energy in the signal corresponding to the 12 pitch classes named in Eq. \ref{eq:pitch_classes}.
+Initially proposed for use in chord estimation systems \cite{Fujishima1999Realtime}, chroma features attempt to measure the amount of energy in the signal corresponding to the 12 pitch classes named in Eq. \ref{eq:pitch_classes}.
 These features may then be processed by any number of means, referred to in the literature as \emph{pre-filtering}.
 Importantly, this is done prior to the next stage of \emph{pattern matching}, which is performed on the final feature representation to measure how similar the observed signal is to a set of chord names.
 The process of pattern matching, a relatively local operation, is mapped over a much longer signal, e.g. a full recording, yielding a time-varying estimate of the various chord types the model can represent.
@@ -449,12 +447,12 @@ However, despite this rigor, the data is drawn from a single artist and very wel
 
 To combat these issues, two datasets were released following the 2011 Conference of the International Society of Music Information Retrieval (ISMIR), one of over 700 tracks led by J. Ashley Burgoyne \cite{Burgoyne2011Expert} and another of 295 tracks led by Tae Min Cho, from the Music and Audio Research Lab at NYU\footnote{\url{https://github.com/tmc323/Chord-Annotations}}; here, the former is referred to as ``Billboard'' and the latter as ``MARL-Chords'', corresponding to their related projects.
 In parallel, an additional, comparatively small, dataset was released, containing 20 tracks by the band Queen, provided by Matthias Mauch as an extension to the Isophonics set.
-In all four cases, the chord transcriptions are provided as ``ground truth'', on the premise that the data corresponds to the expert perspective.
+In all four cases, the chord transcriptions are provided as ``ground truth,'' on the premise that the data corresponds to the expert perspective.
 To help prevent errors and resolve judgment calls, these additional annotation efforts employed a review process, where the transcriptions of one or more annotators were verified by a different individual.
 
 Leveraging this ground truth data, it is possible to quantitatively assess the outputs of a computational system.
 % The approach to comparing, and subsequently scoring, the relative agreement between two chord transcriptions can be formally expressed .
-Expressed formally, the conventional approach to scoring an ACE system is a weighted measure of chord-symbol recall, $R_{W}$, between a reference, $\mathcal{R}$, and estimation, $\mathcal{E}$, chord sequence as a \emph{continuous} integral over time, summed over a collection of $N$ pairs:
+Expressed formally, the conventional approach to scoring an ACE system is a weighted measure of chord-symbol recall, $R_{W}$, between a reference, $\mathcal{R}$, and estimation, $\mathcal{E}$, chord sequence as a \emph{continuous} integral over time, summed over a collection of $N$ comparison pairs:
 
 \begin{equation}
 \label{eq:recall_micro}
@@ -469,7 +467,7 @@ S = \sum_{n=0}^{N-1}\int_{t=0}^{T_n}(\mathcal{R}_n(t), \mathcal{E}_n(t) \in \Re)
 
 Defining the normalization term $S$ separately is useful when comparing chord names, as it relaxes the assumption that the comparison function is defined for all possible chords.
 Furthermore, setting the comparison function as a free variable allows for flexible evaluation of a system's outputs, and thus all emphasis can be placed on the choice of comparison function, $C$.
-In practice, this measure has been referred to as \emph{Weighted Chord Symbol Recall} (WCSR) \cite{Harte2010Towards}, \emph{Relative Correct Overlap} (TCO) \cite{McVicar2013Machine}, or \emph{Framewise Recognition Rate} \cite{Cho2014Improved}, but it is, most generally, a recall measure.
+In practice, this measure has been referred to as \emph{Weighted Chord Symbol Recall} (WCSR) \cite{Harte2010Towards}, \emph{Total Correct Overlap} (TCO) \cite{McVicar2013Machine}, or \emph{Framewise Recognition Rate} \cite{Cho2014Improved}, but it is, most generally, a recall measure.
 
 As discussed, most ACE research typically proceeds by mapping all chords into a smaller chord vocabulary, and using an enharmonic equivalence comparison function at evaluation, e.g. \texttt{C\#:maj} == \texttt{Db:maj}.
 Recently, this approach was generalized by the effort behind the open source evaluation toolbox, \texttt{mir\_eval} \cite{Raffel2014Eval}, introducing a suite of chord comparison functions.
@@ -504,14 +502,15 @@ chords outside this set are considered ``out-of-gamut'' and ignored.
 The ``tetrads'' comparison extends this to all chords contained within an octave, e.g. six chords and half-diminished sevenths.
 The ``Major-minor'' comparison is limited to major and minor chords alone;
 like ``sevenths'', other chords are ignored from evaluation.
-Unlike the other rules, ``MIREX'' compares chords at the pitch class level, and defines equivalence if three or four notes intersect.
+Unlike the other rules, ``MIREX'' compares chords at the pitch class level, and defines equivalence if either three or four notes intersect.
 Comparing the pitch class composition of a chord allows for a slightly relaxed evaluation, allowing for misidentified roots and related chords.
 Finally, rules that ignore certain chords only do so when they occur in a reference annotation.
 In other words, an estimation is not held accountable for chords deemed to be out of gamut, but predicting such chords is still counted as an error.
 
-Complementing these rules, it was recently proposed by Cho in \cite{Cho2014Improved} that, when working with larger chord vocabularies, special attention should be paid to performance across all chord qualities.
-The motivation for additional measures stems from the reality that chord classes are not uniformly distributed, and a model that ignores infrequent chords will not be well characterized by global statistics.
-Instead, Cho proposes a chord quality recall measure, $R_{Q}$ whereby all chord comparisons are rotated to their equivalents in C, and averaged without normalizing by occurrence.
+Complementing these rules, it was recently proposed that, when working with larger chord vocabularies, special attention should be paid to performance across all chord qualities \cite{Cho2014Improved}.
+Noting that chord classes are not uniformly distributed, weighted averages will place a greater emphasis on the most frequent chords.
+Therefore, additional measures are needed to gain insight into the performance on rare, but musically significant, chord types.
+To this end, Cho proposes a chord quality recall measure, $R_{Q}$ whereby all chord comparisons are rotated to their equivalents in C, and averaged without normalizing by occurrence.
 
 \begin{equation}
 R_{Q} = \sum_{q=0}^{Q-1}\frac{1}{W_q}\sum_{n=0}^{N-1}\int_{t=0}^{T_n}C(\mathcal{R}_n(t), \mathcal{E}_n(t) | q)\partial~t
@@ -527,8 +526,8 @@ It should also be noted that the only comparison function on which quality-wise 
 \label{sec:pilot_study}
 
 Here, a preliminary study conducted by the author in 2012, and presented at the International Conference of Machine Learning and Applications (ICMLA 2012), is revisited and expanded upon to frame subsequent work \cite{Humphrey2012Rethinking}.
-Approaching ACE from the perspective of classifying music audio among the standard 24 Major-Minor classes, in addition to a no-chord estimator, a deep convolutional network is explored as a means to realize a full chord estimation system.
-Doing so not only addresses the questions of relevance or quality toward chroma as a representation, but error analysis of an end-to-end data-driven approach can be used to gain insight into the data itself.
+Approaching ACE from the perspective of classifying music audio among the standard 25 Major-Minor-null classes, a deep convolutional network is explored as a means to realize a full chord estimation system.
+Doing so not only circumvents the question of feature design, e.g. chroma, but error analysis of an end-to-end data-driven approach can be used to gain insight into the data itself.
 % Even in the instances of previous work that jointly optimize different processing stages, these systems are limited by the choice of hand-crafted features, e.g. chroma.
 % Though the notion of feature optimization is an open question, history indicates most believe more powerful classifiers will lead to better results.
 % It has been adequately demonstrated in other disciplines that deep learning can be used to train feature extractors and a classifier jointly, resolving this issue.
@@ -547,9 +546,9 @@ This transform consists of 36 bins per octave, resulting in 252 filters spanning
 The high time-resolution of the constant-Q spectra is further reduced to a framerate of 4Hz by mean-filtering each frequency coefficient with a 15-point window and decimating in time by a factor of 10.
 As discussed previously, a constant-Q filterbank front-end provides the dual benefits of a reduced input dimensionality, compared to the raw audio signal, and produces a time-frequency representation that is linear in pitch, allowing for convolutions to learn pitch-invariant features.
 
-The input to the network is defined as a 20-frame time-frequency \emph{patch}, corresponding to 5 seconds.
+The input to the network is defined as a 20-frame time-frequency \emph{patch}, corresponding to 5 seconds, and advanced with a hop-size of one frame.
 A long input duration is chosen in an effort to learn context, thereby reducing the need for post-filtering.
-Local-contrast normalization is applied to the constant-Q representation, serving as a form of automatic gain control, and somewhat similar in principle to log-whitening used previously in chord estimation \cite{Cho2010Exploring}.
+Local-contrast normalization is first applied to the entire constant-Q representation, serving as a form of automatic gain control, and somewhat similar in principle to log-whitening used previously in chord estimation \cite{Cho2010Exploring}.
 As an experimental variable, data are augmented by applying random circular shifts along the frequency axis during training within an octave range.
 The linearity of pitch in a constant-Q representation affords the ability to ``transpose'' an observation as if it were a chord of a different root by shifting the pitch tile and changing the label accordingly.
 Every data point in the training set then contributes to each chord class of the same quality (Major or minor), having the effect of inflating the dataset by a factor of 12.
@@ -577,20 +576,23 @@ The output of the final layer is passed through a softmax operator, producing an
  S & K:(1, 4, 6, 25), P:(1, 3)& K:(1, 4, 5, 25), P:(1, 3)\\
  &K:(4, 6, 6, 27) & K:(4, 6, 5, 13) \\
  &K:(6, 8, 6, 27) & K:(6, 8, 5, 13) \\
- &W:(480, 50)  & W:(2560, 50)\\
+ &W:(960, 50)  & W:(2560, 50)\\
  &W:(50, 25)  & W:(50, 25)\\
+ &\#:61,607  & \#:134,523\\
 \hline
  M & K:(1, 6, 6, 25), P:(1, 3)& K:(1, 6, 5, 25), P:(1, 3)\\
  &K:(6, 9, 6, 27) & K:(6, 9, 5, 13) \\
  &K:(9, 12, 6, 27) & K:(9, 12, 5, 13) \\
- &W:(720, 125)  & W:(3840, 125)\\
+ &W:(1440, 125)  & W:(3840, 125)\\
  &W:(125, 25)  & W:(125, 25)\\
+ &\#:210,446  & \#:494,582\\
 \hline
  L & K:(1, 16, 6, 25), P:(1, 3)& K:(1, 16, 5, 25), P:(1, 3)\\
  &K:(16, 20, 6, 27) & K:(16, 20, 5, 13) \\
  &K:(20, 24, 6, 27) & K:(20, 24, 5, 13) \\
- &W:(1440, 200)  & W:(7680, 200)\\
+ &W:(2880, 200)  & W:(7680, 200)\\
  &W:(200, 25)  & W:(200, 25)\\
+ &\#:713,285  & \#:1,595,285\\
 \hline
 \end{tabular}
 \end{table}
@@ -602,7 +604,7 @@ All chords are resolved to their nearest major-minor equivalent, as discussed in
 The collection of 475 tracks are stratified into five folds, with the data being split into training, validation, and test sets at a ratio of 3--1--1, respectively.
 The algorithm by which the data are stratified is non-trivial, but somewhat irrelevant to the discussion here; the curious reader is referred to the original publication for more detail.
 Model parameters are learned by minimizing the Negative Log-Likelihood (NLL) loss over the training set.
-This is achieved via mini-batch stochastic gradient descent with a fixed learning rate and batch size, and early stopping is performed as a function of classification error over the validation set.
+This is achieved via mini-batch stochastic gradient descent with a fixed learning rate (0.1) and batch size (50), and early stopping is performed as a function of classification error over the validation set.
 Training batches are assembled by a forced uniform sampling over the data, such that each class occurs with equal probability.
 
 \subsection{Quantitative Results}
@@ -641,13 +643,13 @@ The outer model configurations in the first column of Table \ref{tab:model_confi
 Overall recall is given in Table \ref{tab:exp1res}, and offers two important insights.
 One, deep network chord estimation performs competitively with the state of the art at the major-minor task.
 Previously published numbers on the same dataset fall in the upper 70\% range \cite{Cho2010Exploring}, and it is encouraging that this initial inquiry roughly matches state of the art performance.
-Noting the variation in performance falls within a 2\% margin across folds, a leave-one-out (LoO) strategy is used for experimentation across configurations, with and without data transposition.
+Noting the variation in performance falls within a 2\% margin across folds, a single fold of the data is used for experimentation across configurations, with and without data transposition.
 
 The overall recall results are given in Table \ref{tab:exp2res}.
 Perhaps the most obvious trend is the drop in recall on the training set between data conditions.
 Transposing the training data also improves generalization, as well as reducing the extent to which the network can overfit the training data.
 Transposing the input pitch spectra should have a negligible effect on the parameters of the convolutional layers, and this is confirmed by the results.
-All models in the second column, e.g. X-2, have smaller kernels, which leads to a much larger weight matrix in the first fully connected layer, and worse generalization in the non-transposed condition.
+All models in the second column, e.g. X-2, have smaller kernels, which leads to a much larger weight matrix in the first fully connected layer, and slightly worse generalization in the non-transposed condition.
 It is reasonable to conclude that over-fitting mostly occurs in the final layers of the network, which do not take advantage of weight tying.
 Transposing the data results in an effect similar to that of weight tying, but because the sharing is not explicit the model must learn to encode this redundant information with more training data.
 
@@ -665,9 +667,9 @@ Transposing the data results in an effect similar to that of weight tying, but b
  \hline
 Arch & Train & Valid & Test & Train & Valid & Test \\
 \hline
-S-1 & 84.7 & 74.9 & 75.6 & 79.5 & 75.9 & 76.8 \\
-M-1 & 85.5 & 75.0 & 75.5 & 80.6 & 75.6 & 77.0 \\
-L-1 & 92.0 & 75.2 & 75.5 & 81.7 & 76.5 & 77.7 \\
+S-1 & \textbf{84.7} & 74.9 & 75.6 & 79.5 & 75.9 & 76.8 \\
+M-1 & \textbf{85.5} & 75.0 & 75.5 & 80.6 & 75.6 & 77.0 \\
+L-1 & \textbf{92.0} & 75.2 & 75.5 & 81.7 & 76.5 & \textbf{77.7} \\
 \hline
 S-2 & 87.0 & 73.1 & 74.5 & 78.4 & 75.5 & 76.2 \\
 M-2 & 91.2 & 73.9 & 74.0 & 79.4 & 75.4 & 76.6 \\
@@ -686,7 +688,7 @@ These two behaviors are not necessarily equivalent, and therefore whatever these
 
 \begin{figure}[!t]
 \centering
- \centerline{\includegraphics[width=0.8\textwidth]{tr-te-diff_FF-TT}}
+ \centerline{\includegraphics[width=0.8\textwidth]{tr-te-diff_FF-TT_labeled}}
 \caption{Accuracy differential between training and test as a function of chord class, ordered along the x-axis from most to least common in the dataset for As-Is (blue) and Transposed (green) conditions.}
 \label{fig:classes}
 \end{figure}
@@ -705,18 +707,17 @@ Therefore, all chord classes benefit equally from data augmentation, which is ch
 \end{figure}
 
 If this is indeed the case, there are likely two main sources of intra-class variance: the practice of resolving all chord classes to Major-Minor, or error in the ground truth transcriptions.
-As a means to assess the former, Figure \ref{fig:strict_vs_others} plots the accuracy for chords that strictly labeled root-position Major-minor (Mm) versus all other (O) chords that are mapped into these classes in the train (Tr) and test (Te) conditions, with and without transposition.
+To assess the former, Figure \ref{fig:strict_vs_others} plots the accuracy for chords that strictly labeled root-position Major-minor (Mm) versus all other (O) chords that are mapped into these classes in the train (Tr) and test (Te) conditions, with and without transposition.
 This is a far more informative figure, resulting in a few valuable insights.
 First, there is a moderate drop in performance over the training set for strictly Major-minor chords when data are transposed ($\approx -5\%$), but this causes a noticeable increase in generalization for strictly Major-minor chords in test set ($\approx +3\%$).
 Other chords, however, experience a significant decrease in performance within the training set ($\approx -11\%$) with transposition, but register a negligible improvement in the test set ($>1\%$).
-One interpretation of this behavior is there is too much conceptual variation in the space of Other chords to meaningfully generalize to unseen data that is also not strictly Major-minor.
-This definition by exclusion gives rise to a class subset that is less populated than its strict counterpart, but will inherently contain a wider range of musical content.
+One explanation for this behavior might be found in recognizing that Other chords will act as different modes in a class's aggregate distribution.
 Though a sufficiently complex model may be able to overfit these datapoints in the absence of transposition, counting each observation toward every pitch class distributes the added variance across all classes evenly.
-This causes the model to ignore uncommon modes in the class distribution as noise, while reinforcing the strict Major-minor model in the process.
+Thus, when transposition is introduced, the model effectively averages the class distributions together at the expense of being sensitive to the less salient modes of each class.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.8\textwidth]{arch_5-FF_TT_accdiff2}
+\includegraphics[width=0.8\textwidth]{arch_5-FF_TT_accdiff2_labeled}
 \caption{Histograms of track-wise recall differential between As-Is and Transposed data conditions, for training (blue), validation (red) and test (green) datasets.}
 \label{fig:acc_diff}
 \end{figure}
@@ -727,9 +728,9 @@ More importantly, it is because of this strong internal structure that these cho
 Therefore, tracks in the training set that exhibit significantly different performance between data conditions may help answer another question: why might transposition prevent the model from overfitting certain chords?
 To investigate this behavior, track-wise histograms of recall differential are computed with and without data transposition for the training, validation, and test splits, shown in Figure \ref{fig:acc_diff}.
 Interestingly, performance over most tracks is unaffected or only slightly changed by the transposed data condition, as evidenced by the near-zero mode of the distributions.
-Some tracks in the training set, however, yield considerably worse results when the data is transposed.
+When the data is transposed, however, the model performs considerably worse on certain tracks in the training split.
 While this is consistent with intuition, %intuitively satisfying because the repetitive nature of music would cause observations drawn from the same recording to be highly correlated, and therefore multiple instances of rare chords, outliers, or labeling errors should be well localized.
-, it indicates that error analysis is sufficiently motivated at the track, rather than instance, level, and may offer insight into future areas of improvement.
+it indicates that error analysis is sufficiently motivated at the track, rather than observation, level, and may offer insight into future areas of improvement.
 
 One such problem track is ``With or Without You'' by U2.
 Here, the ground truth transcription consists primarily of four chords: \texttt{D:maj}, \texttt{D:maj/5}, \texttt{D:maj6/6}, and \texttt{D:maj(4)/4}.
@@ -737,20 +738,20 @@ When resolved to the Major-minor vocabulary, the transcription is reduced entire
 In the As-Is data condition, the model is able to call nearly the entire track \texttt{D:maj};
 when training data are transposed, however, the model is unable to reproduce the ground truth transcription and instead tracks the bass motion, producing \texttt{D:maj}, \texttt{A:maj}, \texttt{B:min}, and \texttt{G:maj}, a very common harmonic progression in popular music.
 As far as quantitative evaluation is concerned, this second estimation exhibits a high degree of mismatch with the reference transcription, but is qualitatively reasonable and arguably far more useful to a musician.
-Importantly, this illustrates that the process of mapping chords to a reduced vocabulary can cause objective measures to deviate considerably from subjective experience, and thus confounding evaluation.
+Importantly, this illustrates that the process of mapping chords to a reduced vocabulary can cause objective measures to deviate considerably from subjective experience, confounding evaluation.
 
-However, perhaps even more critically, the reliability of the reference annotation is somewhat dubious.
+Perhaps even more critically, the reliability of the reference annotation is somewhat dubious.
 Returning to the original song, one finds reasonably ambiguous harmonic content, consisting of a vocal melody, the moving bass line mentioned previously, a string pad sustaining a high-pitched \texttt{D}, and a moving guitar riff.
-Therefore, as a point of comparison, an Internet search yields six guitar chord transcriptions from the website Ultimate Guitar\footnote{\url{http://tabs.ultimate-guitar.com/u/u2/with_or_without_you_crd.htm},  accessed 19 April 2015.}.
+As a point of comparison, an Internet search yields six guitar chord transcriptions from the website Ultimate Guitar\footnote{\url{http://tabs.ultimate-guitar.com/u/u2/with_or_without_you_crd.htm},  accessed 19 April 2015.}.
 These alternative interpretations are consolidated in Table \ref{tab:wowu_chords}, alongside the reference, noting both the average and number of ratings, as well as the number of views the tab has received.
 Though the view count is not directly indicative of a transcription's accuracy, it does provide a weak signal indicating that a large number of users did \emph{not} rate it negatively.
 In considering this particular example, there are a handful of takeaways to note.
 First, all but the sixth of the user-generated chord transcriptions are equivalent by the conventional major-minor mapping rules, which is, interestingly enough, the same one produced by the model presented here.
 Second, this rather large community of musicians shows, at least for this song, a strong preference for root position chords.
-While it is difficult to determine why an annotator might choose one interpretation than another, it would appear general, root-position chords are preferred to nuanced chord spellings, e.g. \texttt{G:maj} over \texttt{D:maj(4)/4}.
-Finally, this raises questions surrounding the practice of using such precise chord labels for annotation.
+While it is difficult to determine why an annotator might choose one interpretation than another, it would appear general, root-position chords are preferred to inversions, e.g. \texttt{G:maj} over \texttt{D:maj(4)/4}.
+Finally, this begins to motivate questions about annotator consistency, both between and within individuals, when fine-detailed chord labels are used.
 If nothing else, the flexibility afforded by this particular chord syntax allows annotators to effectively ``build'' their own chords through non-standard intervals or various bass intervals, amplifying the role subjectivity can play in transcription.
-This is not only problematic from a practical standpoint ---are various annotators using this syntax consistently?--- but atypical chord spellings are most likely to appear when the music content being described is especially ambiguous.
+This is not only problematic from an objective standpoint, but atypical chord spellings are most likely to appear when the music content being described is especially ambiguous.
 
 
 \begin{table}[!t]
@@ -786,7 +787,7 @@ First and foremost, the common practice of major-minor chord resolution is respo
 While this approach simplifies the problem being addressed, it appears to introduce uninformative variation to classes during training, and thus noise in the resulting evaluation.
 Therefore, for this reason alone, future work should consider larger vocabulary chord estimation, so that each chord class can be modeled explicitly.
 Additionally, an investigation into sources of error revealed that the performance for some tracks changes drastically between data conditions.
-Further exploration encouraged the notion that chord annotations with modified intervals or bass information may amplify the subjectivity of a transcription, and thus introduce noise in the reference chord annotations.
+Further exploration shed light on the observation that detailed chord labels, e.g. using modified intervals or bass information, may introduce subjectivity into the annotation process, and thus undermine annotator consistency.
 Ignoring over-specified chord names would serve as an approach to data cleaning, maximizing confidence in the ground truth data and resulting in more stable evaluation.
 % Finally, invariance to absolute pitch height should be built directly into the chord model, eliminating the need to manually transpose data during training.
 
@@ -814,6 +815,7 @@ Given that the collections were curated in isolation of each other, it is a nece
 To these ends, each recording is checked against the EchoNest Analyze API\footnote{\url{http://developer.echonest.com/docs/v4}} and associated with its track and song identifiers, corresponding to the recording and work, respectively.
 Though multiple track IDs will map to the same song ID, uniqueness is defined at the level of a song to ensure duplicates are removed.
 This identifies 18 redundant songs, and all but one is dropped for each collision from the total collection, resulting in a final count of 1217 unique tracks.
+Tracks and the corresponding annotations are preferred in the order of Isophonics, Billboard, and MARL.
 
 Based on conclusions of the pilot study, the decision is made to ignore all chord labels that do not strictly match one of the considered qualities, i.e. chords that specify interval modifications, e.g. \texttt{A:min(*b3)}, or non-root inversions, e.g. \texttt{C:maj/5}.
 The motivation for doing so is two-fold.
@@ -848,27 +850,29 @@ There are a handful of important distinctions to make between the two, however, 
 \subsubsection{Input Representation}
 \label{subsubsec:data_considerations}
 A comparable constant-Q transform is applied to the audio at a framerate of 20Hz, without subsequent low-pass filtering or decimation, and time-frequency patches are formed from 20 frames, corresponding to 1 second.
-Whereas the previous study aimed to learn context directly, there is the inherent concern that a low input framerate will reduce the amount of data available for training beyond what is required by the model.
+Whereas the previous study aimed to learn context directly, the increased number of classes makes it difficult to operate in a similar manner here.
+First, the number of observations available for training a deep network is typically correlated with the analysis framerate.
+Additionally, fine temporal detail may be necessary to distinguish between some of the more nuanced classes, such as \texttt{dim} and \texttt{dim7}.
 In lieu of learning this context, standard post-filtering will be applied in the form of a uniform-transition HMM with a tunable self-transition penalty, consistent with \cite{Cho2014Improved}. %; this is introduced in greater detail shortly, in \ref{subsubsec:viterbi}.
 
-Additionally, local contrast normalization is included as a standard preprocessing stage, with minor modifications.
-In previous work, a threshold is placed on the scaling term given by the average standard deviation over the entire input.
+Additionally, local contrast normalization (LCN) is included as a standard preprocessing stage, with minor modifications.
+In previous work on LCN, a threshold is placed on the scaling term given by the average standard deviation over the entire input \cite{Kavukcuoglu2010Learning}.
 While this may be suitable in the field of computer vision, where spatial dimensions are equivalent in 2-space, audio data behave differently in time and frequency.
 Namely, complex sounds often exhibit an overtone series, and energy becomes more densely concentrated in higher frequencies.
-This can have the undesirable effect of inadequately gaining regions that are more sparse.
-To correct for this behavior, the scaling coefficient is adjusted such that the frequency range considered is a piecewise function of frequency height, defined as follows:
-
-% TODO: this is unclear.
+This can have the undesirable effect of inadequately boosting regions that are more sparse.
+To adapt this to music audio spectra, where low and high frequency amplitudes may vary independently, e.g. bass guitar and voice, the normalization term is modified as a piecewise function of pitch height:
 
 \begin{align*}
 X_{filt} = (X \circledast W) \\
 V = X_{filt} - X \\
-S_k = V \circledast W_k \\
-S_k = max(S_k, \mu_{S_k}) \\
+S_k = \sqrt(V^2 \circledast H_k^L), L_k \in [73, 37, 19] \\
 Y = \sum_{k=0}^{K-1} g_k * \frac{V}{S_k} \\
 \end{align*}
 
-\noindent To illustrate the benefit of this piecewise combination, an example track is given in Figure \ref{fig:lcn_mods}, both with and without the octave-dependent modification.
+\noindent Here, a high-pass filtered representation, $V$, is obtained by low-pass filtering the input, $X$, with the kernel, $W$, and taking the difference of the output.
+Then, $K$-smoothing filters, $H_k$, with shape $(L_k, 1)$ are convolved along the frequency axis only, yielding what is effectively an equivalently sized matrix of local $l_2$ magnitudes, $S_k$.
+The final output is realized by scaling the high-pass coefficients and weighting with a mask, $g_k$, corresponding to different frequency ranges, $k=[0:36, 36:72, 72:252]$.
+To illustrate the benefit of this piecewise combination, an example track is given in Figure \ref{fig:lcn_mods}, both with and without octave-dependent contrast normalization.
 
 \begin{figure}[!t]
 \centering
@@ -880,7 +884,7 @@ Y = \sum_{k=0}^{K-1} g_k * \frac{V}{S_k} \\
 
 \subsubsection{Designing a Root-Invariant Classifier}
 \label{subsubsec:root_invariance}
-One of the key findings from the previous study of deep networks for ACE, consistent with previous research, is the importance of enforcing or encouraging root-invariance in the model.
+It is generally acknowledged in ACE research that root-invariance is an important property to exploit in the design of any computational model.
 With GMMs, this is typically achieved by rotating all data, i.e. chroma features, to the same root and fitting a model for each quality.
 Then, when applying the model, likelihoods are estimated for each root by circularly rotating chroma through all twelve positions to recover the full space of chord classes.
 In the pilot study on chord estimation, this concept was mimicked by rotating the data in the input domain.
@@ -891,12 +895,20 @@ Not only does this require more parameters to capture this redundant information
 Alternatively, pitch invariance can be built directly into the model by tying the weights of the classifier for different chord qualities across the twelve roots.
 This is realized here by defining a four layer network composed entirely of convolution operations, diagrammed in Figure \ref{fig:fullconvnet}.
 As convolutional networks amply demonstrated, weight tying is an effective way to achieve translation invariance with fewer parameters and less training data.
-This is achieved as follows: the penultimate representation is designed to yield a matrix with shape $(12 \times N)$, corresponding to the number of pitch classes and the chosen output dimensionality of the second to last layer, respectively; the chord classifier is then applied by taking the inner product with a weight matrix with shape $(N \times 13)$, corresponding to the dimensionality of the previous layer and the number of chord qualities, respectively.
-For ease and efficiency this is implemented as a convolution, but the result is equivalent.
-This produces a $(12 \times 13)$ matrix, which is flattened to represent the 13 qualities in all possible roots.
+This is achieved as follows:
 
-The no-chord class is not captured by this operation, however, and a separate fully connected layer is applied in parallel to the flattened penultimate representation to estimate this class independently.
-This one-dimensional no-chord estimator is then concatenated with the flattened chord estimator, and this combined representation of 157 classes is normalized by the softmax operation to yield the probability mass function over all classes.
+\begin{align*}
+\label{eq:root_invariant}
+Z_C = X \circledast W_Q + b_Q \\
+Z_N = X \cdot W_N + b_N \\
+P(x|Y) = \sigma(concat([flatten(Z_C), Z_N])) \\
+\end{align*}
+
+\noindent First, an $L$-layer network is designed to produce a penultimate representation, $X$, with shape $(P, 1, M)$, corresponding to the number of pitch classes, $P$, and a given dimensionality, $M$, respectively.
+A weight tensor $W_Q$ with shape $(1, Q, M)$ is then convolved with $X$, matching the dimensionality of the penultimate representation and the number of chord qualities considered, followed by an additive bias of length $Q$.
+This produces a $(P, Q, 1)$ tensor, $Z_C$, representing a conditional estimate of each chord quality in all 12 roots, affording translation invariance across roots.
+To estimate the ``no-chord'' class, a separate inner product is computed between between $X$ and a weight vector $W_N$ with length $M$, followed by a scalar bias, yielding $Z_N$.
+Having flattened the chord estimation matrix $Z_C$, the two intermediate outputs are then concatenated to produce a vector with length $P \times Q + 1$ and normalized by the softmax operation, $\sigma$, yielding a posterior over the chord classes.
 
 \begin{figure}[!t]
 \centering
@@ -909,11 +921,11 @@ This one-dimensional no-chord estimator is then concatenated with the flattened 
 \label{subsubsec:conv_dropout}
 
 Here, the principles of dropout, discussed in Chapter \ref{chp:deep_learning}, are extended to 3D convolutions.
-In the weight-matrix case, training with dropout effectively ignores activations of an transformed output, setting them to zero.
+In the weight-matrix case, training with dropout effectively ignores activations of a transformed output, setting them to zero.
 Considering each output coefficient as a measure of activation for a given ``feature'', the act of dropout can be interpreted as sub-sampling the feature extractors learned by the model.
 
-By extension, the same principle could be applied to convolutional layers.
-In the absence of any known prior effort to do so, this is achieved here by dropping out a full 3D kernel.
+By extension, the same principle can be applied to convolutional layers \cite{Srivastava2014Dropout, Goodfellow2013Maxout}.
+This is achieved here by dropping out a full 3D kernel.
 % The former is chosen as a trade-off in the degree of randomness dropout introduces to the training processes; the merits of one approach over another are left for future work.
 Expressed formally, the $i^{th}$ kernel, $W_i$, can be masked with probability $p$, resulting in the possibly empty feature map, $Z_i$:
 
@@ -970,7 +982,7 @@ First, due to the increased number of classes, mini-batches would either need to
 To the latter point, it is easy to imagine scenarios where gradient descent wobbles back and forth between updates, as each batch pulls the parameters in a slightly different direction.
 The other challenge this raises is a result of the considerable class imbalance, where uniform presentation would both spend too much time on minority classes and inhibit the speed at which the model could learn the full extent of the majority classes.
 
-The solution to this problem is found in Bayes' theorem, where the network is understood as yielding a class posterior probability, $P(Y|x)$, for the chord class, $Y$, given the observation, $x$:
+One solution to this problem is found in Bayes' theorem, where the network is understood as yielding a class posterior probability, $P(x|Y)$, for the chord class, $Y$, given the observation, $x$:
 
 \begin{equation}
 P(x|Y) = \frac{P(Y|x)P(x)}{P(Y)}
@@ -1127,12 +1139,14 @@ One way to interpret this result is that these systems are quite robust in the e
 \hline
  train   &    0.0 &   0.125 &   0.25 &    0.5 \\
 \hline
+Cho, 2014 & 0.62476 & -- & -- & -- \\
  L       & 0.8858 &  0.8263 & 0.7403 & 0.5838 \\
  XL      & 0.9049 &  0.8569 & 0.7652 & 0.6147 \\
  XXL     & 0.9421 &  0.8838 & 0.8232 & 0.6459 \\
 \hline
  test   &    0.0 &   0.125 &   0.25 &    0.5 \\
 \hline
+ Cho, 2014 & 0.4546 & -- & -- & --  \\
  L      & 0.4306 &  0.5029 & 0.5240 & 0.5135 \\
  XL     & 0.4174 &  0.4887 & \textbf{0.5281} & 0.5253 \\
  XXL    & 0.3935 &  0.4825 & 0.5127 & 0.5257 \\
@@ -1183,8 +1197,8 @@ To further assess this claim, the individual chord quality accuracies are broken
 Immediately obvious is the influence of sharp distribution effects in generalization.
 Performance for the majority chord qualities, in the upper half of the table, is noticeably higher than the minority classes, in the lower half.
 The one exception is that of dominant 7 chords, which seems relatively low, especially compared to Cho;
-this is likely a result of V vs V7 confusions, but the annotations do not easily provide this functional information to validate the hypothesis\footnote{The Billboard dataset \emph{does} provide tonic information, and thus this relationship could be recovered from the data; however, it is left here as a fertile area for future work}.
-XXL-0.25 yields near identical weighted recall statistics to Cho, but achieves a significant increase in quality-wise recall, $R_{Q}$, 0.5127 to 0.4546 ($\delta$0.0581).
+this is likely a result of V vs V7 confusions, but the annotations do not easily provide this functional information to validate the hypothesis\footnote{The Billboard dataset \emph{does} provide tonic information, and thus this relationship could be recovered from the data; however, it is left here as a fertile area for future work.}.
+XL-0.25 yields near identical weighted recall statistics to Cho, but achieves a significant increase in quality-wise recall, $R_{Q}$, 0.5127 to 0.4546 ($+0.0581$).
 
 
 Notably, the only chord quality to decrease in accuracy with dropout is major, indicating that, with the addition of dropout, the decision boundary between major and its related classes, e.g. major 7 and dominant 7, shift.
@@ -1220,12 +1234,12 @@ Lastly, it is necessary to recognize that, while quality-wise recall provides a 
 As a final investigation of algorithm performance with this particular collection of data, having the estimations of two very different computational systems affords the opportunity to explore where they do or do not agree.
 First, the two algorithms are scored against each other by using one as the reference and the other as the estimation.
 Then, both algorithms are evaluated against the human reference, keeping the maximum of the two scores for each track.
-This second condition is similar in concept to model averaging, and serves to further highlight differences between estimations.
-The results of each given in Table \ref{tab:algo_vs_algo}.
+This second condition is similar in concept to a best-case ensemble, and serves to further highlight differences between estimations.
+The results of each are given in Table \ref{tab:algo_vs_algo}.
 
 It is interesting to consider that, despite nearly equivalent performance on the metrics reported above, the algorithms match each other about as well as either matches the reference annotations.
 If the systems made same mistakes, there would be better agreement between their respective outputs.
-Since this isn't the case, it is safe to conclude that the errors made by one system are sufficiently different than those of the other.
+Since this is not the case, it is safe to conclude that the errors made by one system are sufficiently different than those of the other.
 This is a particularly valuable discovery, as these systems offer two sufficiently distinct, automated perspectives and can be leveraged for further analysis.
 Additionally, combining the systems' estimations shows that there are some instances where one model outperforms the other, encouraging the exploration of ensemble methods in future work.
 
@@ -1479,9 +1493,9 @@ Taken together, it is noteworthy that such extrinsic knowledge can, and perhaps 
 \label{subsec:conclusions}
 
 % Quantitative observations
-Based on conventional methodology, the proposed deep learning approach leads to results on par with the state of the art, just eclipsing the baseline in the various metrics considered.
+Based on conventional methodology, the proposed deep learning approach leads to results that slightly advance the state of the art, matching or surpassing the baseline in the various metrics considered.
 Though fully convolutional models can be complex enough to over-fit the dataset, a small amount of dropout during training helps reduce this over-fitting, while leading to slightly better generalization.
-Dropout also raises quality-wise recall in minority classes significantly.
+Dropout also improves quality-wise recall in minority classes significantly.
 Given the significant imbalance of chord classes in the dataset, however, this is a very unstable measure of system performance.
 Small shifts in the quality-wise recall of a majority class can result in large performance swings, and vice versa.
 Thus, the criteria for what makes for a ``good'' system may be motivated by use case, to determine which of these metrics correspond to the desired behavior.
@@ -1490,7 +1504,9 @@ Additionally, the suite of chord comparison functions demonstrate that most erro
 One-of-K classifiers struggle to encode these relationships between certain chords, e.g. \texttt{A:maj} and \texttt{A:maj7}.
 By analogy, this is like building a classifier that discriminates between, among other classes, animals and cats, respectively; all cats are animals, but not all animals are cats.
 This is problematic in a flat classifier, because it is attempting to linearly separate a pocket of density contained within another.
-To address this issue, a structured output and loss function would be better suited to model these relationships.
+It might be possible to address this issue by extending the propsed system in two ways.
+First, the output of the network would be a bank of logistic regressors, rather than a softmax, and a cross-entropy loss function would be optimized.
+Alternatively, a structured output and loss function could be better suited to model these relationships.
 Directly encoding the knowledge that \texttt{maj7} chords are a subset of \texttt{maj}, will make it easier for a machine to learn these boundaries.
 One such hierarchy for the chords considered in this work is given in Figure \ref{fig:chord_hierarchy}.
 Here, the degree of specificity increases as the decision tree is traversed to a leaf node, and could be achieved with more structured output, such as a hierarchical softmax or conditional estimator.
@@ -1530,7 +1546,7 @@ Instead, embracing multiple perspectives, rather than attempting to resolve them
 One such way this could be achieved is by obtaining multiple chord annotations and creating a time-aligned bag of words reference.
 For example, knowing that 97 of 100 annotators labeled a chord as \texttt{A:7} is very different from the scenario that 52 did, while the other 48 reported \texttt{A:maj}.
 Curating a dataset with so many perspectives is unlikely to happen, but perhaps multiple computational systems could be used to find boundary chords that \emph{do} warrant multiple perspectives.
-Ultimately, this study demonstrates that future chord datasets should strive to capture the degree of subjectivity in an annotation, thus enabling objective measures better correspond with subjective experience.
+Ultimately, this study demonstrates that future chord datasets should strive to capture the degree of subjectivity in an annotation, thus enabling objective measures to better correspond with subjective experience.
 
 
 \section{Summary}
