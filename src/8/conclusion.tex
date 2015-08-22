@@ -240,14 +240,17 @@ Furthermore, more effort could be made to decode the fretboard estimations in ph
 Given the initial impetus for this work, though, the most valuable action to take next would be to deploy the system via an online application.
 This both serves the previous goal of collecting feedback on the quality of the system, as well as allowing users to correct errors, thus growing the amount the labeled data for training and evaluation of future systems.
 Furthermore, this speaks to an observation that encompasses all music informatics research:
-there is a great deal to be gained by finding ways to deploy systems as a means of facilitating data collection.
-Traditionally, the process of annotating music for curating ground truth is achieved entirely by manual means, and less-than-perfect machines can be leveraged to greatly accelerate this daunting task.
+there is a great deal to be gained by deploying even moderately performing systems as a means of facilitating data collection.
+Traditionally, the process of annotating music for curating ground truth is achieved entirely by manual means, and less-than-perfect algorithms can be leveraged to greatly accelerate this daunting task.
+The merits of this approach have been aptly demonstrated with the success of reCAPTCHA in the realm of optical character recognition.
 
-Numerical optimization is your friend.
-Don't have to use deep learning to use gradient descent.
-Use data to fine-tune existing systems, such as tempo estimation, onset detection, etc.
-Not terribly hard to reframe many MIR systems as differentiable functions.
-Lots of tools to facilitate this.
+Outside the scope of the specific applications tackled in this work, there are a number of other ways in which deep learning can be applied to music informatics.
+Perhaps most simply, gradient-based optimization is a viable approach to tweak and tune previous developed algorithms.
+Many complex systems, such as instrument recognition, melody tracking, or tempo estimation, can be reinterpreted as deep, differentiable architectures, allowing parameters to be tuned automatically, rather than heuristically.
+Approaching problems through the lens of deep learning does not require abandoning previous research in favor of these trendy new methods;
+rather, our collective progress serves as a starting point from which data-driven development can take these systems to the next level.
+Furthermore, MIR systems make wide use of differentiable operations, and there exist a variety of software toolkits that facilitate the process of automatically tuning a given algorithm.
+
 
 Tackle tasks for which generating data makes sense
 Mono- or polyphonic pitch tracking
