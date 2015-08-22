@@ -251,13 +251,13 @@ Approaching problems through the lens of deep learning does not require abandoni
 rather, our collective progress serves as a starting point from which data-driven development can take these systems to the next level.
 Furthermore, MIR systems make wide use of differentiable operations, and there exist a variety of software toolkits that facilitate the process of automatically tuning a given algorithm.
 
+It is an adavantage of numerically optimizing pre-existing systems that less data is required to achieve good results and avoid over-fitting.
+That said, there are an increasing number of tasks in music informatics for which generating ``synthetic'' data makes a great deal of sense.
+Consider, for example, instrument specific pitch estimation.
+Due to the overwhelming shift toward computer-based music composition and production, it is trivial to find massive, well-curated sound libraries for a various instruments, particularly piano.
+By combining these pristine recordings with any number of distortions, filters, or other signal augmentations, it is posisble to create large, realistic datasets for training deep networks.
+Thus, by rendering a corpus of symbolic music with real sound sample libraries, the task of robust polyphonic pitch tracking, or even full transcription, seems quite feasible.
 
-Tackle tasks for which generating data makes sense
-Mono- or polyphonic pitch tracking
-Automatic transcription
-Truly ground truth representations
-Possible to make these datasets reasonably realistic
-Large sample libraries to leverage
 
 Jointly estimate different kinds of tasks
 Music recognition doesn't really occur in a vacuum.
