@@ -234,13 +234,14 @@ From a system design perspective, the relationship with music structure analysis
 Finally, and arguably of greatest importance, one or more automatic chord estimation systems desperately need to be evaluated by a large number of real users, and the findings disseminated within the community.
 This is critical to not only validate or redefine our objective measures, but also identify and prioritize deficiencies in modern ACE systems.
 
-Here's what to do with guitar stuff.
-In addition to chords above (all relevant)
-Hook up to a better decoding system (Burlet)
-Multiple voicings, more chord shapes
-Deploy the thing, collect feedback / corrections
-We should be deploying all of our systems.
-Don't collect data cold, bootstrap models for data collection.
+Complementing the discussion of general chord estimation above, there are specific extensions to the work on guitar chord tablature worth exploring.
+It is a particular limitation of the current system that only single chord voicings are represented, and support for multiple chord shapes would lead to a more expressive system.
+Furthermore, more effort could be made to decode the fretboard estimations in physically plausible ways, as in the work of Burlet \cite{Burlet2013Robotaba}.
+Given the initial impetus for this work, though, the most valuable action to take next would be to deploy the system via an online application.
+This both serves the previous goal of collecting feedback on the quality of the system, as well as allowing users to correct errors, thus growing the amount the labeled data for training and evaluation of future systems.
+Furthermore, this speaks to an observation that encompasses all music informatics research:
+there is a great deal to be gained by finding ways to deploy systems as a means of facilitating data collection.
+Traditionally, the process of annotating music for curating ground truth is achieved entirely by manual means, and less-than-perfect machines can be leveraged to greatly accelerate this daunting task.
 
 Numerical optimization is your friend.
 Don't have to use deep learning to use gradient descent.
