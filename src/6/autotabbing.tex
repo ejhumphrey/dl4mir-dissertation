@@ -236,7 +236,8 @@ Augmented & \textbf{0.8294} & \textbf{0.8715} & \textbf{0.8420} & \textbf{0.6989
 Overall performance is measured as weighted recall across metrics, as per the previous chapter, and given in Table \ref{tab:test_micro}.
 These results indicate that, over all the data, the three fretboard models perform far better than either of the two previous ones.
 Additionally, the combination of weight scaling and pitch shifting leads to the best overall performance.
-As the second, weight scaled condition fares slightly worse than training the models with the data as-is, it is reasonable to assume that applying pitch shifting only during training likely would have resulted in higher overall scores.
+As the second, weight-scaled condition fares slightly worse than training the models with the data as-is, there is reason to conclude that applying pitch shifting only during training will likely result in higher overall scores.
+This inquiry is left as an opportunity for future work.
 
 
 \begin{table}[t]
@@ -276,7 +277,7 @@ This result is intuitively satisfying, as the introduction of class-dependent we
 Though this can help attenuate the model's strong preference for majority chord classes, it does nothing to help address the overall deficiency of minority classes.
 Therefore, when loss scaling is combined with data augmentation, the increase in performance is profound; nearly all statistics, at both the micro and quality-wise macro level, improve, some significantly.
 
-Additionally, it can be seen that the higher overall scores in the guitar model are a result of over-predicting majority, and in particular ``major'', chords
+Additionally, it can be seen that the higher overall scores in the guitar model are a result of over-predicting majority, and in particular ``major'', chords.
 Compared to the root-invariant model of the previous chapter, the guitar models are over 10\% better at predicting major chords alone.
 Somewhat surprisingly, the root-invariant model is nearly 20\% better at dominant seven chords than any new model trained here.
 This can be understood as an artifact of the intersection in fretboard space between major and dominant seven chords, coupled with the significant bias toward major chords.
@@ -309,13 +310,16 @@ However, since the representation is human readable, it is trivial to correct th
 %
 \end{figure}
 
-In the space of fretboard estimation, this can be quantified by comparing the distances between predictions both before and after classification, partitioned on whether or not the datapoint is correctly assigned.
-First, the distances between the continuous-valued fretboard and the corresponding target template are computed and tallied as a histogram.
-Next, the estimated fretboard representations are assigned to the \emph{nearest} template, and distance is computed to the target; these distances, are also aggregated into a histogram, but take only a finite number of values.
-Both probability density functions are integrated into continuous distribution functions to illustrate what ratio of the data lives within the radius of a bounding volume, shown in Figure \ref{fig:quant_error}.
-Here, it can be seen that classification clearly widens the gap between correct and incorrect answers.
-Alternatively, in the regression scenario, nearly 20\% of these errors are closer to their correct class, accounting for well over 80\% of the data.
-Importantly, the improved proximity of these errors mean that they should be easier to correct by potential users.
+In the space of fretboard estimation, this can be quantified by comparing the distances between predictions and the ideal template both before and after classification, partitioned on whether or not the datapoint is correctly assigned.
+First, the distances between the continuous-valued fretboard and the corresponding target template are computed and tallied as two histograms, partitioned on binary accuracy and normalized by the total number of observations.
+Next, the estimated fretboard representations are assigned to the \emph{nearest} template, and distance is computed to the target;
+these distances are also histogrammed, split on correctness, but take only a few discrete values due to the vector quantization introduced by classification.
+These four density functions are then integrated into continuous distribution functions (CDF).
+Shown in Figure \ref{fig:quant_error}, these CDFs can be understood as representing the ratio of total observations as a function of an estimation's distance from the ideal representation.
+Here, it can be seen that misclassification effectively widens the gap between correct and incorrect answers.
+Alternatively, in the regression scenario, nearly 20\% of these errors are ``closer'' to their correct class's template, accounting for well over 80\% of the data.
+Importantly, this additional information, contained in an incorrect prediction, is precisely what makes it easier for potential users to correct mistakes;
+they are offered insight into \emph{how} the system may have failed.
 
 
 \section{Discussion}
@@ -330,10 +334,10 @@ The vast majority of music can be simplified as ``power chords'', consisting of 
 Therefore, while many methodological challenges inherent to chord estimation persist in this study, predicting chord shapes as tablature softens the degree to which they impact usability.
 
 Setting aside the limitations of quantitative evaluation in chord estimation, the proposed system warrants a subjective, user experience study in the future.
-Many of the gains identified here can only be qualitatively assessing how such a system achieves its goals, such as the degree to which performance \emph{does} in fact degrade gracefully.
+Many of the gains identified here can only be qualitatively assessed by how such a system achieves its goals, such as the degree to which performance \emph{does} in fact degrade gracefully.
 Countless instances can be identified where system ``errors'' can be reasonably interpreted as the chord name provided, but only a study with real users will indicate how useful this is.
 
-Perhaps most importantly though, the next logical research step is to develop an interactive user interface and deploy the system at scale.
+Perhaps most importantly though, the next logical research step is to develop an interactive user interface and deploy such a system at scale.
 In addition to distributed instruction, deploying an ``autotabbing'' system provides a means to collect and clean reference annotations.
 Approaching this task from the perspective of human-readable representations holds considerable promise in the space of data curation, as editing a chord transcription is generally a far simpler task than creating one from scratch.
 This reality is only amplified for annotators who lack formal ear training.

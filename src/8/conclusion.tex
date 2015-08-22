@@ -18,7 +18,7 @@ Deep architectures and feature learning were shown to hold promise in music anal
 
 At this point, it was necessary to consider what is ``deep learning'', and why is this an option now?
 In Chapter \ref{chp:deep_learning}, the history of the field was first re-examined, showing that after an over-hyped introduction, neural networks languished through the latter part of the 20th century.
-This period of skepticism and disinterest gave technology time to catch up to the theory, and after a serious of significant research contributions, deep learning made a triumphant return to the fore of computer science, toppling longstanding benchmarks seemingly overnight.
+This period of skepticism and disinterest gave technology time to catch up to the theory, and after a series of significant research contributions, deep learning made a triumphant return to the fore of computer science, toppling longstanding benchmarks seemingly overnight.
 While this has brought about a second wave of hype and interest, it also encouraging the curation of a more established theory of deep networks.
 As reviewed, the modern practice of deep learning consists of a handful of modular processing blocks, strung together in differentiable functions and numerically optimized to an objective function via gradient-based methods, complemented by a growing suite of practical tricks of the trade.
 
@@ -67,7 +67,7 @@ However, while these enigmatic functions might cause understandable confusion, t
 % Simply train the systems we've already got
 But where to start?
 The simplest way one might begin to explore deep learning for some problem of choice is to build some previously published algorithm and use gradient descent to fine-tune the hand crafted weights.
-There are countless MIR systems could be reformulated in the deep learning framework, such as onset detection, instrument identification, or pitch estimation.
+There are countless MIR systems that can and are being reformulated in the deep learning framework, such as onset detection, instrument identification, or pitch estimation.
 Most importantly, doing so eliminates the need to compare minor implementation details, like specific hyperparameters or window coefficients;
 just learn it and let it all come out in the wash.
 Additionally, introducing the process of learning to classic music informatics systems makes it easier to \emph{combine} multiple systems to reap the benefits of model averaging.
@@ -77,7 +77,7 @@ The key takeaway here is the notion that good architectures already exist for so
 Critically, these lessons and practices transcend known problems to new ones.
 As demonstrated with the fretboard architecture of Chapter \ref{chp:guitar}, systems can be quickly constructed by appropriately constraining the behavior.
 Since a guitar has six strings, and each can only be active in one place, it makes sense to model each as a probability surface.
-That said, there is much more could be done here.
+That said, there is much more that could be done here.
 Perhaps transition constraints could be imposed, such that the model would prefer common chord shapes, or positional constraints, whereby nearby frets are preferred to large jumps.
 In this manner, end-to-end systems can be designed and developed at a high level, and numerical optimization can be leveraged to work out the fine details.
 Furthermore, while learning can discover useful features that were previously overlooked or not considered, this advantage is amplified for new challenges and applications that do not offer much guiding intuition.
@@ -130,7 +130,8 @@ one, simplify the learning problem by removing degrees of freedom known to be ir
 two, constrain the learning problem to encourage musically plausible solutions.
 If loudness doesn't impact one's ability to recognize chords, for example, the data should probably be normalized.
 Music informatics researchers have a diverse background on which to draw, and this knowledge can be incorporated into the model or training strategy.
-Notably, curriculum learning will likely become a much larger topic in the near future, and much can be incorporated from music education and pedagogy in this process.
+Notably, curriculum learning ---the process by which data presented during training are ordered as a function of some variable, e.g. difficulty--- will likely become a much larger topic in the near future, and much can be incorporated from music education and pedagogy in this process.
+For example, a data-driven approach to rhythm analysis might first attempt to recognize simple patterns before moving on syncopation and polyrhythms, rather than attempt to make sense of all content at once.
 
 
 \item \textbf{Over-fitting is your friend}:
@@ -151,8 +152,8 @@ For example, a fretboard prediction network could incorporate a penalty whereby 
 
 
 \item \textbf{The gap between ``real'' and synthetic music is closing}:
-As more modern music transitions to a digital environment, the difference in quality between a real sound recording and one synthesized for research purposes is converging to zero.
-Generally speaking, samplers, synthesizers, and other music production software are underutilized in data-driven music research.
+As more modern music transitions to a digital environment, the difference in quality between a purely acoustic sound recording and one synthesized for research purposes is continually decreasing.
+Generally speaking, samplers, synthesizers, and other music production software are increasingly prevalent in modern popular music, but largely underutilized in data-driven music research.
 These high quality tools can also be used for data augmentation to make algorithms robust to irrelevant deformations, such as perceptual codecs, background noise, tempo modulation, or pitch shifting.
 By generating an unprecedented amount of realistic training data, can we functionally solve tasks such as onset detection, pitch detection, or tempo estimation?
 
@@ -189,11 +190,11 @@ And, given significant gains in compute power, the combination of architectural 
 That said, there are a few important things deep learning is not.
 It is by no means the best answer to every problem.
 Deep learning is, in its current forms, still relatively data hungry and often computationally expensive.
-Even in the case of unsupervised pre-training, sufficient volumes of realistic data may not be trivial to obtain, as in the case of accelerometers or gyroscopes.
+Even in the case of unsupervised pre-training, sufficient volumes of realistic data may not be trivial to obtain, as in the case of accelerometers or gyroscopes for use in musically oriented human-computer interaction research.
 To the latter point, any performance gains obtained with a deep network could be effectively negated by disproportionate increase in processing time.
 Both of these limitations are like to become less important over time, but remain relevant today.
 More conceptually, albeit somewhat contentiously, nor can the modern flavors of deep learning be called ``intelligent'';
-echoing the ghost of Searle, a system may certainly \emph{behave} intelligently without truly \emph{being} so.
+echoing the ghost of John Searle, a system may certainly \emph{behave} intelligently without truly \emph{being} so.
 Despite the imagery evoked by metaphors and figurative language that pervade the field, deep learning has as much in common with humanity as a player piano, and learning is merely a means of programming in a data-driven manner.
 This is not to say that deep learning can or will not lead to such breakthroughs, but care should be taken when differentiating metaphor from reality.
 
@@ -209,6 +210,64 @@ But is it useful?
 Can it accelerate the process of system design and implementation?
 Can it allow the clever researcher to quickly vet ideas and develop complex, robust systems?
 The answer to all of these is \emph{yes}.
+
+
+\subsection{A Handful of Possible Next Steps}
+
+In the course of this thesis, several possible opportunities for subsequent research have been identified.
+Here, an effort is made to consolidate the bigger ideas into a single list, as well as introduce other observations gleaned during the research process.
+
+First, there are a variety of specific ways in which the work on timbre similarity could be easily extended.
+Based on visual inspection alone, more diffuse embeddings are probably necessary to achieve a strong sense of perceptual smoothness.
+One likely way this could be achieved is by limiting similarity during training to intra-class near-neighbors, rather than all observations from a given class.
+To this point, a perceptual study would prove enlightening as a means of better understanding what, if any, salient dimensions are captured by the model.
+Additionally, in the space of user experience, it would be valuable to better assess the usefulness of these embeddings for a visual-based search for sounds.
+In a creative vein, timbre ``morphing'' could be realized by defining a trajectory through an embedding space, and using concatenative synthesis on short-time windows of the corresponding audio signals.
+More generally though, this approach could be expanded to consider other kinds of audio or music data, such as vocals, chord labels, or urban environmental sounds.
+
+On the topic of chords and harmony, a few tasks for future research have also been identified.
+One, a better definition of the problem is necessary in order to make substantive progress.
+As a result, this will make it necessary to reconsider and, in all likelihood, expand the music content used for development and evaluation.
+In order to embrace subjectivity, it will be important to additionally collect multiple perspectives on chord labels whenever possible.
+This more nuanced reference signal will provide more stable evaluation, while allowing researchers to tackle chord labeling as a tagging problem using a harmonic vocabularity.
+From a system design perspective, the relationship with music structure analysis and boundary detection are obvious, and a more explicit fusion of approaches would almost certainly prove fruitful.
+Finally, and arguably of greatest importance, one or more automatic chord estimation systems desperately need to be evaluated by a large number of real users, and the findings disseminated within the community.
+This is critical to not only validate or redefine our objective measures, but also identify and prioritize deficiencies in modern ACE systems.
+
+Here's what to do with guitar stuff.
+In addition to chords above (all relevant)
+Hook up to a better decoding system (Burlet)
+Multiple voicings, more chord shapes
+Deploy the thing, collect feedback / corrections
+We should be deploying all of our systems.
+Don't collect data cold, bootstrap models for data collection.
+
+Numerical optimization is your friend.
+Don't have to use deep learning to use gradient descent.
+Use data to fine-tune existing systems, such as tempo estimation, onset detection, etc.
+Not terribly hard to reframe many MIR systems as differentiable functions.
+Lots of tools to facilitate this.
+
+Tackle tasks for which generating data makes sense
+Mono- or polyphonic pitch tracking
+Automatic transcription
+Truly ground truth representations
+Possible to make these datasets reasonably realistic
+Large sample libraries to leverage
+
+Jointly estimate different kinds of tasks
+Music recognition doesn't really occur in a vacuum.
+Multi-representation learning, chords and downbeats, and or segmentation
+chords and tagging
+This also allows us to combine small datasets
+Any one dataset might be small, but each task regularizes the other.
+
+Deep learning isn't just for classification.
+Can do some fun audio regression problems.
+Deep nonlinear filters
+Non-linear modeling of guitar amplifiers
+Other kinds of synthesis
+Autoencoders and generative models are attractive for creative applications.
 
 
 \subsection{On the Apparent Rise of Glass Ceilings in Music Informatics}

@@ -14,7 +14,7 @@ There are several reasons why open research is beneficial to the greater body of
 First, sharing code and data allows others to reproduce previous results, a fundamental tenet of the scientific method.
 Open source implementations are invaluable for sufficiently complex systems.
 It may be near impossible to describe every minute detail in a publication necessary for someone else to replicate the obtained results;
-for some works, in fact, the only artifact that can do this unambiguously is the source code itself.
+for some works, in fact, the only artifacts that can do this unambiguously are the source code and experimental data used.
 Second, and in a related vein, open research makes it both easier and faster to build upon and extend the previous work of others.
 Even in the instance a researcher is able to recreate a published system, the time and effort necessary to get to this point is significant and arguably unnecessary.
 Granted, while there is an educational component inherent to the re-implementation of previous work, the situation is akin to long division:
@@ -25,7 +25,7 @@ The reality is that no one individual has ever truly solved anything on their ow
 
 With these motivations in mind, this chapter details the several open source contributions made in the course of this work, culminating in a single code repository used to produce the results contained herein.
 These software tools consist of the following:
-Section \ref{sec:jams} describes \texttt{jams}, a JSON annotated music specification and python API for rich music descriptions;
+Section \ref{sec:jams} describes \texttt{jams}, a JSON annotated music specification and Python API for rich music descriptions;
 Section \ref{sec:biggie} introduces \texttt{biggie}, an HDF5 interface for interacting with notoriously big data;
 Section \ref{sec:optimus} details \texttt{optimus}, a user-friendly library for building and serializing arbitrary acyclic processing graphs;
 Section \ref{sec:mir_eval} discusses relevant contributions to \texttt{mir\_eval}, a transparent framework for evaluating MIR systems;
@@ -138,7 +138,7 @@ It is typically advantageous to learn on several consecutive frames of features,
 These tiles could be sharded from longer feature sequences into some number of discrete, equivalently shaped observations, but this is generally undesirable.
 Doing so limits the flexibility of the researcher considering different tile sizes, requiring that the data be sharded again.
 More difficult, this practice increases the footprint of the dataset linearly with the size of each observation.
-Lastly, it is helpful to keep the entire feature sequence in tact, as it facilitates the application of any additional time-dependent processing, e.g. Viterbi decoding.
+Lastly, it is helpful to keep the entire feature sequence intact, as it facilitates the application of any additional time-dependent processing, e.g. Viterbi decoding.
 
 To achieve these ends, \texttt{biggie}\footnote{\url{http://github.com/ejhumphrey/biggie}} is the high-dimensional, signal-level equivalent to JAMS, built on two basic objects.
 An \emph{entity} is a struct-like object designed to keep various numerical representations together, regardless of samplerate.
@@ -156,10 +156,10 @@ While biggie helps address similar pain points as other libraries, like \texttt{
 
 % What is the problemo
 Deep learning tools have matured rapidly in the last half decade, with powerful choices across several programming languages.
-Developed under the direction of Yoshua Bengio at the University of Montreal, Theano\footnote{\url{http://deeplearning.net/software/theano/}}, is the leading Python library for deep learning.
+Developed under the direction of Yoshua Bengio at the University of Montreal, Theano\footnote{\url{http://deeplearning.net/software/theano/}}, is one of the leading Python libraries for deep learning.
 Boasting a large and growing user base, Theano offers all the pieces necessary for deep learning research, including symbolic differentiation, optimized C-implementations, and seamless integration with GPUs.
 Though extremely powerful, useful, and expressive, there are two facets of the library that proved troublesome in the course of this work.
-Serialization is can be tricky, especially for networks under active development.
+Serialization can be tricky, especially for networks under active development.
 The common approach to saving objects in Python, known as ``pickling'', is sensitive to modifications to the code, and thus something pickled previously may not be recoverable in the future.
 Additionally, designing neural networks in Theano can be rather time-consuming, and is not the most user-friendly experience.
 This is especially true when constructing non-standard architectures, such as guitar fretboard models or pairwise training strategies.
@@ -200,11 +200,11 @@ As a result, a consensus has yet to be reached regarding the single best approac
 To efficiently compare chords, a given chord label is first separated into its
 constituent parts, based on the syntax of~\cite{Harte2010Towards}.
 For example, the chord label \texttt{G:maj(6)/5} is mapped to three pieces of information: the root (``G''), the root-invariant active semitones as determined by the quality shorthand (``maj'') and scale degrees (``6''), and the bass interval (``5'').
-Based on this representation, an estimated chord label can be compare with a reference by defining a comparison function between these invariant representations.
+Based on this representation, an estimated chord label can be compared with a reference by defining a comparison function between these invariant representations.
 Any encoded chords that are deemed to be ``out of gamut'' return a negative score to be easily filtered.
 Track-wise scores are computed by weighting each comparison by the duration of its interval, over all intervals in an audio file.
 This is achieved by forming the union of the boundaries in each sequence, sampling the labels, and summing the time intervals of the ``correct'' ranges.
-The cumulative score, referred to as \emph{weighted chord symbol recall}, is tallied over a set audio files by discrete summation, where the importance of each score is weighted by the duration of each annotation~\cite{Mauch2010Automatic}.
+The cumulative score, referred to as \emph{weighted chord symbol recall}, is tallied over a set of audio files by discrete summation, where the importance of each score is weighted by the duration of each annotation~\cite{Mauch2010Automatic}.
 
 
 \section{\texttt{dl4mir}}
