@@ -242,7 +242,7 @@ This both serves the previous goal of collecting feedback on the quality of the 
 Furthermore, this speaks to an observation that encompasses all music informatics research:
 there is a great deal to be gained by deploying even moderately performing systems as a means of facilitating data collection.
 Traditionally, the process of annotating music for curating ground truth is achieved entirely by manual means, and less-than-perfect algorithms can be leveraged to greatly accelerate this daunting task.
-The merits of this approach have been aptly demonstrated with the success of reCAPTCHA in the realm of optical character recognition.
+The merits of this approach have been aptly demonstrated with the success of reCAPTCHA and its role in optical character recognition research.
 
 Outside the scope of the specific applications tackled in this work, there are a number of other ways in which deep learning can be applied to music informatics.
 Perhaps most simply, gradient-based optimization is a viable approach to tweak and tune previous developed algorithms.
@@ -258,20 +258,24 @@ Due to the overwhelming shift toward computer-based music composition and produc
 By combining these pristine recordings with any number of distortions, filters, or other signal augmentations, it is posisble to create large, realistic datasets for training deep networks.
 Thus, by rendering a corpus of symbolic music with real sound sample libraries, the task of robust polyphonic pitch tracking, or even full transcription, seems quite feasible.
 
+Alternatively, jointly estimating different dimensions of music is another area ripe for exploration.
+Put in context, many MIR systems are design to do one thing well;
+this system recognizes chords, for example, \emph{or} it identifies boundaries between sections, but not both.
+It is necessary to note, though, that this is hardly how music is perceived, and the use of harmony is often strongly correlated with notions of structure.
+While there has certainly been some work in this area \cite{Papadopoulos2011Joint}, there is much that could be done in the realm of deep learning.
+Multi-representation learning could proceed by training one network with different output layers for each task considered, encouraging the reuse of intermediary representations internal to the system.
+This also directly addresses the issue of MIR datasets often being too small for data-driven methods, as a few small datasets may together be sufficient.
+A combined dataset for joint estimation is greater than the sum of its individual parts, as each serves as regularization against the representations tuned for the other tasks, encouraging the model to learn generally useful musical features.
 
-Jointly estimate different kinds of tasks
-Music recognition doesn't really occur in a vacuum.
-Multi-representation learning, chords and downbeats, and or segmentation
-chords and tagging
-This also allows us to combine small datasets
-Any one dataset might be small, but each task regularizes the other.
-
-Deep learning isn't just for classification.
-Can do some fun audio regression problems.
-Deep nonlinear filters
-Non-linear modeling of guitar amplifiers
-Other kinds of synthesis
-Autoencoders and generative models are attractive for creative applications.
+Finally, it is worth noting that the majority of deep learning research places a large emphasis on classification and recognition tasks.
+However, there are several creative or artistic applications that are well suited for exploration in the MIR community.
+One, deep neural networks are simply nonlinear functions, and are equally applicable in the space of audio synthesis and filter design.
+It should be possible, for example, to produce compelling models of nonlinear, analog guitar amplifiers through data-driven means.
+Autoencoders and generative models are especially attractive for composition, both in the space of sound synthesis or symbolic music representations.
+To the former, a deep autoencoder could be trained to reproduce observations of an instrument, regularized by how it might be controlled, e.g. pitch and amplitude.
+The encoder could then be discarded after training, and the intermediary representation becomes an opportunity for direct control.
+In the latter, a network ---recursive or otherwise--- could be trained to generate likely piano roll representations, given a seed input.
+This is particularly attractive in pursuing a musical variant of Google's ``Deep Dream'' experiment\footnote{}, where resynthesizing acoustic representations might prove problematic.
 
 
 \subsection{On the Apparent Rise of Glass Ceilings in Music Informatics}
