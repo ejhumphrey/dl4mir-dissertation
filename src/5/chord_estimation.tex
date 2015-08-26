@@ -566,30 +566,30 @@ The output of the final layer is passed through a softmax operator, producing an
 \begin{table}[!t]
 % increase table row spacing, adjust to taste
 \renewcommand{\arraystretch}{1.4}
-\caption{Model Configurations - Larger models proceed down the rows, as small (S), medium (M), and large (L); two different kernel shapes, $1$ and $2$, are given across columns.}
+\caption{Model Configurations - Larger models proceed down the rows, as small (S), medium (M), and large (L); two different receptive fields, $1$ and $2$, are given across columns, with corresponding shapes for weights (W), pooling (P), and total number of parameters (\#).}
 %\caption{Convolutional Layers -- K: kernel shape, P: pooling shape. Fully-connected Layers -- W: Weight shape }
 \label{tab:model_configs}
 \centering
 \begin{tabular}{c || l || l |}
  & 1 & 2 \\
 \hline
- S & K:(1, 4, 6, 25), P:(1, 3)& K:(1, 4, 5, 25), P:(1, 3)\\
- &K:(4, 6, 6, 27) & K:(4, 6, 5, 13) \\
- &K:(6, 8, 6, 27) & K:(6, 8, 5, 13) \\
+ S & W:(1, 4, 6, 25), P:(1, 3)& W:(1, 4, 5, 25), P:(1, 3)\\
+ &W:(4, 6, 6, 27) & W:(4, 6, 5, 13) \\
+ &W:(6, 8, 6, 27) & W:(6, 8, 5, 13) \\
  &W:(960, 50)  & W:(2560, 50)\\
  &W:(50, 25)  & W:(50, 25)\\
  &\#:61,607  & \#:134,523\\
 \hline
- M & K:(1, 6, 6, 25), P:(1, 3)& K:(1, 6, 5, 25), P:(1, 3)\\
- &K:(6, 9, 6, 27) & K:(6, 9, 5, 13) \\
- &K:(9, 12, 6, 27) & K:(9, 12, 5, 13) \\
+ M & W:(1, 6, 6, 25), P:(1, 3)& W:(1, 6, 5, 25), P:(1, 3)\\
+ &W:(6, 9, 6, 27) & W:(6, 9, 5, 13) \\
+ &W:(9, 12, 6, 27) & W:(9, 12, 5, 13) \\
  &W:(1440, 125)  & W:(3840, 125)\\
  &W:(125, 25)  & W:(125, 25)\\
  &\#:210,446  & \#:494,582\\
 \hline
- L & K:(1, 16, 6, 25), P:(1, 3)& K:(1, 16, 5, 25), P:(1, 3)\\
- &K:(16, 20, 6, 27) & K:(16, 20, 5, 13) \\
- &K:(20, 24, 6, 27) & K:(20, 24, 5, 13) \\
+ L & W:(1, 16, 6, 25), P:(1, 3)& W:(1, 16, 5, 25), P:(1, 3)\\
+ &W:(16, 20, 6, 27) & W:(16, 20, 5, 13) \\
+ &W:(20, 24, 6, 27) & W:(20, 24, 5, 13) \\
  &W:(2880, 200)  & W:(7680, 200)\\
  &W:(200, 25)  & W:(200, 25)\\
  &\#:713,285  & \#:1,595,285\\

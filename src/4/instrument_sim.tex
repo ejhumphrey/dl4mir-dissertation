@@ -192,7 +192,7 @@ The main component of the system is a deep convolutional network, which maps til
 A pairwise training harness is made by copying this network, and parameters are learned by minimizing the distance between observations of the same sound source and maximizing the distance otherwise (Subsection \ref{subsec:timbre_pairwise}).
 At test time, the pairwise harness is discarded, and the resulting network is used to project inputs to the learned embedding space.
 
-% TODO: Update figure with margin box.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{nlse_system.pdf}
@@ -272,11 +272,13 @@ During training, the function $\mathcal{F}$ is copied and parameters, $\Theta$, 
 Two inputs, $X_1$ and $X_2$, are transformed by their respective functions, $\mathcal{F}_1$ and $\mathcal{F}_2$, to produce the outputs, $Z_1$ and $Z_2$.
 A metric, e.g. Euclidean, is chosen to compute a distance, $D$ between these outputs.
 Finally, a similarity score, $Y$, representing the relationship between $X_1$ and $X_2$, is passed to a contrastive loss function, which penalizes similar and dissimilar pairs differently.
+
 Generalizing the original DrLIM approach, different margin terms are applied in the two conditions.
 For similar pairs, the loss will be small when the distance is small, or zero within the margin $m_s$;
 for dissimilar pairs, the loss will be small when the distance is large, or zero outside a dissimilar margin, $m_d$.
-This formal definition is summarized symbolically by the following:
-
+Here similarity is defined as $Y=1$, for consistency with boolean logic.
+As a result, the first term of the loss function is only non-zero for similar pairs, and the inverse is true for the second term.
+This is summarized symbolically by the following:
 
 \begin{align*}
 Z_1 = \mathcal{F}_1(X_1 | \Theta), Z_2 = \mathcal{F}_2(X_2 | \Theta)\\
@@ -285,9 +287,6 @@ D = || Z_1 - Z_2 ||_2\\
 \mathcal{L}_{d} = \max(0, m_{d} - D)^2\\
 \mathcal{L} = Y * \mathcal{L}_{s} + (1 - Y) * \mathcal{L}_{d} \\
 \end{align*}
-
-\noindent Note that similarity is given by $Y=1$, for consistency with boolean logic.
-As a result, the first term of the loss function is only non-zero for similar pairs, and the inverse is true for the second term.
 
 %Training strategy
 Returning to the previous discussion regarding the dynamic range of the output layer, it should now be clear that the choice of margin only influences the learned embedding relative to a scale factor when the output is unbounded.
@@ -521,7 +520,6 @@ In the NLSE model, tuba is confused with French horn more often than bassoon; fo
 Intuitively, the two brass instruments should share the higher confusion rate, and thus pitch is being used by the LDA model as a feature with which to distinguish between classes.
 The convolutional model, on the other hand, is forced to embrace a considerable amount of pitch invariance, and is prevented from making the same error.
 
-% TODO: Label rows and columns as reference vs estimated.
 \begin{landscape}
 \begin{table*} % [h]
 \begin{center}

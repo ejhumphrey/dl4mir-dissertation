@@ -59,7 +59,7 @@ Section \ref{sec:deep_learning} then introduces the ideas of deep architectures 
 Finally, Section \ref{sec:discussion} summarizes the concepts covered herein, and discusses why it is critical point in time for the music informatics community to consider alternative approaches.
 
 
-\section{Reassessing Common Practice in Automatic Music Description}
+\section{Reassessing Common Practice in Content-Based MIR}
 \label{sec:common}
 
 Despite a broad spectrum of application-specific problems, the vast majority of music signal processing systems adopt a common two-stage paradigm of feature extraction and semantic interpretation.
@@ -68,7 +68,7 @@ These signal features are then provided to a pattern recognition machine for the
 % TODO: Fill in URLs.
 Crafting good features is a particularly challenging subproblem, and it is becoming standard practice amongst researchers to use precomputed features\footnote{Million Song Dataset} or off-the-shelf implementations\footnote{MIR Toolbox, Chroma Toolbox, MARSYAS, Echonest API}, focusing instead on increasingly more powerful pattern recognition machines to improve upon prior work.
 While early research mainly employed simple classification strategies, such as nearest-neighbors or peak-picking, recent work makes extensive use of sophisticated and versatile techniques, e.g. Support Vector Machines \cite{Mandel2005Song}, Bayesian Networks \cite{Mauch2010Approximate}, Conditional Random Fields \cite{Sumi2012Music}, and Variable-Length Markov Models \cite{Chordia2011Predictive}.
-% TODO: Fix this figure.
+
 \begin{figure}
 \begin{centering}
 \includegraphics[width=\textwidth]{mtb_mfccs}
@@ -134,7 +134,7 @@ However, shallow, low-order functions are fundamentally limited in the kinds of 
 
 \begin{figure}[t]
 \begin{centering}
-\includegraphics[height=1.5 in]{specfit}
+\includegraphics[width=\textwidth]{specfit}
 \caption{\emph{Low-order approximations of highly nonlinear data}: The log-magnitude spectra of a violin signal (black) is characterized by a channel vocoder (blue) and cepstrum coefficients (green). The latter, being a higher-order function, is able to more accurately describe the contour with the same number of coefficients, i.e. smaller mean-squared error.}
 \label{fig:curvefit}
 \end{centering}
@@ -192,7 +192,7 @@ This led to in-depth studies of onset detection \cite{Bello2005Tutorial}, based 
 Along the way, it was also discovered that applying nonlinear compression to a novelty function produced noticeably better results \cite{Klapuri2006Analysis}.
 Various periodicity tracking methods were simultaneously explored, including oscillators \cite{Large1994Resonance}, multiple agents \cite{Goto1995Realtime}, inter-onset interval histograms \cite{Dixon2007Evaluation}, and tuned filterbanks \cite{Grosche2011Extracting}.
 
-% TODO: Redo this fig!
+
 \begin{figure}
 \begin{centering}
 \includegraphics[width=\textwidth]{hierarchicaltecture}
@@ -269,7 +269,7 @@ The function considered here, a linear dot product, is very constrained, and ``b
 Additionally, it is possible to directly inspect the learned weights because the system is straightforward; more complex models, however, will make this process far more difficult.
 
 
-\subsection{Previous Feature Learning Efforts in Music Informatics}
+\subsection{Previous Efforts in Music Informatics}
 
 While far from widespread, an increasing number of researchers have begun investigating deep learning to challenges in content-based music informatics.
 % MLPs, DBNs

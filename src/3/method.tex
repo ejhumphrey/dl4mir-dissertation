@@ -181,7 +181,6 @@ Though the error estimate is much noisier, the strategy is still effective, sign
 \subsubsection{Convolutional Neural Networks}
 \label{subsec:convnets}
 
-% Fully connected networks, bleh; sensitive to translation and scale
 % TODO: Needs a better context sentence
 
 Though equal parts remarkable and encouraging, the universal approximation theorem has significant practical limitations.
@@ -313,8 +312,7 @@ more accurately, however, processing depth as a means to representational power 
 The \emph{width} of a network, on the other hand, is determined by the dimensionality of the intermediary representations between sub-functions, and often varies within the network.
 
 It is worth noting that this sequential cascade of operations is only common practice and not a hard and fast rule.
-% TODO: Fill in this reference.
-Some networks make use of interesting types of connectivity between layers, referred to as ``skip-layer'' connections \cite{};
+Some networks make use of interesting types of connectivity between layers, referred to as ``skip-layer'' connections \cite{Sermanet2011Traffic};
 others adopt an explicit graphical interpretation, encouraging the description of the network in terms of nodes and edges.
 Therefore the design of a network architecture must address several interrelated questions:
 what is the function being modeled?
@@ -393,8 +391,7 @@ The first, and perhaps original, interpretation is referred to as a ``2D'' convo
 In this formulation, $X_l$ has shape $(N, d_0, d_1)$ where $(d_0,d_1)$ is the shape of each map, $W$ has shape $(M, m_0, m_1)$, where $(m_0,m_1)$ define the size of the kernel, and the output, $Z_l$, has shape $(M, d_0-m_0+1, d_1-m_1+1)$.
 Note that in this 2D formulation, the activation of a kernel is summed equally across the separate feature maps, and thus a single kernel is shared across channels and spatial translations.
 
-% TODO: Fix this citation.
-Alternatively, the other common variant of the $\circledast$ operator is the 3D convolution, written as follows \cite{Bengio2011What}:
+Alternatively, the other common variant of the $\circledast$ operator is the 3D convolution, written as follows \cite{Ji2013Convolutional}:
 
 \begin{equation}
 \label{eq:convolution}
@@ -553,10 +550,7 @@ It is worth noting that there are various, roughly equivalent interpretations of
 While largely inspired by \cite{LeCun2006Tutorial}, the perspective presented here takes a far more constrained approach to \emph{inference}, whereby prediction is achieved by the forward propagation of an input through a model.
 % To simplify the discussion, the architecture of a neural network only specifies those operations necessary to achieve some behavior.
 All additional operations necessary to measure the quality of a model can be considered supplementary \emph{meta-function} that sits on top of the desired model during training only.
-% TODO(Include this figure?)
-% As illustrated in Figure \ref{fig:training_harness}, this ``scaffolding'' is discarded once training completes, leaving the model of interest.
 
- % and the curious reader is directed thusly for a more thorough treatment than the one warranted here.
 In the most general sense, this evaluative component is known as a \emph{loss} function, $L$, quantifying the degree of fitness between a model, $\mathcal{F}$, its parameters, $\Theta$, and a collection of $N$ labeled data, $\mathcal{D} = \{(X_i, Y_i) \}$, where $X_i$ is the $i^{th}$ observation and $Y_i$ its corresponding desired output:
 
 \begin{equation}

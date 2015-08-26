@@ -217,8 +217,9 @@
 
 % Spaces for the TOC
 \cftsetindents{chapter}{0em}{4em}
-\cftsetindents{section}{3em}{2.8em}
-\cftsetindents{subsection}{5.8em}{3.5em}
+\cftsetindents{section}{3em}{2em}
+%\cftsetindents{subsection}{4.25em}{2em}
+\cftsetindents{subsection}{5.25em}{2em}
 \cftsetindents{subsubsection}{9.3em}{4.5em}
 \cftsetindents{figure}{0em}{3.5em}
 \cftsetindents{table}{0em}{3.5em}
@@ -244,10 +245,13 @@
 \renewcommand{\thesection}{\arabic{section}}
 \renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
 \renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+%\renewcommand{\thesection}{}
+%\renewcommand{\thesubsection}{}
+%\renewcommand{\thesubsubsection}{}
 
 % Uncomment the following lines to *always* ignore section numbers (ignoring secnumdepth in the main tex)
 %\renewcommand{\thesection}{\hspace{-0.45cm}}
-%\renewcommand{\thesubsection}{}
+%\renewcommand{\thesubsection}{\hspace{-0.45cm}}
 %\renewcommand{\thesubsubsection}{\hspace{-0.45cm}}
 
 % Chapter display following NYU's ugly guidelines
@@ -270,6 +274,7 @@
 
 % Margin
 \titlespacing{\chapter}{0pt}{2em}{3em}
+%\titlespacing{\section}{0em}{10em}{10em}
 \titlespacing{\section}{0pt}{2.5em}{0.5em}
 \titlespacing{\subsection}{0pt}{2.5em}{0.5em}
 \titlespacing{\subsubsection}{0pt}{2.5em}{0.5em}
