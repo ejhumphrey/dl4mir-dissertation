@@ -151,20 +151,15 @@ The ability to explore familiar ideas from an unfamiliar perspective holds consi
 
 
 \subsection{Limitations}
-% TODO: Finish this.
+
 It is valuable to note that despite the difficulty inherent to defining timbre, all computational research must adopt some working concept of it, implicitly or otherwise.
-Generally two facets to timbre; sound quality and sound source.
-They are related but not exactly equal.
-The work presented here operates on the assumption that the perception of timbre is tightly coupled with the experience of discriminating between unique sound sources.
-This is not intended to be a true equivalence with timbre, but a functional approximation that allows the research to proceed.
-Compromise and simplification; You'll pay out somewhere.
-Human judgments of similarity absolve you assumptions about the relationship between source and quality, but costly to curate at scale.
-A data-driven approach, on the other hand, offers the opposite scenario; it is relatively simple to collect this data, but requires that assumptions be made regarding the quality being related.
-
-Ensemble versus solo.
-Here focus entirely on the latter.
-
-
+Generally speaking, there are a few levels at which one typically uses timbre to describe music;
+however, the one common trait that defines timbre is found in the ability to discriminate sound sources.
+This does not necessarily afford a concrete definition of timbre, but it \emph{does} provide an objective function to which a machine learning model may be optimized.
+While the research presented here lives in pursuit of timbre similarity, the notion is one that can only be captured approximately by defining instrument-level associations between acoustic signals.
+It is reasonable, or to some degree even expected, that two sounds originating from different instruments could be perceived as being more similar than two originating from the same instrument, due to a variety of factors, e.g. recording artifacts or performer variation.
+All results and insights gleaned in the course of this particular inquiry must therefore be understood in this context what it means to be more or less ``similar.''
+That said, this is just another way of defining similarity, one that both lends itself well to data-driven research and is reasonable in terms of sound source distinction.
 
 
 \section{Learning Timbre Similarity}

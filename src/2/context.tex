@@ -65,8 +65,12 @@ Finally, Section \ref{sec:discussion} summarizes the concepts covered herein, an
 Despite a broad spectrum of application-specific problems, the vast majority of music signal processing systems adopt a common two-stage paradigm of feature extraction and semantic interpretation.
 Leveraging substantial domain knowledge and a deep understanding of digital signal theory, researchers carefully architect signal processing systems to capture useful signal-level attributes, referred to as \emph{features}.
 These signal features are then provided to a pattern recognition machine for the purposes of assigning semantic meaning to observations.
-% TODO: Fill in URLs.
-Crafting good features is a particularly challenging subproblem, and it is becoming standard practice amongst researchers to use precomputed features\footnote{Million Song Dataset} or off-the-shelf implementations\footnote{MIR Toolbox, Chroma Toolbox, MARSYAS, Echonest API}, focusing instead on increasingly more powerful pattern recognition machines to improve upon prior work.
+Crafting good features is a particularly challenging subproblem, and it is becoming standard practice amongst researchers to use precomputed features\footnote{Million Song Dataset: \url{http://labrosa.ee.columbia.edu/millionsong/}} or off-the-shelf implementations
+\footnote{MIR Toolbox: \url{https://www.jyu.fi/hum/laitokset/musiikki/en/research/coe/materials/mirtoolbox}}
+\footnote{Chroma Toolbox: \url{http://resources.mpi-inf.mpg.de/MIR/chromatoolbox/}}
+\footnote{MARSYAS: \url{http://marsyas.info/}}
+\footnote{Echonest API: \url{http://developer.echonest.com/docs/v4/track.html}},
+focusing instead on increasingly more powerful pattern recognition machines to improve upon prior work.
 While early research mainly employed simple classification strategies, such as nearest-neighbors or peak-picking, recent work makes extensive use of sophisticated and versatile techniques, e.g. Support Vector Machines \cite{Mandel2005Song}, Bayesian Networks \cite{Mauch2010Approximate}, Conditional Random Fields \cite{Sumi2012Music}, and Variable-Length Markov Models \cite{Chordia2011Predictive}.
 
 \begin{figure}
@@ -315,11 +319,11 @@ Notably, these are crucial observations to make now for a variety of reasons.
 From a practical standpoint, many in the research community are investing considerable effort in the curation of datasets.
 While some, like \cite{Bittner2014Medleydb}, have gone to great lengths to clear licenses for the source audio signals, most use commercial recordings and thus sharing the original content is problematic.
 As a result, it is becoming standard practice to apply a respected, but non-invertible, feature extraction algorithm over the original audio content and share the extracted statistics with the community, e.g. the Million Song Dataset \cite{Bertin2011Million}.
-While these efforts are commendable, such datasets are ultimately limited by the feature extraction algorithm employed.
+These efforts are commendable, but such datasets are constrained by the feature extraction algorithm employed.
 
-As a final comment, this is not to imply that feature design is intrinsically deficient, but rather an acknowledgment of the reality that feature extraction is somewhat by definition a lossy process;
-thus, essential information to solve some task may be inadvertenly discarded as a result.
+As a final comment, this is not to imply that feature design is intrinsically deficient, but rather an acknowledgment that feature extraction is by definition a lossy process;
+thus, information essential to solving some task may be inadvertenly discarded in the process.
 It is only fair to recognize that some degree of representation engineering can be adventageous in the application of deep learning to music signal processing.
 The goal of representation design in these two scenarios, however, is quite different:
 whereas conventional feature design attempts to ultimately solve the problem, representation design for deep learning, as we will see, strives to make the problem easier to solve.
-While this does not preclude the latter from being non-trivial, there is a larger margin for error as uncertainty can be deferred to the learning stage.
+% While this does not preclude the latter from being non-trivial, there is a larger margin for error as uncertainty can be deferred to the learning stage.
